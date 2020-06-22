@@ -11,6 +11,7 @@
     <modules>
         <module>hw01-students-test-app</module>
         <module>hw02-students-testing</module>
+        <module>hw03-spring-boot-testing-app</module>
     </modules>
 
 
