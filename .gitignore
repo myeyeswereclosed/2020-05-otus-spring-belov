@@ -16,3 +16,5 @@ target/
 *.ipr
 
 *.DS_Store
+
+spring-shell.log
