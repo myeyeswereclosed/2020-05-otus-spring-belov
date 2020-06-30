@@ -1,7 +1,7 @@
 test:
-  questionsDelimiter: ,
+  questionsDelimiter: \,
   # one question and at least two tuples of {possibleAnswer, correctnessFlag}
   questionItemsMinNumber: 5
   locale: ru_Ru
   pointsToPass: 5
-  answersDelimiter: ,
+  answersDelimiter: \,
