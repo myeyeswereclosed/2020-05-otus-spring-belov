@@ -1,0 +1,15 @@
+spring:
+  datasource:
+    platform: postgres
+    url: jdbc:postgresql://localhost:5432/bookdb
+    username: postgres
+    password: testpassword
+    driverClassName: org.postgresql.Driver
+    initialization-mode: always
+
+shell:
+  output:
+    error: Some error occured. Please, try once more
+  availability:
+    noCurrentBookMessage: No current book found
+    sessionNotFinishedMessage: Current session not finished. Maybe you should add author or genre

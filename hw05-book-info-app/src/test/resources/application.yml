@@ -1,0 +1,10 @@
+spring:
+  datasource:
+    platform: h2
+    url: jdbc:hsqldb:mem:testdb
+    username: sa
+    password:
+
+shell:
+  input:
+    delimiter: \,
