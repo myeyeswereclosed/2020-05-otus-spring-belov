@@ -12,8 +12,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
-import static java.util.Collections.singletonMap;
-
 @Repository
 public class JdbcGenreDao implements GenreDao {
     private final NamedParameterJdbcOperations jdbc;
@@ -23,24 +21,26 @@ public class JdbcGenreDao implements GenreDao {
     }
 
     @Override
-    public Genre save(String name) {
+    public Genre save(Genre genre) {
         var keyHolder = new GeneratedKeyHolder();
 
         jdbc.update(
             "insert into genre(name) values(:name)",
-            new MapSqlParameterSource().addValue("name", name),
+            new MapSqlParameterSource().addValue("name", genre.getName()),
             keyHolder,
             new String[]{"id"}
         );
 
-        return new Genre(Objects.requireNonNull(keyHolder.getKey()).intValue(), name);
+        genre.setId(Objects.requireNonNull(keyHolder.getKey()).intValue());
+
+        return genre;
     }
 
     @Override
-    public void update(long id, String name) {
+    public void update(Genre genre) {
         jdbc.update(
             "update genre set name = :name where id = :id",
-            Map.of("name", name, "id", id)
+            Map.of("name", genre.getName(), "id", genre.getId())
         );
     }
 
@@ -60,15 +60,6 @@ public class JdbcGenreDao implements GenreDao {
                 Map.of("name", name),
                 new GenreMapper()
             );
-    }
-
-    @Override
-    public List<Genre> findByNames(List<String> names) {
-        return jdbc.query(
-            "select id, name from genre where name in (:names)",
-            singletonMap("names", names),
-            new GenreMapper()
-        );
     }
 
     @Override

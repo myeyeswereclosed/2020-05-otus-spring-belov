@@ -8,8 +8,6 @@ import java.util.function.Function;
 
 @ShellComponent
 public class BaseCommandHandler {
-    protected final static String NAME_PATTERN = "^[A-Za-z]+(\\s[A-Za-z]+)+";
-
     private final ShellOutputConfig config;
 
     public BaseCommandHandler(ShellOutputConfig config) {
@@ -19,16 +17,16 @@ public class BaseCommandHandler {
     protected  <T> String output(ServiceResult<T> serviceResult, Function<T, String> onValue) {
         return
             serviceResult.isOk()
-                ? serviceResult.value().map(onValue).orElse("Ok")
-                : config.getError()
+                ? serviceResult.value().map(onValue).orElse(config.getNotFoundMessage())
+                : config.getErrorMessage()
             ;
     }
 
     protected String output(ServiceResult<Void> serviceResult, String message) {
-        return serviceResult.isOk() ? message : config.getError();
+        return serviceResult.isOk() ? message : config.getErrorMessage();
     }
 
     protected String output(ServiceResult<Void> serviceResult) {
-        return serviceResult.isOk() ? "Ok" : config.getError();
+        return serviceResult.isOk() ? config.getDefaultMessage() : config.getErrorMessage();
     }
 }

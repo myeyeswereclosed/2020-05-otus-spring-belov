@@ -7,11 +7,11 @@ import ru.otus.spring.book_info_app.domain.Genre;
 import java.util.List;
 
 public interface BookDao {
-    Book save(String title);
+    Book save(Book book);
 
     Book findById(long id);
 
-    void update(long id, String title);
+    void update(Book book);
 
     void delete(long id);
 

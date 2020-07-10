@@ -1,18 +1,13 @@
 package ru.otus.spring.book_info_app.service.author;
 
-import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.stereotype.Service;
 import ru.otus.spring.book_info_app.dao.author.AuthorDao;
 import ru.otus.spring.book_info_app.domain.Author;
-import ru.otus.spring.book_info_app.domain.Book;
-import ru.otus.spring.book_info_app.domain.Name;
 import ru.otus.spring.book_info_app.infrastructure.AppLogger;
 import ru.otus.spring.book_info_app.infrastructure.AppLoggerFactory;
-import ru.otus.spring.book_info_app.service.result.FailResult;
+import ru.otus.spring.book_info_app.service.result.Executed;
+import ru.otus.spring.book_info_app.service.result.Failed;
 import ru.otus.spring.book_info_app.service.result.ServiceResult;
-import ru.otus.spring.book_info_app.service.result.SuccessResult;
-
-import java.util.List;
 
 @Service
 public class AuthorServiceImpl implements AuthorService {
@@ -25,63 +20,39 @@ public class AuthorServiceImpl implements AuthorService {
     }
 
     @Override
-    public ServiceResult<Author> getByName(Name name) {
+    public ServiceResult<Author> create(Author author) {
         try {
-            return new SuccessResult<>(dao.findByName(name.toString()));
-        } catch(EmptyResultDataAccessException e) {
-            logger.info("Author not found");
-        } catch (Exception e) {
-            logger.logException(e);
-        }
-
-        return new FailResult<>();
-    }
-
-    @Override
-    public ServiceResult<Author> create(Name name) {
-        try {
-            return new SuccessResult<>(dao.save(name.toString()));
+            return new Executed<>(dao.save(author));
         } catch (Exception e) {
             logger.logException(e);
 
-            return new FailResult<>();
+            return new Failed<>();
         }
     }
 
     @Override
-    public ServiceResult<Void> update(long id, String name) {
+    public ServiceResult<Void> update(Author author) {
         try {
-            dao.update(id, name);
+            dao.update(author);
 
-            return SuccessResult.unit();
+            return Executed.unit();
         } catch (Exception e) {
             logger.logException(e);
 
-            return new FailResult<>();
+            return new Failed<>();
         }
     }
 
     @Override
-    public ServiceResult<Void> delete(long id) {
+    public ServiceResult<Void> remove(long id) {
         try {
             dao.delete(id);
 
-            return SuccessResult.unit();
+            return Executed.unit();
         } catch (Exception e) {
             logger.logException(e);
 
-            return new FailResult<>();
-        }
-    }
-
-    @Override
-    public ServiceResult<List<Author>> getByBook(Book book) {
-        try {
-            return new SuccessResult<>(dao.findByBook(book));
-        } catch (Exception e) {
-            logger.logException(e);
-
-            return new FailResult<>();
+            return new Failed<>();
         }
     }
 }

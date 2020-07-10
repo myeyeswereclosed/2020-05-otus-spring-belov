@@ -3,38 +3,43 @@ package ru.otus.spring.book_info_app.service.shell;
 import org.springframework.shell.standard.ShellComponent;
 import org.springframework.shell.standard.ShellMethod;
 import ru.otus.spring.book_info_app.config.ShellOutputConfig;
+import ru.otus.spring.book_info_app.domain.Author;
 import ru.otus.spring.book_info_app.service.author.AuthorService;
-import ru.otus.spring.book_info_app.service.name_parser.NameParser;
 
-import javax.validation.constraints.Pattern;
+import javax.validation.constraints.Size;
 
 @ShellComponent
 public class AuthorCommandsHandler extends BaseCommandHandler {
     private final AuthorService service;
-    private final NameParser parser;
 
-    public AuthorCommandsHandler(AuthorService service, ShellOutputConfig config, NameParser parser) {
+    public AuthorCommandsHandler(AuthorService service, ShellOutputConfig config) {
         super(config);
         this.service = service;
-        this.parser = parser;
     }
 
     @ShellMethod(value = "Add new author", key = {"new_author", "na"})
-    public String add(@Pattern(regexp = NAME_PATTERN) String name) {
+    public String add(
+        @Size(min = 2, max = 64) String firstName,
+        @Size(min = 2, max = 256) String lastName
+    ) {
         return
             output(
-                service.create(parser.parse(name)),
+                service.create(new Author(firstName, lastName)),
                 (author -> author.toString() + " added")
             );
     }
 
     @ShellMethod(value = "Edit author", key = {"edit_author", "ea"})
-    public String edit(long id, @Pattern(regexp = NAME_PATTERN) String name) {
-        return output(service.update(id, name), "Author renamed");
+    public String edit(
+        long id,
+        @Size(min = 2, max = 64) String firstName,
+        @Size(min = 2, max = 256) String lastName
+    ) {
+        return output(service.update(new Author(id, firstName, lastName)), "Author renamed");
     }
 
     @ShellMethod(value = "Delete author", key = {"delete_author", "da"})
     public String delete(long id) {
-        return output(service.delete(id), "Author deleted");
+        return output(service.remove(id), "Author deleted");
     }
 }

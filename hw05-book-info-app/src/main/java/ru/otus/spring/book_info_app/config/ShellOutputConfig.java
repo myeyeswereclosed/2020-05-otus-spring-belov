@@ -6,15 +6,31 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 @ConfigurationProperties(prefix="shell.output")
 public class ShellOutputConfig {
-    public String getError() {
-        return error;
+    private String errorMessage;
+    private String notFoundMessage;
+    private String defaultMessage;
+
+    public String getNotFoundMessage() {
+        return notFoundMessage;
     }
 
-    public void setError(String error) {
-        this.error = error;
+    public void setNotFoundMessage(String notFoundMessage) {
+        this.notFoundMessage = notFoundMessage;
     }
 
-    private String error;
+    public String getDefaultMessage() {
+        return defaultMessage;
+    }
 
+    public void setDefaultMessage(String defaultMessage) {
+        this.defaultMessage = defaultMessage;
+    }
 
+    public String getErrorMessage() {
+        return errorMessage;
+    }
+
+    public void setErrorMessage(String errorMessage) {
+        this.errorMessage = errorMessage;
+    }
 }

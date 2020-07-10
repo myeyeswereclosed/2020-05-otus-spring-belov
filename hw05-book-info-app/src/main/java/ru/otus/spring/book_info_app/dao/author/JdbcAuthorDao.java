@@ -7,105 +7,68 @@ import org.springframework.stereotype.Repository;
 import ru.otus.spring.book_info_app.dao.mapper.AuthorMapper;
 import ru.otus.spring.book_info_app.domain.Author;
 import ru.otus.spring.book_info_app.domain.Book;
-import ru.otus.spring.book_info_app.service.name_parser.NameParser;
 
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
-import java.util.stream.Collectors;
-
-import static java.util.Collections.singletonMap;
 
 @Repository
 public class JdbcAuthorDao implements AuthorDao {
     private final NamedParameterJdbcOperations jdbc;
-    private final NameParser parser;
 
-    public JdbcAuthorDao(NamedParameterJdbcOperations namedParameterJdbcOperations, NameParser parser) {
+    public JdbcAuthorDao(NamedParameterJdbcOperations namedParameterJdbcOperations) {
         this.jdbc = namedParameterJdbcOperations;
-        this.parser = parser;
     }
 
     @Override
-    public List<Author> findByNames(List<String> names) {
-        return
-            jdbc.query(
-            "select id, name from author where name in (:names)",
-                singletonMap("names", names),
-                new AuthorMapper(parser)
-            );
-    }
-
-    @Override
-    public Author findByName(String name) {
+    public Author findByFirstAndLastName(String firstName, String lastName) {
         return
             jdbc.queryForObject(
-                "select id, name from author where name = :name",
-                Map.of("name", name),
-                new AuthorMapper(parser)
+                "select id, first_name, last_name from author where first_name = :firstName and last_name = :lastName",
+                Map.of("firstName", firstName, "lastName", lastName),
+                new AuthorMapper()
             );
     }
 
-    public Author save(String name) {
+    public Author save(Author author) {
         var keyHolder = new GeneratedKeyHolder();
 
         jdbc.update(
-            "insert into author(name) values(:name)",
-            new MapSqlParameterSource().addValue("name", name),
+            "insert into author(first_name, last_name) values(:firstName, :lastName)",
+            new MapSqlParameterSource()
+                .addValue("firstName", author.getFirstName())
+                .addValue("lastName", author.getLastName()),
             keyHolder,
             new String[]{"id"}
         );
 
-        return
-            new Author(
-                Objects.requireNonNull(keyHolder.getKey()).longValue(),
-                parser.parse(name)
-            );
-    }
+        author.setId(Objects.requireNonNull(keyHolder.getKey()).longValue());
 
-    @Override
-    public void save(List<String> names) {
-        Map<String, Long>[] maps = new Map[names.size()];
-
-        jdbc.batchUpdate(
-            "insert into author(name) values(:name)",
-            names
-                .stream()
-                .map(name -> Map.of("name", name))
-                .collect(Collectors.toList())
-                .toArray(maps)
-        );
+        return author;
     }
 
     @Override
     public List<Author> findByBook(Book book) {
         return
             jdbc.query(
-                "select a.id, a.name from author a " +
+                "select a.id, a.first_name, a.last_name from author a " +
                 "join book_author ba on a.id = ba.author_id " +
                 "where ba.book_id = :bookId",
                 Map.of("bookId", book.getId()),
-                new AuthorMapper(parser)
+                new AuthorMapper()
             );
     }
 
     @Override
-    public void update(long id, String name) {
+    public void update(Author author) {
         jdbc.update(
-            "update author set name = :name where id = :id",
-            Map.of("name", name, "id", id)
+            "update author set first_name = :firstName, last_name = :lastName where id = :id",
+            Map.of(
+                "id", author.getId(),
+                "firstName", author.getFirstName(),
+                "lastName", author.getLastName()
+            )
         );
-    }
-
-    @Override
-    public Author findById(long id) {
-        return
-            jdbc
-                .queryForObject(
-                    "select id, name from author where id = :id",
-                    singletonMap("id", id),
-                    new AuthorMapper(parser)
-                );
     }
 
     @Override

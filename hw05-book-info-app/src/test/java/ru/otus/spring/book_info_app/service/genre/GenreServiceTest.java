@@ -1,5 +1,4 @@
-package ru.otus.spring.book_info_app.service.book;
-
+package ru.otus.spring.book_info_app.service.genre;
 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -9,8 +8,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.dao.QueryTimeoutException;
-import ru.otus.spring.book_info_app.dao.book.BookDao;
-import ru.otus.spring.book_info_app.domain.Book;
+import ru.otus.spring.book_info_app.dao.genre.GenreDao;
+import ru.otus.spring.book_info_app.domain.Genre;
 import ru.otus.spring.book_info_app.service.result.ServiceResult;
 
 import java.util.Arrays;
@@ -19,25 +18,25 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.when;
 
-@DisplayName("Сервис по работе c книгами должен ")
+@DisplayName("Сервис по работе c жанрами должен ")
 @ExtendWith(MockitoExtension.class)
 @SpringBootTest
-public class BookServiceTest {
-    private final static Book BOOK = new Book(30, "Tri porosenka");
-    private final static Book BOOK_STORED = new Book(30, "Tri porosenka");
+public class GenreServiceTest {
+    private final static Genre GENRE = new Genre(0, "horror");
+    private final static Genre GENRE_STORED = new Genre(20, "horror");
 
     @MockBean
-    private BookDao dao;
+    private GenreDao dao;
 
     @Autowired
-    BookServiceImpl service;
+    GenreServiceImpl service;
 
-    @DisplayName("вернуть успешный результат, если книга сохранена в бд")
+    @DisplayName("вернуть успешный результат, если жанр был сохранен")
     @Test
-    public void addBook() {
-        when(dao.save(BOOK)).thenReturn(BOOK_STORED);
+    public void create() {
+        when(dao.save(GENRE)).thenReturn(GENRE_STORED);
 
-        var result = service.addBook(BOOK);
+        var result = service.create(GENRE);
 
         assertSuccessfulResult(result);
     }
@@ -45,50 +44,50 @@ public class BookServiceTest {
     @DisplayName("вернуть ошибку, если возникает исключение")
     @Test
     public void handleException() {
-        when(dao.save(BOOK)).thenThrow(new QueryTimeoutException("Timeout1"));
+        when(dao.save(GENRE)).thenThrow(new QueryTimeoutException("Timeout1"));
         doAnswer(i -> {
             throw new QueryTimeoutException("Timeout2");
-        }).when(dao).update(BOOK);
+        }).when(dao).update(GENRE);
         doAnswer(i -> {
             throw new QueryTimeoutException("Timeout3");
-        }).when(dao).delete(BOOK.getId());
+        }).when(dao).delete(GENRE.getId());
 
         Arrays.asList(
-            service.addBook(BOOK),
-            service.rename(BOOK),
-            service.remove(BOOK.getId())
+            service.create(GENRE),
+            service.update(GENRE),
+            service.remove(GENRE.getId())
         ).forEach(
             result -> assertThat(result.isOk()).isFalse()
         );
     }
 
     @Test
-    @DisplayName("вернуть успешный результат, если книга была обновлена")
+    @DisplayName("вернуть успешный результат, если жанр был обновлен")
     public void renameBook() {
         doAnswer(i -> {
             return null;
-        }).when(dao).update(BOOK);
+        }).when(dao).update(GENRE);
 
-        var result = service.rename(BOOK);
+        var result = service.update(GENRE);
 
         assertThat(result.isOk());
     }
 
     @Test
-    @DisplayName("вернуть успешный пустой результат, если книга была удалена")
+    @DisplayName("вернуть успешный пустой результат, если жанр была удален")
     public void removeBook() {
         doAnswer(i -> {
             return null;
-        }).when(dao).delete(BOOK_STORED.getId());
+        }).when(dao).delete(GENRE.getId());
 
-        var result = service.remove(BOOK_STORED.getId());
+        var result = service.remove(GENRE.getId());
 
         assertThat(result.isOk());
         assertThat(result.value().isEmpty());
     }
 
-    private void assertSuccessfulResult(ServiceResult<Book> result) {
+    private void assertSuccessfulResult(ServiceResult<Genre> result) {
         assertThat(result.isOk());
-        assertThat(result.value().get()).isEqualTo(BOOK_STORED);
+        assertThat(result.value().get()).isEqualTo(GENRE_STORED);
     }
 }

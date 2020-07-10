@@ -1,116 +1,172 @@
 package ru.otus.spring.book_info_app.service.book;
 
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.dao.EmptyResultDataAccessException;
+import org.springframework.dao.QueryTimeoutException;
+import ru.otus.spring.book_info_app.dao.author.AuthorDao;
+import ru.otus.spring.book_info_app.dao.book.BookDao;
+import ru.otus.spring.book_info_app.dao.genre.GenreDao;
 import ru.otus.spring.book_info_app.domain.Author;
 import ru.otus.spring.book_info_app.domain.Book;
 import ru.otus.spring.book_info_app.domain.Genre;
-import ru.otus.spring.book_info_app.domain.Name;
-import ru.otus.spring.book_info_app.service.author.AuthorService;
-import ru.otus.spring.book_info_app.service.book_info.BookInfoServiceImpl;
-import ru.otus.spring.book_info_app.service.genre.GenreService;
-import ru.otus.spring.book_info_app.service.result.FailResult;
-import ru.otus.spring.book_info_app.service.result.SuccessResult;
 
 import static java.util.Collections.singletonList;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.*;
 
-@RunWith(MockitoJUnitRunner.class)
+@DisplayName("Сервис сводной информации о книгах должен ")
 @SpringBootTest
 public class BookInfoServiceTest {
     private final static Book BOOK = new Book(30L, "Tri porosenka");
     private final static Genre GENRE = new Genre(24, "horror");
-    private final static Author AUTHOR = new Author(11L, new Name("Some", "Author"));
+    private final static Author AUTHOR = new Author(11L, "Test", "Author");
 
-    @Mock
-    private BookService bookService;
+    @MockBean
+    private BookDao bookDao;
 
-    @Mock
-    private AuthorService authorService;
+    @MockBean
+    private AuthorDao authorDao;
 
-    @Mock
-    private GenreService genreService;
+    @MockBean
+    private GenreDao genreDao;
+
+    @Autowired
+    BookInfoServiceImpl service;
 
     @Test
+    @DisplayName("добавлять книге ранее сохраненный жанр")
     public void addExistingGenre() {
-        when(genreService.getByName(GENRE.getName())).thenReturn(new SuccessResult<>(GENRE));
-        when(bookService.addGenre(BOOK.getId(), GENRE)).thenReturn(SuccessResult.unit());
+        when(genreDao.findByName(GENRE.getName())).thenReturn(GENRE);
 
-        var service = new BookInfoServiceImpl(bookService, authorService, genreService);
-
-        var result = service.addGenre(BOOK.getId(), GENRE.getName());
+        var result = service.addBookGenre(BOOK.getId(), GENRE);
 
         assertThat(result.isOk());
-        verify(bookService, times(1)).addGenre(BOOK.getId(), GENRE);
-        verify(genreService, times(1)).getByName(GENRE.getName());
-        verify(genreService, never()).create(GENRE.getName());
+        verify(bookDao, times(1)).addGenre(BOOK.getId(), GENRE);
+        verify(genreDao, times(1)).findByName(GENRE.getName());
+        verify(genreDao, never()).save(GENRE);
     }
 
     @Test
+    @DisplayName("сохранять новый жанр и добавлять его к книге")
     public void addNewGenre() {
-        when(genreService.getByName(GENRE.getName())).thenReturn(new FailResult<>());
-        when(genreService.create(GENRE.getName())).thenReturn(new SuccessResult<>(GENRE));
+        when(genreDao.findByName(GENRE.getName())).thenThrow(new RuntimeException("Genre not found"));
+        when(genreDao.save(GENRE)).thenReturn(GENRE);
 
-        var service = new BookInfoServiceImpl(bookService, authorService, genreService);
-
-        var result = service.addGenre(BOOK.getId(), GENRE.getName());
+        var result = service.addBookGenre(BOOK.getId(), GENRE);
 
         assertThat(result.isOk());
-        verify(bookService, times(1)).addGenre(BOOK.getId(), GENRE);
-        verify(genreService, times(1)).getByName(GENRE.getName());
-        verify(genreService, times(1)).create(GENRE.getName());
+        verify(bookDao, times(1)).addGenre(BOOK.getId(), GENRE);
+        verify(genreDao, times(1)).findByName(GENRE.getName());
+        verify(genreDao, times(1)).save(GENRE);
     }
 
     @Test
+    @DisplayName("добавлять книге ранее сохраненного автора")
     public void addExistingAuthor() {
-        when(authorService.getByName(AUTHOR.getName())).thenReturn(new SuccessResult<>(AUTHOR));
-        when(bookService.addAuthor(BOOK.getId(), AUTHOR)).thenReturn(SuccessResult.unit());
+        when(authorDao.findByFirstAndLastName(AUTHOR.getFirstName(), AUTHOR.getLastName())).thenReturn(AUTHOR);
 
-        var service = new BookInfoServiceImpl(bookService, authorService, genreService);
-
-        var result = service.addAuthor(BOOK.getId(), AUTHOR.getName());
+        var result = service.addBookAuthor(BOOK.getId(), AUTHOR);
 
         assertThat(result.isOk());
-        verify(bookService, times(1)).addAuthor(BOOK.getId(), AUTHOR);
-        verify(authorService, times(1)).getByName(AUTHOR.getName());
-        verify(authorService, never()).create(AUTHOR.getName());
+        verify(bookDao, times(1)).addAuthor(BOOK.getId(), AUTHOR);
+        verify(authorDao, times(1)).findByFirstAndLastName(AUTHOR.getFirstName(), AUTHOR.getLastName());
+        verify(authorDao, never()).save(AUTHOR);
     }
 
     @Test
+    @DisplayName("сохранять нового автора и добалять его к книге")
     public void addNewAuthor() {
-        when(authorService.getByName(AUTHOR.getName())).thenReturn(new FailResult<>());
-        when(authorService.create(AUTHOR.getName())).thenReturn(new SuccessResult<>(AUTHOR));
+        when(authorDao.findByFirstAndLastName(AUTHOR.getFirstName(), AUTHOR.getLastName()))
+            .thenThrow(new RuntimeException("Author not found"));
+        when(authorDao.save(AUTHOR)).thenReturn(AUTHOR);
 
-        var service = new BookInfoServiceImpl(bookService, authorService, genreService);
-
-        var result = service.addAuthor(BOOK.getId(), AUTHOR.getName());
+        var result = service.addBookAuthor(BOOK.getId(), AUTHOR);
 
         assertThat(result.isOk());
-        verify(bookService, times(1)).addAuthor(BOOK.getId(), AUTHOR);
-        verify(authorService, times(1)).getByName(AUTHOR.getName());
-        verify(authorService, times(1)).create(AUTHOR.getName());
+        verify(bookDao, times(1)).addAuthor(BOOK.getId(), AUTHOR);
+        verify(authorDao, times(1)).findByFirstAndLastName(AUTHOR.getFirstName(), AUTHOR.getLastName());
+        verify(authorDao, times(1)).save(AUTHOR);
     }
 
     @Test
+    @DisplayName("отдавать информацию о книге и ее авторах и жанрах")
     public void getInfo() {
-        when(bookService.find(BOOK.getId())).thenReturn(new SuccessResult<>(BOOK));
-        when(authorService.getByBook(BOOK)).thenReturn(new SuccessResult<>(singletonList(AUTHOR)));
-        when(genreService.getByBook(BOOK)).thenReturn(new SuccessResult<>(singletonList(GENRE)));
-
-        var service = new BookInfoServiceImpl(bookService, authorService, genreService);
+        when(bookDao.findById(BOOK.getId())).thenReturn(BOOK);
+        when(authorDao.findByBook(BOOK)).thenReturn(singletonList(AUTHOR));
+        when(genreDao.findByBook(BOOK)).thenReturn(singletonList(GENRE));
 
         var result = service.get(BOOK.getId());
 
         assertThat(result.isOk());
 
-        var bookInfo = result.value().get();
+        var book = result.value().get();
 
-        assertThat(bookInfo.getBook()).isEqualTo(BOOK);
-        assertThat(bookInfo.getAuthors()).isEqualTo(singletonList(AUTHOR));
-        assertThat(bookInfo.getGenres()).isEqualTo(singletonList(GENRE));
+        assertThat(book.getId()).isEqualTo(BOOK.getId());
+        assertThat(book.getTitle()).isEqualTo(BOOK.getTitle());
+        assertThat(book.getAuthors()).isEqualTo(singletonList(AUTHOR));
+        assertThat(book.getGenres()).isEqualTo(singletonList(GENRE));
+    }
+
+    @Test
+    @DisplayName("отдавать пустой результат, если книга не найдена")
+    public void emptyResultIfBookNotFound() {
+        when(bookDao.findById(BOOK.getId())).thenThrow(new EmptyResultDataAccessException(1));
+
+        var result = service.get(BOOK.getId());
+
+        assertThat(result.isOk()).isTrue();
+        assertThat(result.value()).isEmpty();
+
+        verify(bookDao, times(1)).findById(BOOK.getId());
+        verify(authorDao, never()).findByBook(BOOK);
+        verify(genreDao, never()).findByBook(BOOK);
+    }
+
+    @Test
+    @DisplayName("отдавать ошибку, если произошла иная нештатная ситуация при поиске книги")
+    public void failIfDaoFails() {
+        when(bookDao.findById(BOOK.getId())).thenThrow(new QueryTimeoutException("Timeout"));
+
+        var result = service.get(BOOK.getId());
+
+        assertThat(result.isOk()).isFalse();
+
+        verify(bookDao, times(1)).findById(BOOK.getId());
+        verify(authorDao, never()).findByBook(BOOK);
+        verify(genreDao, never()).findByBook(BOOK);
+    }
+
+    @Test
+    @DisplayName("отдавать информацию о книгах и их авторах и жанрах")
+    public void getAllBooksInfo() {
+        when(bookDao.findAll()).thenReturn(singletonList(BOOK));
+        when(authorDao.findByBook(BOOK)).thenReturn(singletonList(AUTHOR));
+        when(genreDao.findByBook(BOOK)).thenReturn(singletonList(GENRE));
+
+        var result = service.getAll();
+
+        assertThat(result.isOk());
+        assertThat(result.value().get().size()).isEqualTo(1);
+
+        var book = result.value().get().get(0);
+
+        assertThat(book.getId()).isEqualTo(BOOK.getId());
+        assertThat(book.getTitle()).isEqualTo(BOOK.getTitle());
+        assertThat(book.getAuthors()).isEqualTo(singletonList(AUTHOR));
+        assertThat(book.getGenres()).isEqualTo(singletonList(GENRE));
+    }
+
+    @Test
+    @DisplayName("вернуть ошибку, если при поиске книг возникает исключение")
+    public void failIfBookDaoFailsOnFindAll() {
+        when(bookDao.findAll()).thenThrow(new QueryTimeoutException("Timeout"));
+
+        var result = service.getAll();
+
+        assertThat(result.isOk()).isFalse();
     }
 }

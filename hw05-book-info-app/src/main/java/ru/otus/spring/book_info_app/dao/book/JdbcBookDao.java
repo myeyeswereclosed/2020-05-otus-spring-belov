@@ -13,8 +13,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
-import static java.util.Collections.singletonMap;
-
 @Repository
 public class JdbcBookDao implements BookDao {
     private final NamedParameterJdbcOperations jdbc;
@@ -24,17 +22,19 @@ public class JdbcBookDao implements BookDao {
     }
 
     @Override
-    public Book save(String title) {
+    public Book save(Book book) {
         var keyHolder = new GeneratedKeyHolder();
 
         jdbc.update(
             "insert into book(title) values(:title)",
-            new MapSqlParameterSource().addValue("title", title),
+            new MapSqlParameterSource().addValue("title", book.getTitle()),
             keyHolder,
             new String[]{"id"}
         );
 
-        return new Book(Objects.requireNonNull(keyHolder.getKey()).longValue(), title);
+        book.setId(Objects.requireNonNull(keyHolder.getKey()).longValue());
+
+        return book;
     }
 
     @Override
@@ -43,15 +43,16 @@ public class JdbcBookDao implements BookDao {
             jdbc
                 .queryForObject(
                     "select id, title from book where id = :id",
-                    singletonMap("id", id),
+                    Map.of("id", id),
                     new BookMapper()
                 );
     }
 
-    public void update(long id, String title) {
+    @Override
+    public void update(Book book) {
         jdbc.update(
             "update book set title = :title where id = :id",
-            Map.of("title", title, "id", id)
+            Map.of("title", book.getTitle(), "id", book.getId())
         );
     }
 

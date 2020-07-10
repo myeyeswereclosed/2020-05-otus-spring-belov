@@ -2,16 +2,12 @@ package ru.otus.spring.book_info_app.service.book;
 
 import org.springframework.stereotype.Service;
 import ru.otus.spring.book_info_app.dao.book.BookDao;
-import ru.otus.spring.book_info_app.domain.Author;
 import ru.otus.spring.book_info_app.domain.Book;
-import ru.otus.spring.book_info_app.domain.Genre;
 import ru.otus.spring.book_info_app.infrastructure.AppLogger;
 import ru.otus.spring.book_info_app.infrastructure.AppLoggerFactory;
-import ru.otus.spring.book_info_app.service.result.FailResult;
+import ru.otus.spring.book_info_app.service.result.Executed;
+import ru.otus.spring.book_info_app.service.result.Failed;
 import ru.otus.spring.book_info_app.service.result.ServiceResult;
-import ru.otus.spring.book_info_app.service.result.SuccessResult;
-
-import java.util.List;
 
 @Service
 public class BookServiceImpl implements BookService {
@@ -24,38 +20,27 @@ public class BookServiceImpl implements BookService {
     }
 
     @Override
-    public ServiceResult<Book> addBook(String title) {
+    public ServiceResult<Book> addBook(Book book) {
         try {
-            return new SuccessResult<>(bookDao.save(title));
+            return new Executed<>(bookDao.save(book));
         } catch (Exception e) {
            logger.logException(e);
         }
 
-        return new FailResult<>();
+        return new Failed<>();
     }
 
     @Override
-    public ServiceResult<Book> find(long id) {
+    public ServiceResult<Void> rename(Book book) {
         try {
-            return new SuccessResult<>(bookDao.findById(id));
+            bookDao.update(book);
+
+            return Executed.unit();
         } catch (Exception e) {
             logger.logException(e);
         }
 
-        return new FailResult<>();
-    }
-
-    @Override
-    public ServiceResult<Book> rename(long id, String title) {
-        try {
-            bookDao.update(id, title);
-
-            return new SuccessResult<>(new Book(id, title));
-        } catch (Exception e) {
-            logger.logException(e);
-        }
-
-        return new FailResult<>();
+        return new Failed<>();
     }
 
     @Override
@@ -63,46 +48,11 @@ public class BookServiceImpl implements BookService {
         try {
             bookDao.delete(id);
 
-            return SuccessResult.unit();
-        } catch (Exception e) {
-            return new FailResult<>();
-        }
-    }
-
-    @Override
-    public ServiceResult<List<Book>> getAll() {
-        try {
-            return new SuccessResult<>(bookDao.findAll());
+            return Executed.unit();
         } catch (Exception e) {
             logger.logException(e);
+
+            return new Failed<>();
         }
-
-        return new FailResult<>();
-    }
-
-    @Override
-    public ServiceResult<Void> addAuthor(long bookId, Author author) {
-        try {
-            bookDao.addAuthor(bookId, author);
-
-            return SuccessResult.unit();
-        } catch (Exception e) {
-            logger.logException(e);
-        }
-
-        return new FailResult<>();
-    }
-
-    @Override
-    public ServiceResult<Void> addGenre(long bookId, Genre genre) {
-        try {
-            bookDao.addGenre(bookId, genre);
-
-            return SuccessResult.unit();
-        } catch (Exception e) {
-            logger.logException(e);
-        }
-
-        return new FailResult<>();
     }
 }

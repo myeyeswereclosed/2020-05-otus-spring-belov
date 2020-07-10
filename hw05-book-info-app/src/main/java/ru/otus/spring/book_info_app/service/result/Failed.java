@@ -2,7 +2,7 @@ package ru.otus.spring.book_info_app.service.result;
 
 import java.util.Optional;
 
-public class FailResult<T> implements ServiceResult<T> {
+public class Failed<T> implements ServiceResult<T> {
     @Override
     public Optional<T> value() {
         return Optional.empty();

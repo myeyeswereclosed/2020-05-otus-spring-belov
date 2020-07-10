@@ -2,15 +2,15 @@ package ru.otus.spring.book_info_app.service.result;
 
 import java.util.Optional;
 
-public class SuccessResult<T> implements ServiceResult<T> {
+public class Executed<T> implements ServiceResult<T> {
     private final T value;
 
-    public SuccessResult(T value) {
+    public Executed(T value) {
         this.value = value;
     }
 
-    public static SuccessResult<Void> unit() {
-        return new SuccessResult<>(null);
+    public static Executed<Void> unit() {
+        return new Executed<>(null);
     }
 
     @Override

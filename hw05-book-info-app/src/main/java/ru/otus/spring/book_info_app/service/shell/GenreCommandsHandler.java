@@ -17,16 +17,16 @@ public class GenreCommandsHandler extends BaseCommandHandler {
 
     @ShellMethod(value = "Add new genre", key = {"new_genre", "ng"})
     public String add(String title) {
-        return output(service.create(title), Genre::toString);
+        return output(service.create(new Genre(title)), Genre::toString);
     }
 
     @ShellMethod(value = "Edit genre", key = {"edit_genre", "eg"})
-    public String edit(long id, String name) {
-        return output(service.update(id, name));
+    public String edit(int id, String name) {
+        return output(service.update(new Genre(id, name)));
     }
 
     @ShellMethod(value = "Delete genre", key = {"delete_genre", "dg"})
     public String delete(long id) {
-        return output(service.delete(id));
+        return output(service.remove(id));
     }
 }
