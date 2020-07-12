@@ -1,5 +1,7 @@
 package ru.otus.spring.book_info_app.service.result;
 
+import java.util.Collections;
+import java.util.List;
 import java.util.Optional;
 
 public class Executed<T> implements ServiceResult<T> {
@@ -21,5 +23,10 @@ public class Executed<T> implements ServiceResult<T> {
     @Override
     public boolean isOk() {
         return true;
+    }
+
+    @Override
+    public List<Throwable> failures() {
+        return Collections.emptyList();
     }
 }
