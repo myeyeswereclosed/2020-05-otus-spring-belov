@@ -1,5 +1,6 @@
 package ru.otus.spring.book_info_app.dao;
 
+import org.apache.commons.lang3.tuple.Pair;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -94,5 +95,24 @@ public class JdbcAuthorDaoTest {
 
         assertThat(authors.size()).isEqualTo(2);
         assertThat(authors).contains(AUTHOR_STORED, NEW_AUTHOR);
+    }
+
+    @DisplayName("находить авторов, у которых есть написанные книги")
+    @Test
+    public void findAuthorsHavingBooks() {
+        bookDao.addAuthor(BOOK_STORED.getId(), AUTHOR_STORED);
+        dao.save(NEW_AUTHOR);
+
+        assertThat(
+            dao.findByFirstAndLastName(
+                NEW_AUTHOR.getFirstName(),
+                NEW_AUTHOR.getLastName()
+            )
+        ).isEqualTo(NEW_AUTHOR);
+
+        var authors = dao.findAllWithBooks();
+
+        assertThat(authors.size()).isEqualTo(1);
+        assertThat(authors.get(0)).isEqualTo(Pair.of(AUTHOR_STORED, BOOK_STORED.getId()));
     }
 }

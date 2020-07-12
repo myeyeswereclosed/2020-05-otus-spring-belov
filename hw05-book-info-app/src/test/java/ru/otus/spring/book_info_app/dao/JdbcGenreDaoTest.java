@@ -1,5 +1,6 @@
 package ru.otus.spring.book_info_app.dao;
 
+import org.apache.commons.lang3.tuple.Pair;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -33,9 +34,9 @@ public class JdbcGenreDaoTest {
     @DisplayName("находить жанр по названию, если он сохранен")
     @Test
     public void find() {
-        var author = dao.findByName(GENRE_STORED.getName());
+        var genre = dao.findByName(GENRE_STORED.getName());
 
-        assertThat(author).isEqualTo(GENRE_STORED);
+        assertThat(genre).isEqualTo(GENRE_STORED);
     }
 
     @DisplayName("сохранять новый жанр")
@@ -64,7 +65,7 @@ public class JdbcGenreDaoTest {
 
     @DisplayName("выбрасывать исключение, если жанр не найден")
     @Test
-    public void throwExceptionIfAuthorNotFound() {
+    public void throwExceptionIfGenreNotFound() {
         assertThrows(
             DataAccessException.class,
             () -> dao.findByName(NEW_GENRE.getName())
@@ -73,7 +74,7 @@ public class JdbcGenreDaoTest {
 
     @DisplayName("удалять жанр")
     @Test
-    public void deleteBook() {
+    public void delete() {
         dao.delete(GENRE_STORED.getId());
 
         assertThrows(
@@ -84,15 +85,29 @@ public class JdbcGenreDaoTest {
 
     @DisplayName("находить жанры книги")
     @Test
-    public void addAuthor() {
+    public void findGenre() {
         dao.save(NEW_GENRE);
 
         bookDao.addGenre(BOOK_STORED.getId(), GENRE_STORED);
         bookDao.addGenre(BOOK_STORED.getId(), NEW_GENRE);
 
-        var authors = dao.findByBook(BOOK_STORED);
+        var genres = dao.findByBook(BOOK_STORED);
 
-        assertThat(authors.size()).isEqualTo(2);
-        assertThat(authors).contains(GENRE_STORED, NEW_GENRE);
+        assertThat(genres.size()).isEqualTo(2);
+        assertThat(genres).contains(GENRE_STORED, NEW_GENRE);
+    }
+
+    @DisplayName("находить жанры, к которым относятся хранимые книги")
+    @Test
+    public void findAuthorsHavingBooks() {
+        bookDao.addGenre(BOOK_STORED.getId(), GENRE_STORED);
+        dao.save(NEW_GENRE);
+
+        assertThat(dao.findByName(NEW_GENRE.getName())).isEqualTo(NEW_GENRE);
+
+        var genres = dao.findAllWithBooks();
+
+        assertThat(genres.size()).isEqualTo(1);
+        assertThat(genres.get(0)).isEqualTo(Pair.of(GENRE_STORED, BOOK_STORED.getId()));
     }
 }

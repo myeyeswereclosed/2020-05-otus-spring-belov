@@ -10,7 +10,7 @@ import ru.otus.spring.book_info_app.service.book.BookInfoService;
 import ru.otus.spring.book_info_app.service.book.BookService;
 
 import javax.validation.constraints.Size;
-import java.util.List;
+import java.util.stream.Collectors;
 
 @ShellComponent
 public class BookCommandsHandler extends BaseCommandHandler {
@@ -52,7 +52,11 @@ public class BookCommandsHandler extends BaseCommandHandler {
 
     @ShellMethod(value = "Get all books", key = {"all_books", "all"})
     public String getAll() {
-        return output(bookInfoService.getAll(), List::toString);
+        return
+            output(
+                bookInfoService.getAll(),
+                books -> books.stream().map(Book::toString).collect(Collectors.joining("\r\n"))
+            );
     }
 
     @ShellMethod(value = "Add book author", key = {"add_author", "aa"})

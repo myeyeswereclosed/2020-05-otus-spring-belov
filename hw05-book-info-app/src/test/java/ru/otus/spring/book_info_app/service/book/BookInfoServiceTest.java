@@ -1,5 +1,6 @@
 package ru.otus.spring.book_info_app.service.book;
 
+import org.apache.commons.lang3.tuple.Pair;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,7 +14,11 @@ import ru.otus.spring.book_info_app.dao.genre.GenreDao;
 import ru.otus.spring.book_info_app.domain.Author;
 import ru.otus.spring.book_info_app.domain.Book;
 import ru.otus.spring.book_info_app.domain.Genre;
+import ru.otus.spring.book_info_app.service.result.ServiceResult;
 
+import java.util.List;
+
+import static java.util.Collections.emptyList;
 import static java.util.Collections.singletonList;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.*;
@@ -22,8 +27,13 @@ import static org.mockito.Mockito.*;
 @SpringBootTest
 public class BookInfoServiceTest {
     private final static Book BOOK = new Book(30L, "Tri porosenka");
+    private final static Book ANOTHER_BOOK = new Book(31L, "Tri kotenka");
+
     private final static Genre GENRE = new Genre(24, "horror");
+    private final static Genre ANOTHER_GENRE = new Genre(25, "love-story");
+
     private final static Author AUTHOR = new Author(11L, "Test", "Author");
+    private final static Author ANOTHER_AUTHOR = new Author(12L, "AnotherTest", "Author");
 
     @MockBean
     private BookDao bookDao;
@@ -143,21 +153,56 @@ public class BookInfoServiceTest {
     @Test
     @DisplayName("отдавать информацию о книгах и их авторах и жанрах")
     public void getAllBooksInfo() {
-        when(bookDao.findAll()).thenReturn(singletonList(BOOK));
-        when(authorDao.findByBook(BOOK)).thenReturn(singletonList(AUTHOR));
-        when(genreDao.findByBook(BOOK)).thenReturn(singletonList(GENRE));
+        setUpGetAllBooksInfo();
 
         var result = service.getAll();
 
+        assertGetAllBooksResult(result);
+    }
+
+    private void setUpGetAllBooksInfo() {
+        when(bookDao.findAll()).thenReturn(List.of(BOOK, ANOTHER_BOOK));
+        when(authorDao.findAllWithBooks())
+            .thenReturn(
+                List.of(
+                    Pair.of(AUTHOR, BOOK.getId()),
+                    Pair.of(ANOTHER_AUTHOR, BOOK.getId())
+                )
+            );
+        when(genreDao.findAllWithBooks())
+            .thenReturn(
+                List.of(
+                    Pair.of(GENRE, BOOK.getId()),
+                    Pair.of(ANOTHER_GENRE, BOOK.getId())
+                )
+            );
+    }
+
+    private void assertGetAllBooksResult(ServiceResult<List<Book>> result) {
         assertThat(result.isOk());
-        assertThat(result.value().get().size()).isEqualTo(1);
+        assertThat(result.value().get().size()).isEqualTo(2);
 
-        var book = result.value().get().get(0);
+        var bookWithInfo = result.value().get().get(0);
+        var bookWithoutInfo = result.value().get().get(1);
 
-        assertThat(book.getId()).isEqualTo(BOOK.getId());
-        assertThat(book.getTitle()).isEqualTo(BOOK.getTitle());
-        assertThat(book.getAuthors()).isEqualTo(singletonList(AUTHOR));
-        assertThat(book.getGenres()).isEqualTo(singletonList(GENRE));
+        assertThat(bookWithInfo)
+            .isEqualTo(
+                new Book(
+                    BOOK.getId(),
+                    BOOK.getTitle(),
+                    List.of(AUTHOR, ANOTHER_AUTHOR),
+                    List.of(GENRE, ANOTHER_GENRE)
+                )
+            );
+        assertThat(bookWithoutInfo)
+            .isEqualTo(
+                new Book(
+                    ANOTHER_BOOK.getId(),
+                    ANOTHER_BOOK.getTitle(),
+                    emptyList(),
+                    emptyList()
+                )
+            );
     }
 
     @Test
