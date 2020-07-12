@@ -1,9 +1,12 @@
 package ru.otus.spring.book_info_app.dao.genre;
 
+import org.apache.commons.lang3.tuple.Pair;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcOperations;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.stereotype.Repository;
+import ru.otus.spring.book_info_app.dao.mapper.BookAuthorMapper;
+import ru.otus.spring.book_info_app.dao.mapper.GenreAuthorMapper;
 import ru.otus.spring.book_info_app.dao.mapper.GenreMapper;
 import ru.otus.spring.book_info_app.domain.Book;
 import ru.otus.spring.book_info_app.domain.Genre;
@@ -71,6 +74,17 @@ public class JdbcGenreDao implements GenreDao {
                 "where bg.book_id = :bookId",
                 Map.of("bookId", book.getId()),
                 new GenreMapper()
+            );
+    }
+
+    @Override
+    public List<Pair<Genre, Long>> findAllWithBooks() {
+        return
+            jdbc.query(
+                "select g.id genre_id, g.name, bg.book_id book_id " +
+                "from genre g join book_genre bg " +
+                "on bg.genre_id = g.id",
+                new GenreAuthorMapper()
             );
     }
 }

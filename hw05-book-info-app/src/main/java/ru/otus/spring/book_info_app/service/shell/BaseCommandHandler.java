@@ -27,6 +27,6 @@ public class BaseCommandHandler {
     }
 
     protected String output(ServiceResult<Void> serviceResult) {
-        return serviceResult.isOk() ? config.getDefaultMessage() : config.getErrorMessage();
+        return output(serviceResult, config.getDefaultMessage());
     }
 }

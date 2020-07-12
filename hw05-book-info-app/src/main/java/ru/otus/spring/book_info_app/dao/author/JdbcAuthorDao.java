@@ -1,10 +1,13 @@
 package ru.otus.spring.book_info_app.dao.author;
 
+import org.apache.commons.lang3.tuple.Pair;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcOperations;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.stereotype.Repository;
 import ru.otus.spring.book_info_app.dao.mapper.AuthorMapper;
+import ru.otus.spring.book_info_app.dao.mapper.BookAuthorMapper;
+import ru.otus.spring.book_info_app.dao.mapper.BookMapper;
 import ru.otus.spring.book_info_app.domain.Author;
 import ru.otus.spring.book_info_app.domain.Book;
 
@@ -56,6 +59,17 @@ public class JdbcAuthorDao implements AuthorDao {
                 "where ba.book_id = :bookId",
                 Map.of("bookId", book.getId()),
                 new AuthorMapper()
+            );
+    }
+
+    @Override
+    public List<Pair<Author, Long>> findAllWithBooks() {
+        return
+            jdbc.query(
+                "select a.id author_id, a.first_name, a.last_name, ba.book_id book_id " +
+                "from author a join book_author ba " +
+                "on ba.author_id = a.id",
+                new BookAuthorMapper()
             );
     }
 

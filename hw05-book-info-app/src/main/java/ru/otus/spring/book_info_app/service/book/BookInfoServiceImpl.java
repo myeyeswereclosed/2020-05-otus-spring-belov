@@ -1,5 +1,6 @@
 package ru.otus.spring.book_info_app.service.book;
 
+import org.apache.commons.lang3.tuple.Pair;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.stereotype.Service;
 import ru.otus.spring.book_info_app.dao.author.AuthorDao;
@@ -14,9 +15,15 @@ import ru.otus.spring.book_info_app.service.result.Executed;
 import ru.otus.spring.book_info_app.service.result.Failed;
 import ru.otus.spring.book_info_app.service.result.ServiceResult;
 
-import java.util.List;
-import java.util.Optional;
-import java.util.stream.Collectors;
+import java.util.*;
+
+import static java.util.Comparator.comparingLong;
+
+import static java.util.stream.Collectors.groupingBy;
+import static java.util.stream.Collectors.mapping;
+import static java.util.stream.Collectors.toList;
+
+import static java.util.Collections.emptyList;
 
 @Service
 public class BookInfoServiceImpl implements BookInfoService {
@@ -53,7 +60,7 @@ public class BookInfoServiceImpl implements BookInfoService {
                 .ofNullable(existingAuthor)
                 .map(existingOne -> addAuthor(bookId, existingOne))
                 .orElseGet(() -> addNewAuthor(bookId, author))
-        ;
+            ;
     }
 
     private ServiceResult<Void> addNewAuthor(long bookId, Author author) {
@@ -62,7 +69,7 @@ public class BookInfoServiceImpl implements BookInfoService {
                 .ofNullable(authorDao.save(author))
                 .map(newAuthor -> addAuthor(bookId, newAuthor))
                 .orElseGet(Failed::new)
-        ;
+            ;
     }
 
     private ServiceResult<Void> addAuthor(long bookId, Author author) {
@@ -82,7 +89,7 @@ public class BookInfoServiceImpl implements BookInfoService {
         Genre existingGenre;
 
         try {
-           existingGenre = genreDao.findByName(genre.getName());
+            existingGenre = genreDao.findByName(genre.getName());
         } catch (Exception e) {
             logger.warn(e.getMessage());
 
@@ -103,7 +110,7 @@ public class BookInfoServiceImpl implements BookInfoService {
                 .ofNullable(genreDao.save(genre))
                 .map(newGenre -> addGenre(bookId, newGenre))
                 .orElseGet(Failed::new)
-        ;
+            ;
     }
 
     private ServiceResult<Void> addGenre(long bookId, Genre genre) {
@@ -156,22 +163,55 @@ public class BookInfoServiceImpl implements BookInfoService {
         return Optional.empty();
     }
 
-    // Неоптимально с точки зрения запросов, оставил, поскольку учебный код
     @Override
     public ServiceResult<List<Book>> getAll() {
         try {
+            var books = bookDao.findAll();
+
             return
                 new Executed<>(
-                    bookDao
-                        .findAll()
-                        .parallelStream()
-                        .map(this::getBookWithInfo)
-                        .filter(Optional::isPresent)
-                        .map(Optional::get)
-                        .collect(Collectors.toList())
+                    books.isEmpty()
+                        ? books
+                        : booksWithInfo(books)
                 );
         } catch (Exception e) {
+            logger.logException(e);
+
             return new Failed<>();
         }
+    }
+
+    private List<Book> booksWithInfo(List<Book> books) {
+        var authors = bookIdToItsInfo(authorDao.findAllWithBooks());
+        var genres = bookIdToItsInfo(genreDao.findAllWithBooks());
+
+        return
+            books
+                .parallelStream()
+                .peek(
+                    book -> {
+                        book.setAuthors(findOrEmpty(authors, book.getId()));
+                        book.setGenres(findOrEmpty(genres, book.getId()));
+                    }
+                )
+                .sorted(comparingLong(Book::getId))
+                .collect(toList())
+            ;
+    }
+
+    private<T> List<T> findOrEmpty(Map<Long, List<T>> valuesMap, Long key) {
+        return valuesMap.getOrDefault(key, emptyList());
+    }
+
+    private<T> Map<Long, List<T>> bookIdToItsInfo(List<Pair<T, Long>> infoToBookIdItems) {
+        return
+            infoToBookIdItems
+                .parallelStream()
+                .collect(
+                    groupingBy(
+                        Pair::getRight,
+                        mapping(Pair::getLeft, toList())
+                    )
+                );
     }
 }
