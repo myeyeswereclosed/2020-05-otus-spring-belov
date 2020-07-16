@@ -9,10 +9,10 @@ import ru.otus.spring.jpa_book_info_app.service.author.AuthorService;
 import javax.validation.constraints.Size;
 
 @ShellComponent
-public class AuthorCommandsHandler extends BaseCommandHandler {
+public class AuthorCommandsExecutor extends BaseCommandExecutor {
     private final AuthorService service;
 
-    public AuthorCommandsHandler(AuthorService service, ShellOutputConfig config) {
+    public AuthorCommandsExecutor(AuthorService service, ShellOutputConfig config) {
         super(config);
         this.service = service;
     }

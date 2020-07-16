@@ -8,5 +8,5 @@ public interface GenreService {
 
     ServiceResult<Void> update(Genre genre);
 
-    ServiceResult<Void> remove(long id);
+    ServiceResult<Void> remove(int id);
 }

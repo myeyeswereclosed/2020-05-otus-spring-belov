@@ -6,6 +6,12 @@ spring:
     password: testpassword
     driverClassName: org.postgresql.Driver
     initialization-mode: always
+  jpa:
+    show-sql: true
+    generate-ddl: false
+    hibernate:
+      format-sql: true
+      ddl-auto: none
 
 shell:
   output:

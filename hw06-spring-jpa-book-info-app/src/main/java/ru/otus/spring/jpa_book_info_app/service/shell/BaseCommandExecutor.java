@@ -7,10 +7,10 @@ import ru.otus.spring.jpa_book_info_app.service.result.ServiceResult;
 import java.util.function.Function;
 
 @ShellComponent
-public class BaseCommandHandler {
+public class BaseCommandExecutor {
     private final ShellOutputConfig config;
 
-    public BaseCommandHandler(ShellOutputConfig config) {
+    public BaseCommandExecutor(ShellOutputConfig config) {
         this.config = config;
     }
 

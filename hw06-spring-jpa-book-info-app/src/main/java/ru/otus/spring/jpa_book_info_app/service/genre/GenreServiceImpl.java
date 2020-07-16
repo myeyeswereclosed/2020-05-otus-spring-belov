@@ -9,6 +9,8 @@ import ru.otus.spring.jpa_book_info_app.service.result.Executed;
 import ru.otus.spring.jpa_book_info_app.service.result.Failed;
 import ru.otus.spring.jpa_book_info_app.service.result.ServiceResult;
 
+import javax.transaction.Transactional;
+
 @Service
 public class GenreServiceImpl implements GenreService {
     private final static AppLogger logger = AppLoggerFactory.logger(GenreServiceImpl.class);
@@ -20,6 +22,7 @@ public class GenreServiceImpl implements GenreService {
     }
 
     @Override
+    @Transactional
     public ServiceResult<Genre> create(Genre genre) {
         try {
             return new Executed<>(repository.save(genre));
@@ -31,6 +34,7 @@ public class GenreServiceImpl implements GenreService {
     }
 
     @Override
+    @Transactional
     public ServiceResult<Void> update(Genre genre) {
         try {
             repository.save(genre);
@@ -42,15 +46,18 @@ public class GenreServiceImpl implements GenreService {
     }
 
     @Override
-    public ServiceResult<Void> remove(long id) {
+    @Transactional
+    public ServiceResult<Void> remove(int id) {
         try {
-            repository.delete(id);
+            if (repository.delete(id)) {
+                return Executed.unit();
+            }
 
-            return Executed.unit();
+            logger.warn("Genre with id = {} not found", id);
         } catch (Exception e) {
             logger.logException(e);
-
-            return new Failed<>();
         }
+
+        return new Failed<>();
     }
 }

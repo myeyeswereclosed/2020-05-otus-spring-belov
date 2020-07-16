@@ -7,10 +7,10 @@ import ru.otus.spring.jpa_book_info_app.domain.Genre;
 import ru.otus.spring.jpa_book_info_app.service.genre.GenreService;
 
 @ShellComponent
-public class GenreCommandsHandler extends BaseCommandHandler {
+public class GenreCommandsExecutor extends BaseCommandExecutor {
     private final GenreService service;
 
-    public GenreCommandsHandler(GenreService service, ShellOutputConfig config) {
+    public GenreCommandsExecutor(GenreService service, ShellOutputConfig config) {
         super(config);
         this.service = service;
     }
@@ -25,8 +25,8 @@ public class GenreCommandsHandler extends BaseCommandHandler {
         return output(service.update(new Genre(id, name)));
     }
 
-    @ShellMethod(value = "Delete genre", key = {"delete_genre", "dg"})
-    public String delete(long id) {
+    @ShellMethod(value = "Remove genre", key = {"remove_genre", "rg"})
+    public String remove(int id) {
         return output(service.remove(id));
     }
 }

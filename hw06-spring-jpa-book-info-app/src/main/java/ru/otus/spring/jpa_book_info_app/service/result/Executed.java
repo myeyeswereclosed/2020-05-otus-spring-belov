@@ -13,6 +13,10 @@ public class Executed<T> implements ServiceResult<T> {
         return new Executed<>(null);
     }
 
+    public static<T> Executed<T> empty() {
+        return new Executed<>(null);
+    }
+
     @Override
     public Optional<T> value() {
         return Optional.ofNullable(value);

@@ -5,6 +5,7 @@ drop table if exists book cascade;
 drop table if exists genre cascade;
 drop table if exists book_author;
 drop table if exists book_genre;
+drop table if exists comment;
 
 create table author(
     id bigserial primary key,
@@ -37,6 +38,14 @@ create table book_genre(
     constraint fk__book_genre__genre_id foreign key(genre_id)
         references genre(id) on update cascade on delete cascade,
     constraint uq__book_genre_book_id_genre_id unique(book_id, genre_id)
+);
+
+create table comment(
+    id bigserial primary key,
+    text varchar not null,
+    book_id bigint not null,
+    constraint fk__comment__book_id foreign key(book_id)
+        references book(id) on update cascade on delete cascade
 );
 
 commit;

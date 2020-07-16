@@ -1,16 +1,19 @@
 package ru.otus.spring.jpa_book_info_app.repository.author;
 
 import ru.otus.spring.jpa_book_info_app.domain.Author;
+import ru.otus.spring.jpa_book_info_app.dto.BookAuthor;
 
 import java.util.List;
 import java.util.Optional;
 
 public interface AuthorRepository {
-    Author save(Author book);
+    Author save(Author author);
 
-    Optional<Author> findById(long id);
-
-    void delete(long id);
+    boolean delete(long id);
 
     List<Author> findAll();
+
+    List<BookAuthor> findAllWithBooks();
+
+    Optional<Author> findByFirstAndLastName(String firstName, String lastName);
 }

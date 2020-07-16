@@ -3,19 +3,37 @@ package ru.otus.spring.jpa_book_info_app.domain;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import ru.otus.spring.jpa_book_info_app.dto.BookAuthor;
 
 import javax.persistence.*;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.Objects;
 
 @AllArgsConstructor
 @NoArgsConstructor
 @Data
 @Entity
-@Table(name = "author")
+@SqlResultSetMapping(
+    name = "BookAuthorMapping",
+    classes =
+    @ConstructorResult(
+        targetClass = BookAuthor.class,
+        columns = {
+            @ColumnResult(name = "author_id", type = Long.class),
+            @ColumnResult(name = "first_name"),
+            @ColumnResult(name = "last_name"),
+            @ColumnResult(name = "book_id", type = Long.class)
+        }
+    )
+)
+@Table(
+    name = "author",
+    uniqueConstraints = {
+        @UniqueConstraint(columnNames = {"first_name", "last_name"})
+    }
+)
 public class Author {
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
     private long id;
 
@@ -25,20 +43,32 @@ public class Author {
     @Column(name = "last_name")
     private String lastName;
 
-    @ManyToMany(mappedBy = "authors")
-    private List<Book> books = new ArrayList<>();
+    public static Author fromDto(BookAuthor bookAuthor) {
+        return new Author(bookAuthor.getAuthorId(), bookAuthor.getAuthorFirstName(), bookAuthor.getAuthorLastName());
+    }
 
     public Author(String firstName, String lastName) {
         this.firstName = firstName;
         this.lastName = lastName;
     }
 
-    public Author(long id, String firstName, String lastName) {
-        this(firstName, lastName);
-        this.id = id;
+    public boolean hasFirstAndLastName(String firstName, String lastName) {
+        return
+            Objects.nonNull(this.firstName)
+                &&
+            Objects.nonNull(this.lastName)
+                &&
+            this.firstName.equals(firstName)
+                &&
+            this.lastName.equals(lastName)
+        ;
     }
 
     public boolean hasNoId() {
         return id == 0;
+    }
+
+    public String fullName() {
+        return firstName + " " + lastName;
     }
 }

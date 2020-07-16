@@ -9,6 +9,8 @@ import ru.otus.spring.jpa_book_info_app.service.result.Executed;
 import ru.otus.spring.jpa_book_info_app.service.result.Failed;
 import ru.otus.spring.jpa_book_info_app.service.result.ServiceResult;
 
+import javax.transaction.Transactional;
+
 @Service
 public class AuthorServiceImpl implements AuthorService {
     private static final AppLogger logger = AppLoggerFactory.logger(AuthorServiceImpl.class);
@@ -20,6 +22,7 @@ public class AuthorServiceImpl implements AuthorService {
     }
 
     @Override
+    @Transactional
     public ServiceResult<Author> create(Author author) {
         try {
             return new Executed<>(repository.save(author));
@@ -31,6 +34,7 @@ public class AuthorServiceImpl implements AuthorService {
     }
 
     @Override
+    @Transactional
     public ServiceResult<Void> update(Author author) {
         try {
             repository.save(author);
@@ -44,15 +48,18 @@ public class AuthorServiceImpl implements AuthorService {
     }
 
     @Override
+    @Transactional
     public ServiceResult<Void> remove(long id) {
         try {
-            repository.delete(id);
+            if (repository.delete(id)) {
+                return Executed.unit();
+            }
 
-            return Executed.unit();
+            logger.warn("Author with id = {} not found", id);
         } catch (Exception e) {
             logger.logException(e);
-
-            return new Failed<>();
         }
+
+        return new Failed<>();
     }
 }

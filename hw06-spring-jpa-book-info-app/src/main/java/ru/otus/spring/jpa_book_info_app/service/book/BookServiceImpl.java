@@ -35,6 +35,7 @@ public class BookServiceImpl implements BookService {
     }
 
     @Override
+    @Transactional
     public ServiceResult<Void> rename(Book book) {
         try {
             bookRepository.save(book);
@@ -48,6 +49,7 @@ public class BookServiceImpl implements BookService {
     }
 
     @Override
+    @Transactional
     public ServiceResult<Void> remove(long id) {
         try {
             bookRepository.delete(id);

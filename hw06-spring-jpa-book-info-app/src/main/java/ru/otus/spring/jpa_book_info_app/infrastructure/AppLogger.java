@@ -26,7 +26,16 @@ public class AppLogger {
         logger.warn(message);
     }
 
+    public void warn(String message, Object... objects) {
+        logger.warn(message, objects);
+    }
+
     public void info(String message) {
         logger.info(message);
     }
+
+    public void info(String message, Object... objects) {
+        logger.info(message, objects);
+    }
+
 }
