@@ -86,19 +86,6 @@ public class Book {
         return this;
     }
 
-//    @Override
-//    public String toString() {
-//        return
-//            new StringBuilder("Book: {id = ").append(id)
-//                .append(", title = ").append(title)
-//                .append(", authors = ").append(authors)
-//                .append(", genres = ").append(genres)
-//                .append(", comments = ").append(comments)
-//                .append('}')
-//                .toString()
-//        ;
-//    }
-
     private<T> Book addToSet(Set<T> set, T newItem) {
         if (Objects.nonNull(newItem)) {
             set.add(newItem);
