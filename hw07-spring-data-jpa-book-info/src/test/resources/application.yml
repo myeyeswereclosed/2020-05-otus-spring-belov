@@ -1,0 +1,16 @@
+spring:
+  datasource:
+    platform: h2
+    url: jdbc:h2:mem:testdb
+    username: sa
+    password:
+    initialization-mode: always
+  jpa:
+    show-sql: true
+    generate-ddl: false
+    hibernate:
+      format-sql: true
+      ddl-auto: none
+  shell:
+    interactive:
+      enabled: false
