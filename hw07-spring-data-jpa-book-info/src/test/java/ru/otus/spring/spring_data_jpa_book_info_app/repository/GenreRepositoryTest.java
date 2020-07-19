@@ -62,9 +62,6 @@ public class GenreRepositoryTest {
 
         repository.updateNameById(UPDATED_GENRE.getId(), UPDATED_GENRE.getName());
 
-//        System.out.println("EXPECTED " + UPDATED_GENRE);
-//        System.out.println("DB " +  repository.findById(UPDATED_GENRE.getId()).get());
-
         assertThat(repository.findById(UPDATED_GENRE.getId()).get()).isEqualTo(UPDATED_GENRE);
     }
 

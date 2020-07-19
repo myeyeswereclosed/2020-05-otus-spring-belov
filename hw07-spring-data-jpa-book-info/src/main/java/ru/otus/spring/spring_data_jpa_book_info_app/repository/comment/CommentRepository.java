@@ -10,10 +10,4 @@ public interface CommentRepository extends JpaRepository<Comment, Long> {
     @Modifying
     @Query("update Comment c set c.text = :text where c.id = :id")
     int updateTextById(@Param("id") long id, @Param("text") String text);
-//
-//    Optional<Comment> findById(long id);
-//
-//    List<Comment> findAll();
-//
-//    boolean delete(long id);
 }

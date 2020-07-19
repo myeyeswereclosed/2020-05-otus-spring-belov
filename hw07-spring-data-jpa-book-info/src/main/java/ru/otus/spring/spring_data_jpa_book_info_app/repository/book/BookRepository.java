@@ -9,14 +9,6 @@ import ru.otus.spring.spring_data_jpa_book_info_app.domain.Book;
 import java.util.Optional;
 
 public interface BookRepository extends JpaRepository<Book, Long> {
-//    Book save(Book book);
-
-//    Optional<Book> findById(long id);
-
-//    boolean delete(long id);
-//
-//    List<Book> findAll();
-
     @Modifying
     @Query("update Book b set b.title = :title where b.id = :id")
     void updateTitleById(@Param("id") long id, @Param("title") String title);

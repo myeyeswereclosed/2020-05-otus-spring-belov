@@ -9,12 +9,6 @@ import java.util.List;
 import java.util.Optional;
 
 public interface AuthorRepository extends JpaRepository<Author, Long> {
-//    Author save(Author author);
-//
-//    boolean delete(long id);
-//
-//    List<Author> findAll();
-
     @Query(name = "bookAuthors", nativeQuery = true)
     List<BookAuthor> findAllWithBooks();
 
