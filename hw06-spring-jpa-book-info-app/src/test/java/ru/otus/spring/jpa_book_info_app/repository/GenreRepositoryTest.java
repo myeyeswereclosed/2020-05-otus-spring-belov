@@ -70,7 +70,7 @@ public class GenreRepositoryTest {
         assertThat(newGenre).isEqualTo(UPDATED_NEW_GENRE);
     }
 
-    @DisplayName("удалять автора")
+    @DisplayName("удалять жанр")
     @Test
     public void delete() {
         assertTestPreconditions();

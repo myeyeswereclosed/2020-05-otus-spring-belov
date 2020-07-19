@@ -29,7 +29,7 @@ public class JpaCommentRepository implements CommentRepository {
 
     @Override
     public List<Comment> findAll() {
-        return em.createQuery("select c from Comment c", Comment.class).getResultList();
+        return em.createQuery("select c from Comment c join fetch c.book", Comment.class).getResultList();
     }
 
     @Override
