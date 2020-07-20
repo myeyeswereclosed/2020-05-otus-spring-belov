@@ -1,23 +1,23 @@
 package ru.otus.spring.jpa_book_info_app.service.shell.formatter;
 
 import org.springframework.stereotype.Service;
-import ru.otus.spring.jpa_book_info_app.domain.Book;
+import ru.otus.spring.jpa_book_info_app.dto.BookInfo;
 
 import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
-public class BooksOutputFormatter implements OutputFormatter<List<Book>> {
+public class BooksOutputFormatter implements OutputFormatter<List<BookInfo>> {
     private final static String NEW_LINE = "\r\n";
 
-    private final OutputFormatter<Book> bookFormatter;
+    private final OutputFormatter<BookInfo> bookFormatter;
 
-    public BooksOutputFormatter(OutputFormatter<Book> bookFormatter) {
+    public BooksOutputFormatter(OutputFormatter<BookInfo> bookFormatter) {
         this.bookFormatter = bookFormatter;
     }
 
     @Override
-    public String format(List<Book> books) {
+    public String format(List<BookInfo> books) {
         return
             books
                 .stream()

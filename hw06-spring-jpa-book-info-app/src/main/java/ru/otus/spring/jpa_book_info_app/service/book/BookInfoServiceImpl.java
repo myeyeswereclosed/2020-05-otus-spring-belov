@@ -2,10 +2,9 @@ package ru.otus.spring.jpa_book_info_app.service.book;
 
 import org.apache.commons.lang3.tuple.Pair;
 import org.springframework.stereotype.Service;
-import ru.otus.spring.jpa_book_info_app.domain.Author;
-import ru.otus.spring.jpa_book_info_app.domain.Book;
-import ru.otus.spring.jpa_book_info_app.domain.Comment;
-import ru.otus.spring.jpa_book_info_app.domain.Genre;
+import org.springframework.transaction.annotation.Transactional;
+import ru.otus.spring.jpa_book_info_app.domain.*;
+import ru.otus.spring.jpa_book_info_app.dto.BookInfo;
 import ru.otus.spring.jpa_book_info_app.infrastructure.AppLogger;
 import ru.otus.spring.jpa_book_info_app.infrastructure.AppLoggerFactory;
 import ru.otus.spring.jpa_book_info_app.repository.author.AuthorRepository;
@@ -16,8 +15,8 @@ import ru.otus.spring.jpa_book_info_app.service.result.Executed;
 import ru.otus.spring.jpa_book_info_app.service.result.Failed;
 import ru.otus.spring.jpa_book_info_app.service.result.ServiceResult;
 
-import javax.transaction.Transactional;
 import javax.validation.constraints.NotNull;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -69,7 +68,7 @@ public class BookInfoServiceImpl implements BookInfoService {
     private ServiceResult<Book> addAuthor(@NotNull Book book, @NotNull Author author) {
         try {
             if (book.isWrittenBy(author)) {
-                return addExistingInfo(book, "Book already has author {}", author.fullName());
+                return addExistingInfo(book, "Book {} already has author {}", author.fullName());
             }
 
             return
@@ -89,7 +88,7 @@ public class BookInfoServiceImpl implements BookInfoService {
     }
 
     private<T> ServiceResult<Book> addExistingInfo(Book book, String logMessage, String info) {
-        logger.warn(logMessage, info);
+        logger.warn(logMessage, book.toString(), info);
 
         return new Executed<>(book);
     }
@@ -98,7 +97,7 @@ public class BookInfoServiceImpl implements BookInfoService {
         try {
             var updatedBook = bookRepository.save(book.addAuthor(author));
 
-            logger.info(logMessage, author.fullName(), updatedBook.getTitle());
+            logger.info(logMessage, author.fullName(), updatedBook.toString());
 
             return new Executed<>(updatedBook);
         } catch (Exception e) {
@@ -113,7 +112,8 @@ public class BookInfoServiceImpl implements BookInfoService {
     public ServiceResult<Book> addBookGenre(long bookId, Genre genre) {
         try {
             return
-                bookRepository.findById(bookId)
+                bookRepository
+                    .findById(bookId)
                     .map(book -> addGenre(book, genre))
                     .orElse(Executed.empty())
             ;
@@ -127,7 +127,7 @@ public class BookInfoServiceImpl implements BookInfoService {
     private ServiceResult<Book> addGenre(@NotNull Book book, @NotNull Genre genre) {
         try {
             if (book.hasGenre(genre)) {
-                return addExistingInfo(book, "Book already has genre {}", genre.getName());
+                return addExistingInfo(book, "Book {} already has genre {}", genre.getName());
             }
 
             return
@@ -146,24 +146,26 @@ public class BookInfoServiceImpl implements BookInfoService {
     private ServiceResult<Book> updateBookGenre(Book book, Genre genre, String logMessage) {
         var updatedBook = bookRepository.save(book.addGenre(genre));
 
-        logger.info(logMessage, genre.getName(), updatedBook.getTitle());
+        logger.info(logMessage, genre.getName(), updatedBook.toString());
 
         return new Executed<>(updatedBook);
     }
 
     @Override
     @Transactional
-    public ServiceResult<Book> addComment(long bookId, Comment comment) {
+    public ServiceResult<Void> addComment(long bookId, Comment comment) {
         try {
             return
                 bookRepository.findById(bookId)
-                    .<ServiceResult<Book>>map(
+                    .<ServiceResult<Void>>map(
                         book -> {
-                            var updatedBook = bookRepository.save(book.addComment(comment));
+                            comment.setBook(book);
 
-                            logger.info("Added '{}' as comment to {}", comment.getText(), updatedBook.toString());
+                            commentRepository.save(comment);
 
-                            return new Executed<>(updatedBook);
+                            logger.info("Added '{}' as comment to '{}'", comment.getText(), book.getTitle());
+
+                            return Executed.unit();
                         }
                     )
                     .orElse(Executed.empty())
@@ -176,24 +178,35 @@ public class BookInfoServiceImpl implements BookInfoService {
     }
 
     @Override
-    @Transactional
-    public ServiceResult<Book> get(long bookId) {
-        return
-            bookRepository
-                .findById(bookId)
-                .<ServiceResult<Book>>map(
-                    book -> {
-                        logger.getLogger().info("Found book {}", book);
+    @Transactional(readOnly = true)
+    public ServiceResult<BookInfo> get(long bookId) {
+        try {
+            return
+                bookRepository
+                    .findById(bookId)
+                    .<ServiceResult<BookInfo>>map(
+                        book -> {
+                            logger.getLogger().info("Found book {}", book);
 
-                        return new Executed<>(book);
-                    }
-                )
-                .orElseGet(Failed::new)
-        ;
+                            return new Executed<>(
+                                new BookInfo(
+                                    book,
+                                    new HashSet<>(commentRepository.findByBook(bookId))
+                                )
+                            );
+                        })
+                    .orElse(Executed.empty())
+                ;
+        } catch (Exception e) {
+            logger.logException(e);
+        }
+
+        return new Failed<>();
     }
 
+
     @Override
-    public ServiceResult<List<Book>> getAll() {
+    public ServiceResult<List<BookInfo>> getAll() {
         try {
             var booksStored = bookRepository.findAll();
             var bookIdsMappedToAuthors = bookIdsMappedToAuthors();
@@ -203,14 +216,19 @@ public class BookInfoServiceImpl implements BookInfoService {
             var books =
                 booksStored
                     .parallelStream()
-                    .peek(
+                    .map(
                         book -> {
                             book.setAuthors(findOrEmpty(bookIdsMappedToAuthors, book.getId()));
                             book.setGenres(findOrEmpty(bookIdsMappedToGenres, book.getId()));
-                            book.setComments(comments.getOrDefault(book.getId(), emptySet()));
+
+                            return
+                                new BookInfo(
+                                    book,
+                                    comments.getOrDefault(book.getId(), emptySet())
+                                );
                         }
                     )
-                    .sorted(comparingLong(Book::getId))
+                    .sorted(comparingLong(BookInfo::bookId))
                     .collect(toList())
                 ;
 
@@ -228,7 +246,15 @@ public class BookInfoServiceImpl implements BookInfoService {
         return
             toMap(
                 authorRepository.findAllWithBooks(),
-                bookAuthor -> Pair.of(bookAuthor.getBookId(), Author.fromDto(bookAuthor))
+                bookAuthor ->
+                    Pair.of(
+                        bookAuthor.getBookId(),
+                        new Author(
+                            bookAuthor.getAuthorId(),
+                            bookAuthor.getAuthorFirstName(),
+                            bookAuthor.getAuthorLastName()
+                        )
+                    )
             );
     }
 
@@ -236,7 +262,11 @@ public class BookInfoServiceImpl implements BookInfoService {
         return
             toMap(
                 genreRepository.findAllWithBooks(),
-                bookGenre -> Pair.of(bookGenre.getBookId(), Genre.fromDto(bookGenre))
+                bookGenre ->
+                    Pair.of(
+                        bookGenre.getBookId(),
+                        new Genre(bookGenre.getGenreId(), bookGenre.getGenreName())
+                    )
             );
     }
 

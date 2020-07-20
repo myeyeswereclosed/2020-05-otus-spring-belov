@@ -12,19 +12,6 @@ import java.util.Objects;
 @NoArgsConstructor
 @Data
 @Entity
-@SqlResultSetMapping(
-    name = "BookAuthorMapping",
-    classes =
-    @ConstructorResult(
-        targetClass = BookAuthor.class,
-        columns = {
-            @ColumnResult(name = "author_id", type = Long.class),
-            @ColumnResult(name = "first_name"),
-            @ColumnResult(name = "last_name"),
-            @ColumnResult(name = "book_id", type = Long.class)
-        }
-    )
-)
 @Table(
     name = "author",
     uniqueConstraints = {
@@ -42,10 +29,6 @@ public class Author {
 
     @Column(name = "last_name", nullable = false)
     private String lastName;
-
-    public static Author fromDto(BookAuthor bookAuthor) {
-        return new Author(bookAuthor.getAuthorId(), bookAuthor.getAuthorFirstName(), bookAuthor.getAuthorLastName());
-    }
 
     public Author(String firstName, String lastName) {
         this.firstName = firstName;

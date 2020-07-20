@@ -1,5 +1,6 @@
 package ru.otus.spring.jpa_book_info_app.repository.genre;
 
+import org.springframework.data.jpa.repository.JpaRepository;
 import ru.otus.spring.jpa_book_info_app.domain.Genre;
 import ru.otus.spring.jpa_book_info_app.dto.BookGenre;
 
@@ -16,4 +17,13 @@ public interface GenreRepository {
     List<BookGenre> findAllWithBooks();
 
     Optional<Genre> findByName(String name);
+
+//    @Query(
+//        value =
+//        "select new ru.otus.spring.jpa_book_info_app.dto.BookGenre(" +
+//        "g.id as genreId, g.name as genreName, bg.book_id as bookId)" +
+//        "from genre g join book_genre b on bg.genre_id = g.id",
+//        nativeQuery = true
+//    )
+//    List<BookGenre> findAllWithBooks();
 }

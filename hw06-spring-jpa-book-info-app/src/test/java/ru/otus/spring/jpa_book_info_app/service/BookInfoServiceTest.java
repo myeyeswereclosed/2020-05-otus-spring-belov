@@ -26,7 +26,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 @DisplayName("Сервис сводной информации о книгах должен ")
 @SpringBootTest
-@DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
 @Import({JpaBookRepository.class, JpaAuthorRepository.class, JpaGenreRepository.class, JpaCommentRepository.class})
 public class BookInfoServiceTest {
 
@@ -41,26 +40,20 @@ public class BookInfoServiceTest {
     private static final Comment NEW_COMMENT = new Comment(2, "Super book!");
 
     @Autowired
-    JpaBookRepository bookRepository;
+    private JpaAuthorRepository authorRepository;
 
     @Autowired
-    JpaAuthorRepository authorRepository;
+    private JpaGenreRepository genreRepository;
 
     @Autowired
-    JpaGenreRepository genreRepository;
-
-    @Autowired
-    JpaCommentRepository commentRepository;
-
-    @Autowired
-    BookInfoServiceImpl service;
+    private BookInfoServiceImpl service;
 
     @DisplayName("находить книгу по идентификатору")
     @Test
     public void get() {
         var result = service.get(INITIAL_BOOK.getId());
 
-        assertInitialBook(result.value().get());
+        assertInitialBook(result.value().get().getBook());
     }
 
     @DisplayName("отдавать пустой результат, если не книга не найдена")
@@ -85,7 +78,7 @@ public class BookInfoServiceTest {
         var result = service.get(INITIAL_BOOK.getId());
 
         assertThat(result.isOk()).isTrue();
-        assertThat(result.value().get().getAuthors()).isEqualTo(Set.of(INITIAL_AUTHOR, NEW_AUTHOR));
+        assertThat(result.value().get().getBook().getAuthors()).isEqualTo(Set.of(INITIAL_AUTHOR, NEW_AUTHOR));
     }
 
     @DisplayName("игнорировать добавление уже существующего автора книги")
@@ -101,7 +94,7 @@ public class BookInfoServiceTest {
         var result = service.get(INITIAL_BOOK.getId());
 
         assertThat(result.isOk()).isTrue();
-        assertThat(result.value().get().getAuthors()).isEqualTo(Set.of(INITIAL_AUTHOR));
+        assertThat(result.value().get().getBook().getAuthors()).isEqualTo(Set.of(INITIAL_AUTHOR));
     }
 
     @DisplayName("успешно добавлять сохраненного автора как автора книги")
@@ -117,7 +110,7 @@ public class BookInfoServiceTest {
         var result = service.get(INITIAL_BOOK.getId());
 
         assertThat(result.isOk()).isTrue();
-        assertThat(result.value().get().getAuthors()).isEqualTo(Set.of(INITIAL_AUTHOR, NEW_AUTHOR));
+        assertThat(result.value().get().getBook().getAuthors()).isEqualTo(Set.of(INITIAL_AUTHOR, NEW_AUTHOR));
     }
 
     @DisplayName("успешно добавлять новый жанр к хранимой книге")
@@ -133,10 +126,11 @@ public class BookInfoServiceTest {
         var result = service.get(INITIAL_BOOK.getId());
 
         assertThat(result.isOk()).isTrue();
-        assertThat(result.value().get().getGenres()).isEqualTo(Set.of(INITIAL_GENRE, NEW_GENRE));
+        assertThat(result.value().get().getBook().getGenres()).isEqualTo(Set.of(INITIAL_GENRE, NEW_GENRE));
     }
 
     @DisplayName("игнорировать добавление уже существующего жанра книги")
+    @DirtiesContext(methodMode = DirtiesContext.MethodMode.BEFORE_METHOD)
     @Test
     public void addExistingBookGenre() {
         assertThat(
@@ -146,7 +140,7 @@ public class BookInfoServiceTest {
         var result = service.get(INITIAL_BOOK.getId());
 
         assertThat(result.isOk()).isTrue();
-        assertThat(result.value().get().getGenres()).isEqualTo(Set.of(INITIAL_GENRE));
+        assertThat(result.value().get().getBook().getGenres()).isEqualTo(Set.of(INITIAL_GENRE));
     }
 
     @DisplayName("успешно добавлять сохраненный жанр как жанр книги")
@@ -162,10 +156,10 @@ public class BookInfoServiceTest {
         var result = service.get(INITIAL_BOOK.getId());
 
         assertThat(result.isOk()).isTrue();
-        assertThat(result.value().get().getGenres()).isEqualTo(Set.of(INITIAL_GENRE, NEW_GENRE));
+        assertThat(result.value().get().getBook().getGenres()).isEqualTo(Set.of(INITIAL_GENRE, NEW_GENRE));
     }
 
-    @DisplayName("игнорировать добавление уже существующего жанра книги")
+    @DisplayName("добавлять комментарий к книге")
     @Test
     public void addComment() {
         assertThat(
@@ -190,6 +184,7 @@ public class BookInfoServiceTest {
 
     @DisplayName("находить все книги с информацией по ним")
     @Transactional
+    @DirtiesContext(methodMode = DirtiesContext.MethodMode.BEFORE_METHOD)
     @Test
     public void getAll() {
         var result = service.getAll();
@@ -197,11 +192,12 @@ public class BookInfoServiceTest {
         assertThat(result.isOk()).isTrue();
 
         assertThat(result.value().get().size()).isEqualTo(1);
-        var book = result.value().get().get(0);
+        var bookInfo = result.value().get().get(0);
+        var book = bookInfo.getBook();
 
         assertThat(book.getAuthors()).isEqualTo(Set.of(INITIAL_AUTHOR));
         assertThat(book.getGenres()).isEqualTo(Set.of(INITIAL_GENRE));
-        assertThat(book.getComments().size()).isEqualTo(1);
+        assertThat(bookInfo.getComments().size()).isEqualTo(1);
     }
 
     private void assertInitialBook(Book book) {
@@ -223,9 +219,5 @@ public class BookInfoServiceTest {
         var genre = List.copyOf(genres).get(0);
 
         assertThat(genre).isEqualTo(INITIAL_GENRE);
-
-//        assertThat(author.getId()).isEqualTo(INITIAL_AUTHOR.getId());
-//        assertThat(author.getFirstName()).isEqualTo(INITIAL_AUTHOR.getFirstName());
-//        assertThat(author.getFirstName()).isEqualTo(INITIAL_AUTHOR.getFirstName());
     }
 }

@@ -1,6 +1,7 @@
 package ru.otus.spring.jpa_book_info_app.service.comment;
 
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import ru.otus.spring.jpa_book_info_app.domain.Comment;
 import ru.otus.spring.jpa_book_info_app.infrastructure.AppLogger;
 import ru.otus.spring.jpa_book_info_app.infrastructure.AppLoggerFactory;
@@ -9,7 +10,6 @@ import ru.otus.spring.jpa_book_info_app.service.result.Executed;
 import ru.otus.spring.jpa_book_info_app.service.result.Failed;
 import ru.otus.spring.jpa_book_info_app.service.result.ServiceResult;
 
-import javax.transaction.Transactional;
 import java.util.List;
 
 @Service
@@ -37,7 +37,7 @@ public class CommentServiceImpl implements CommentService {
     }
 
     @Override
-    @Transactional
+    @Transactional(readOnly = true)
     public ServiceResult<Comment> find(long id) {
         try {
             return
@@ -58,7 +58,7 @@ public class CommentServiceImpl implements CommentService {
     }
 
     @Override
-    @Transactional
+    @Transactional(readOnly = true)
     public ServiceResult<List<Comment>> findAll() {
         try {
             return new Executed<>(repository.findAll());

@@ -19,7 +19,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 @DisplayName("Репозиторий жанров должен ")
 @DataJpaTest
-@DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
 @Import({JpaGenreRepository.class, JpaBookRepository.class})
 public class GenreRepositoryTest {
     private static final List<Genre> INITIAL_GENRES = List.of(new Genre(1, "horror"), new Genre(2, "history"));
@@ -30,13 +29,13 @@ public class GenreRepositoryTest {
     private static final Book INITIAL_BOOK = new Book(1, "Tri porosenka");
 
     @Autowired
-    TestEntityManager em;
+    private TestEntityManager em;
 
     @Autowired
-    JpaGenreRepository repository;
+    private JpaGenreRepository repository;
 
     @Autowired
-    JpaBookRepository bookRepository;
+    private JpaBookRepository bookRepository;
 
     @DisplayName("находить сохраненные жанры")
     @Test
@@ -47,6 +46,7 @@ public class GenreRepositoryTest {
     }
 
     @DisplayName("сoхранять новый жанр")
+    @DirtiesContext(methodMode = DirtiesContext.MethodMode.BEFORE_METHOD)
     @Test
     public void save() {
         assertTestPreconditions();

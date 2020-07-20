@@ -24,10 +24,10 @@ public class CommentRepositoryTest {
     private final static Comment UPDATED_COMMENT = new Comment(1, "Super book!");
 
     @Autowired
-    TestEntityManager em;
+    private TestEntityManager em;
 
     @Autowired
-    JpaCommentRepository repository;
+    private JpaCommentRepository repository;
 
     @DisplayName("находить все комментарии")
     @Test

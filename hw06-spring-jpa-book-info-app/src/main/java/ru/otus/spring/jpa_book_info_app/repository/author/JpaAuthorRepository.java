@@ -16,6 +16,12 @@ public class JpaAuthorRepository implements AuthorRepository {
     @PersistenceContext
     private EntityManager em;
 
+    private BookAuthorRepository bookAuthorRepository;
+
+    public JpaAuthorRepository(BookAuthorRepository bookAuthorRepository) {
+        this.bookAuthorRepository = bookAuthorRepository;
+    }
+
     @Override
     public Author save(Author author) {
         if (author.hasNoId()) {
@@ -41,16 +47,7 @@ public class JpaAuthorRepository implements AuthorRepository {
 
     @Override
     public List<BookAuthor> findAllWithBooks() {
-        return
-            em
-                .createNativeQuery(
-                    "select a.id author_id, a.first_name, a.last_name, ba.book_id book_id " +
-                    "from author a join book_author ba " +
-                    "on ba.author_id = a.id",
-                    "BookAuthorMapping"
-                )
-                .getResultList()
-        ;
+        return bookAuthorRepository.findAllWithBooks();
     }
 
     @Override

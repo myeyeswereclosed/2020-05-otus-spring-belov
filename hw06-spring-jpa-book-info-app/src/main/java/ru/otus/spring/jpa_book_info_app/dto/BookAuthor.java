@@ -1,13 +1,11 @@
 package ru.otus.spring.jpa_book_info_app.dto;
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
+public interface BookAuthor {
+    long getAuthorId();
 
-@AllArgsConstructor
-@Getter
-public class BookAuthor {
-    private long authorId;
-    private String authorFirstName;
-    private String authorLastName;
-    private long bookId;
+    String getAuthorFirstName();
+
+    String getAuthorLastName();
+
+    long getBookId();
 }
