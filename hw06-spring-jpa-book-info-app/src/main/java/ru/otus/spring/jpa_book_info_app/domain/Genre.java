@@ -11,18 +11,6 @@ import java.util.Objects;
 @NoArgsConstructor
 @Data
 @Entity
-//@SqlResultSetMapping(
-//    name = "BookGenreMapping",
-//    classes =
-//    @ConstructorResult(
-//        targetClass = BookGenre.class,
-//        columns = {
-//            @ColumnResult(name = "genre_id", type = Integer.class),
-//            @ColumnResult(name = "name"),
-//            @ColumnResult(name = "book_id", type = Long.class)
-//        }
-//    )
-//)
 @Table(name = "genre")
 public class Genre {
     @Id

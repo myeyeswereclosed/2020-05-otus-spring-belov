@@ -1,7 +1,9 @@
 package ru.otus.spring.jpa_book_info_app.service.shell.formatter;
 
 import org.springframework.stereotype.Service;
-import ru.otus.spring.jpa_book_info_app.domain.*;
+import ru.otus.spring.jpa_book_info_app.domain.Author;
+import ru.otus.spring.jpa_book_info_app.domain.Comment;
+import ru.otus.spring.jpa_book_info_app.domain.Genre;
 import ru.otus.spring.jpa_book_info_app.dto.BookInfo;
 
 import java.util.Comparator;

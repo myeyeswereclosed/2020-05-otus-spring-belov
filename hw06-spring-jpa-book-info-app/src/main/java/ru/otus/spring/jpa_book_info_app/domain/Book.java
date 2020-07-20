@@ -51,10 +51,6 @@ public class Book {
     )
     private Set<Genre> genres = new HashSet<>();
 
-//    @OneToMany(targetEntity = Comment.class, cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-//    @JoinColumn(name = "book_id", nullable = false, insertable=false, updatable=false)
-//    private Set<Comment> comments = new HashSet<>();
-
     public boolean hasNoId() {
         return id == 0;
     }
@@ -84,13 +80,6 @@ public class Book {
     public BookInfo toInfo() {
         return new BookInfo(this, Collections.emptySet());
     }
-
-//    public Book addComment(Comment comment) {
-//        addToSet(comments, comment);
-//        comment.setBook(this);
-//
-//        return this;
-//    }
 
     private<T> Book addToSet(Set<T> set, T newItem) {
         if (Objects.nonNull(newItem)) {

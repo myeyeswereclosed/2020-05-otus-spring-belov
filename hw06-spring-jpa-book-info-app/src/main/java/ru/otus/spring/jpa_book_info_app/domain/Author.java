@@ -3,10 +3,8 @@ package ru.otus.spring.jpa_book_info_app.domain;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import ru.otus.spring.jpa_book_info_app.dto.BookAuthor;
 
 import javax.persistence.*;
-import java.util.Objects;
 
 @AllArgsConstructor
 @NoArgsConstructor

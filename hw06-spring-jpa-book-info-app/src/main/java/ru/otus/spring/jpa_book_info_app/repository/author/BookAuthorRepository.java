@@ -3,9 +3,7 @@ package ru.otus.spring.jpa_book_info_app.repository.author;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import ru.otus.spring.jpa_book_info_app.domain.Author;
-import ru.otus.spring.jpa_book_info_app.domain.Genre;
 import ru.otus.spring.jpa_book_info_app.dto.BookAuthor;
-import ru.otus.spring.jpa_book_info_app.dto.BookGenre;
 
 import java.util.List;
 
