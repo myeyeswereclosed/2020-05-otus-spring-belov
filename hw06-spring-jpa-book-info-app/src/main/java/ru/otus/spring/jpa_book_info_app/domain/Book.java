@@ -3,8 +3,10 @@ package ru.otus.spring.jpa_book_info_app.domain;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import ru.otus.spring.jpa_book_info_app.dto.BookInfo;
 
 import javax.persistence.*;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
@@ -49,9 +51,9 @@ public class Book {
     )
     private Set<Genre> genres = new HashSet<>();
 
-    @OneToMany(targetEntity = Comment.class, cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    @JoinColumn(name = "book_id", nullable = false, insertable=false, updatable=false)
-    private Set<Comment> comments = new HashSet<>();
+//    @OneToMany(targetEntity = Comment.class, cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+//    @JoinColumn(name = "book_id", nullable = false, insertable=false, updatable=false)
+//    private Set<Comment> comments = new HashSet<>();
 
     public boolean hasNoId() {
         return id == 0;
@@ -79,12 +81,16 @@ public class Book {
         return genres.parallelStream().anyMatch(existingOne -> existingOne.hasName(genre.getName()));
     }
 
-    public Book addComment(Comment comment) {
-        addToSet(comments, comment);
-        comment.setBook(this);
-
-        return this;
+    public BookInfo toInfo() {
+        return new BookInfo(this, Collections.emptySet());
     }
+
+//    public Book addComment(Comment comment) {
+//        addToSet(comments, comment);
+//        comment.setBook(this);
+//
+//        return this;
+//    }
 
     private<T> Book addToSet(Set<T> set, T newItem) {
         if (Objects.nonNull(newItem)) {

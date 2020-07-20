@@ -32,7 +32,7 @@ public class JpaBookRepository implements BookRepository {
                 "select distinct b from Book b " +
                 "left join fetch b.authors " +
                 "left join fetch b.genres " +
-                "left join fetch b.comments where b.id = :id",
+                "where b.id = :id",
                 Book.class
             );
 

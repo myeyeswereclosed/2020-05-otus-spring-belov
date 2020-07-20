@@ -1,10 +1,8 @@
 package ru.otus.spring.jpa_book_info_app.service.shell.formatter;
 
 import org.springframework.stereotype.Service;
-import ru.otus.spring.jpa_book_info_app.domain.Author;
-import ru.otus.spring.jpa_book_info_app.domain.Book;
-import ru.otus.spring.jpa_book_info_app.domain.Comment;
-import ru.otus.spring.jpa_book_info_app.domain.Genre;
+import ru.otus.spring.jpa_book_info_app.domain.*;
+import ru.otus.spring.jpa_book_info_app.dto.BookInfo;
 
 import java.util.Comparator;
 import java.util.Set;
@@ -12,12 +10,14 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 
 @Service
-public class BookOutputFormatter implements OutputFormatter<Book> {
+public class BookOutputFormatter implements OutputFormatter<BookInfo> {
     private final static String TABBED_NEW_LINE = "\r\n\t";
     private final static String DOUBLE_TABBED_NEW_LINE = "\r\n\t\t";
 
     @Override
-    public String format(Book book) {
+    public String format(BookInfo bookInfo) {
+        var book = bookInfo.getBook();
+
         var result =
             new StringBuilder("Book: ")
                 .append(TABBED_NEW_LINE)
@@ -26,7 +26,7 @@ public class BookOutputFormatter implements OutputFormatter<Book> {
 
         appendIfExists(result, book.getAuthors(), "authors:", Author::getId, Author::fullName);
         appendIfExists(result, book.getGenres(), "genres:", Genre::getId, Genre::getName);
-        appendIfExists(result, book.getComments(), "comments:", Comment::getId, Comment::getText);
+        appendIfExists(result, bookInfo.getComments(), "comments:", Comment::getId, Comment::getText);
 
         return result.toString();
     }

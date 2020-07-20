@@ -11,7 +11,7 @@ spring:
     generate-ddl: false
     hibernate:
       format-sql: true
-#      ddl-auto: create-drop
+      ddl-auto: none
 
 shell:
   output:

@@ -53,7 +53,7 @@ public class BookInfoServiceTest {
     public void get() {
         var result = service.get(INITIAL_BOOK.getId());
 
-        assertInitialBook(result.value().get());
+        assertInitialBook(result.value().get().getBook());
     }
 
     @DisplayName("отдавать пустой результат, если не книга не найдена")
@@ -78,7 +78,7 @@ public class BookInfoServiceTest {
         var result = service.get(INITIAL_BOOK.getId());
 
         assertThat(result.isOk()).isTrue();
-        assertThat(result.value().get().getAuthors()).isEqualTo(Set.of(INITIAL_AUTHOR, NEW_AUTHOR));
+        assertThat(result.value().get().getBook().getAuthors()).isEqualTo(Set.of(INITIAL_AUTHOR, NEW_AUTHOR));
     }
 
     @DisplayName("игнорировать добавление уже существующего автора книги")
@@ -94,7 +94,7 @@ public class BookInfoServiceTest {
         var result = service.get(INITIAL_BOOK.getId());
 
         assertThat(result.isOk()).isTrue();
-        assertThat(result.value().get().getAuthors()).isEqualTo(Set.of(INITIAL_AUTHOR));
+        assertThat(result.value().get().getBook().getAuthors()).isEqualTo(Set.of(INITIAL_AUTHOR));
     }
 
     @DisplayName("успешно добавлять сохраненного автора как автора книги")
@@ -110,7 +110,7 @@ public class BookInfoServiceTest {
         var result = service.get(INITIAL_BOOK.getId());
 
         assertThat(result.isOk()).isTrue();
-        assertThat(result.value().get().getAuthors()).isEqualTo(Set.of(INITIAL_AUTHOR, NEW_AUTHOR));
+        assertThat(result.value().get().getBook().getAuthors()).isEqualTo(Set.of(INITIAL_AUTHOR, NEW_AUTHOR));
     }
 
     @DisplayName("успешно добавлять новый жанр к хранимой книге")
@@ -126,7 +126,7 @@ public class BookInfoServiceTest {
         var result = service.get(INITIAL_BOOK.getId());
 
         assertThat(result.isOk()).isTrue();
-        assertThat(result.value().get().getGenres()).isEqualTo(Set.of(INITIAL_GENRE, NEW_GENRE));
+        assertThat(result.value().get().getBook().getGenres()).isEqualTo(Set.of(INITIAL_GENRE, NEW_GENRE));
     }
 
     @DisplayName("игнорировать добавление уже существующего жанра книги")
@@ -140,7 +140,7 @@ public class BookInfoServiceTest {
         var result = service.get(INITIAL_BOOK.getId());
 
         assertThat(result.isOk()).isTrue();
-        assertThat(result.value().get().getGenres()).isEqualTo(Set.of(INITIAL_GENRE));
+        assertThat(result.value().get().getBook().getGenres()).isEqualTo(Set.of(INITIAL_GENRE));
     }
 
     @DisplayName("успешно добавлять сохраненный жанр как жанр книги")
@@ -156,10 +156,10 @@ public class BookInfoServiceTest {
         var result = service.get(INITIAL_BOOK.getId());
 
         assertThat(result.isOk()).isTrue();
-        assertThat(result.value().get().getGenres()).isEqualTo(Set.of(INITIAL_GENRE, NEW_GENRE));
+        assertThat(result.value().get().getBook().getGenres()).isEqualTo(Set.of(INITIAL_GENRE, NEW_GENRE));
     }
 
-    @DisplayName("игнорировать добавление уже существующего жанра книги")
+    @DisplayName("добавлять комментарий к книге")
     @Test
     public void addComment() {
         assertThat(
@@ -192,11 +192,12 @@ public class BookInfoServiceTest {
         assertThat(result.isOk()).isTrue();
 
         assertThat(result.value().get().size()).isEqualTo(1);
-        var book = result.value().get().get(0);
+        var bookInfo = result.value().get().get(0);
+        var book = bookInfo.getBook();
 
         assertThat(book.getAuthors()).isEqualTo(Set.of(INITIAL_AUTHOR));
         assertThat(book.getGenres()).isEqualTo(Set.of(INITIAL_GENRE));
-        assertThat(book.getComments().size()).isEqualTo(1);
+        assertThat(bookInfo.getComments().size()).isEqualTo(1);
     }
 
     private void assertInitialBook(Book book) {

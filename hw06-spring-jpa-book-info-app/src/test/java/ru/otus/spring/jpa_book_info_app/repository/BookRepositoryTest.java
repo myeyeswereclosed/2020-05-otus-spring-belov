@@ -54,7 +54,6 @@ public class BookRepositoryTest {
         assertThat(newBook.getId()).isEqualTo(2);
         assertThat(newBook.getAuthors()).isEmpty();
         assertThat(newBook.getGenres()).isEmpty();
-        assertThat(newBook.getComments()).isEmpty();
     }
 
     @DisplayName("сохранять новую книгу c данными")
@@ -67,7 +66,6 @@ public class BookRepositoryTest {
        newBook
             .addAuthor(new Author(AUTHOR.getFirstName(), AUTHOR.getLastName()))
             .addGenre(new Genre(GENRE_NAME))
-            .addComment(new Comment(NEW_COMMENT_TEXT))
         ;
 
         var bookStored = repository.save(newBook);
@@ -86,7 +84,7 @@ public class BookRepositoryTest {
         INITIAL_BOOK
             .addAuthor(new Author(AUTHOR.getFirstName(), AUTHOR.getLastName()))
             .addGenre(new Genre(GENRE_NAME))
-            .addComment(new Comment(NEW_COMMENT_TEXT))
+//            .addComment(new Comment(NEW_COMMENT_TEXT))
         ;
 
         var bookStored = repository.save(INITIAL_BOOK);
@@ -102,13 +100,6 @@ public class BookRepositoryTest {
 
         assertThat(book.getGenres().size()).isEqualTo(1);
         assertThat(book.hasGenre(GENRE));
-
-        assertThat(book.getComments().size()).isEqualTo(1);
-
-        var comment = new ArrayList<>(book.getComments()).get(0);
-
-        assertThat(comment.getId()).isEqualTo(2);
-        assertThat(comment.getText()).isEqualTo(NEW_COMMENT_TEXT);
     }
 
     @DisplayName("находить книгу с ее данными")
@@ -121,8 +112,6 @@ public class BookRepositoryTest {
             .addAuthor(new Author(ANOTHER_AUTHOR.getFirstName(), ANOTHER_AUTHOR.getLastName()))
             .addGenre(new Genre(GENRE_NAME))
             .addGenre(new Genre(ANOTHER_GENRE_NAME))
-            .addComment(new Comment(INITIAL_COMMENT_TEXT))
-            .addComment(new Comment(NEW_COMMENT_TEXT))
         ;
 
         var newBook = repository.save(book);
@@ -142,20 +131,6 @@ public class BookRepositoryTest {
         assertThat(book.getGenres().size()).isEqualTo(2);
         assertThat(book.hasGenre(GENRE)).isTrue();
         assertThat(book.hasGenre(ANOTHER_GENRE)).isTrue();
-
-        assertThat(book.getComments().size()).isEqualTo(2);
-
-        var comments = book.getComments();
-
-        comments.forEach(comment -> assertThat(comment.hasNoId()).isFalse());
-
-        assertThat(
-            comments
-                .stream()
-                .map(Comment::getText)
-                .collect(Collectors.toList())
-                .containsAll(Arrays.asList(INITIAL_COMMENT_TEXT, NEW_COMMENT_TEXT))
-        );
     }
 
     @DisplayName("удалять книгу по идентификатору")
@@ -175,8 +150,6 @@ public class BookRepositoryTest {
             .addAuthor(new Author(ANOTHER_AUTHOR.getFirstName(), ANOTHER_AUTHOR.getLastName()))
             .addGenre(new Genre(GENRE_NAME))
             .addGenre(new Genre(ANOTHER_GENRE_NAME))
-            .addComment(new Comment(INITIAL_COMMENT_TEXT))
-            .addComment(new Comment(NEW_COMMENT_TEXT))
         ;
 
         repository.save(book);
