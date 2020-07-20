@@ -19,7 +19,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 @DisplayName("Репозиторий жанров должен ")
 @DataJpaTest
-//@DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
 @Import({JpaGenreRepository.class, JpaBookRepository.class})
 public class GenreRepositoryTest {
     private static final List<Genre> INITIAL_GENRES = List.of(new Genre(1, "horror"), new Genre(2, "history"));

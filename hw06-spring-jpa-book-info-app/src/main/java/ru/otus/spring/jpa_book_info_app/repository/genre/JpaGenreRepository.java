@@ -16,6 +16,13 @@ public class JpaGenreRepository implements GenreRepository {
     @PersistenceContext
     private EntityManager em;
 
+
+    private BookGenreRepository bookGenreRepository;
+
+    public JpaGenreRepository(BookGenreRepository bookGenreRepository) {
+        this.bookGenreRepository = bookGenreRepository;
+    }
+
     @Override
     public Genre save(Genre genre) {
         if (genre.hasNoId()) {
@@ -41,16 +48,7 @@ public class JpaGenreRepository implements GenreRepository {
 
     @Override
     public List<BookGenre> findAllWithBooks() {
-        return
-            em
-                .createNativeQuery(
-                    "select g.id genre_id, g.name, bg.book_id book_id " +
-                    "from genre g join book_genre bg " +
-                    "on bg.genre_id = g.id",
-                    "BookGenreMapping"
-                )
-                .getResultList()
-            ;
+        return bookGenreRepository.findAllWithBooks();
     }
 
     @Override

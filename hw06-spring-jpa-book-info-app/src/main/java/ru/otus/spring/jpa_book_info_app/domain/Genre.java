@@ -3,7 +3,6 @@ package ru.otus.spring.jpa_book_info_app.domain;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import ru.otus.spring.jpa_book_info_app.dto.BookGenre;
 
 import javax.persistence.*;
 import java.util.Objects;
@@ -12,18 +11,18 @@ import java.util.Objects;
 @NoArgsConstructor
 @Data
 @Entity
-@SqlResultSetMapping(
-    name = "BookGenreMapping",
-    classes =
-    @ConstructorResult(
-        targetClass = BookGenre.class,
-        columns = {
-            @ColumnResult(name = "genre_id", type = Integer.class),
-            @ColumnResult(name = "name"),
-            @ColumnResult(name = "book_id", type = Long.class)
-        }
-    )
-)
+//@SqlResultSetMapping(
+//    name = "BookGenreMapping",
+//    classes =
+//    @ConstructorResult(
+//        targetClass = BookGenre.class,
+//        columns = {
+//            @ColumnResult(name = "genre_id", type = Integer.class),
+//            @ColumnResult(name = "name"),
+//            @ColumnResult(name = "book_id", type = Long.class)
+//        }
+//    )
+//)
 @Table(name = "genre")
 public class Genre {
     @Id

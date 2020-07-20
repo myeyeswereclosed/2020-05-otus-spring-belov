@@ -12,19 +12,6 @@ import java.util.Objects;
 @NoArgsConstructor
 @Data
 @Entity
-@SqlResultSetMapping(
-    name = "BookAuthorMapping",
-    classes =
-    @ConstructorResult(
-        targetClass = BookAuthor.class,
-        columns = {
-            @ColumnResult(name = "author_id", type = Long.class),
-            @ColumnResult(name = "first_name"),
-            @ColumnResult(name = "last_name"),
-            @ColumnResult(name = "book_id", type = Long.class)
-        }
-    )
-)
 @Table(
     name = "author",
     uniqueConstraints = {
