@@ -37,7 +37,7 @@ public class AuthorServiceImpl implements AuthorService {
     @Transactional
     public ServiceResult<Void> update(Author author) {
         try {
-            repository.save(author);
+            repository.updateNameById(author.getId(), author.getFirstName(), author.getLastName());
 
             return Executed.unit();
         } catch (Exception e) {

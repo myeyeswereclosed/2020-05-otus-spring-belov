@@ -37,9 +37,9 @@ public class BookServiceImpl implements BookService {
     @Transactional
     public ServiceResult<Void> rename(Book book) {
         try {
-            bookRepository.updateTitleById(book.getId(), book.getTitle());
-
-            return Executed.unit();
+            if (bookRepository.updateTitleById(book.getId(), book.getTitle()) > 0) {
+                return Executed.unit();
+            }
         } catch (Exception e) {
             logger.logException(e);
         }
