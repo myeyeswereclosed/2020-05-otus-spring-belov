@@ -204,7 +204,6 @@ public class BookInfoServiceImpl implements BookInfoService {
         return new Failed<>();
     }
 
-
     @Override
     public ServiceResult<List<BookInfo>> getAll() {
         try {

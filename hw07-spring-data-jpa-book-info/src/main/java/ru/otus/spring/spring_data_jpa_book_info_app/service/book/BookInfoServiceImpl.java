@@ -2,10 +2,12 @@ package ru.otus.spring.spring_data_jpa_book_info_app.service.book;
 
 import org.apache.commons.lang3.tuple.Pair;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import ru.otus.spring.spring_data_jpa_book_info_app.domain.Author;
 import ru.otus.spring.spring_data_jpa_book_info_app.domain.Book;
 import ru.otus.spring.spring_data_jpa_book_info_app.domain.Comment;
 import ru.otus.spring.spring_data_jpa_book_info_app.domain.Genre;
+import ru.otus.spring.spring_data_jpa_book_info_app.dto.BookInfo;
 import ru.otus.spring.spring_data_jpa_book_info_app.infrastructure.AppLogger;
 import ru.otus.spring.spring_data_jpa_book_info_app.infrastructure.AppLoggerFactory;
 import ru.otus.spring.spring_data_jpa_book_info_app.repository.author.AuthorRepository;
@@ -16,8 +18,8 @@ import ru.otus.spring.spring_data_jpa_book_info_app.service.result.Executed;
 import ru.otus.spring.spring_data_jpa_book_info_app.service.result.Failed;
 import ru.otus.spring.spring_data_jpa_book_info_app.service.result.ServiceResult;
 
-import javax.transaction.Transactional;
 import javax.validation.constraints.NotNull;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -153,17 +155,19 @@ public class BookInfoServiceImpl implements BookInfoService {
 
     @Override
     @Transactional
-    public ServiceResult<Book> addComment(long bookId, Comment comment) {
+    public ServiceResult<Void> addComment(long bookId, Comment comment) {
         try {
             return
                 bookRepository.findById(bookId)
-                    .<ServiceResult<Book>>map(
+                    .<ServiceResult<Void>>map(
                         book -> {
-                            var updatedBook = bookRepository.save(book.addComment(comment));
+                            comment.setBook(book);
 
-                            logger.info("Added '{}' as comment to {}", comment.getText(), updatedBook.toString());
+                            commentRepository.save(comment);
 
-                            return new Executed<>(updatedBook);
+                            logger.info("Added '{}' as comment to '{}'", comment.getText(), book.getTitle());
+
+                            return Executed.unit();
                         }
                     )
                     .orElse(Executed.empty())
@@ -177,23 +181,33 @@ public class BookInfoServiceImpl implements BookInfoService {
 
     @Override
     @Transactional
-    public ServiceResult<Book> get(long bookId) {
-        return
-            bookRepository
-                .findById(bookId)
-                .<ServiceResult<Book>>map(
-                    book -> {
-                        logger.getLogger().info("Found book {}", book);
+    public ServiceResult<BookInfo> get(long bookId) {
+        try {
+            return
+                bookRepository
+                    .findById(bookId)
+                    .<ServiceResult<BookInfo>>map(
+                        book -> {
+                            logger.getLogger().info("Found book {}", book);
 
-                        return new Executed<>(book);
-                    }
-                )
-                .orElseGet(Failed::new)
-        ;
+                            return new Executed<>(
+                                new BookInfo(
+                                    book,
+                                    new HashSet<>(commentRepository.findAllByBook(book))
+                                )
+                            );
+                        })
+                    .orElse(Executed.empty())
+                ;
+        } catch (Exception e) {
+            logger.logException(e);
+        }
+
+        return new Failed<>();
     }
 
     @Override
-    public ServiceResult<List<Book>> getAll() {
+    public ServiceResult<List<BookInfo>> getAll() {
         try {
             var booksStored = bookRepository.findAll();
             var bookIdsMappedToAuthors = bookIdsMappedToAuthors();
@@ -203,14 +217,19 @@ public class BookInfoServiceImpl implements BookInfoService {
             var books =
                 booksStored
                     .parallelStream()
-                    .peek(
+                    .map(
                         book -> {
                             book.setAuthors(findOrEmpty(bookIdsMappedToAuthors, book.getId()));
                             book.setGenres(findOrEmpty(bookIdsMappedToGenres, book.getId()));
-                            book.setComments(comments.getOrDefault(book.getId(), emptySet()));
+
+                            return
+                                new BookInfo(
+                                    book,
+                                    comments.getOrDefault(book.getId(), emptySet())
+                                );
                         }
                     )
-                    .sorted(comparingLong(Book::getId))
+                    .sorted(comparingLong(BookInfo::bookId))
                     .collect(toList())
                 ;
 

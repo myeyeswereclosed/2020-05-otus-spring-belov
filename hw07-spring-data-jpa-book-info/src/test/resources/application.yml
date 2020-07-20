@@ -1,9 +1,10 @@
 spring:
   datasource:
-    platform: h2
-    url: jdbc:h2:mem:testdb
-    username: sa
-    password:
+    platform: postgres
+    url: jdbc:postgresql://localhost:5432/bookdb
+    username: postgres
+    password: testpassword
+    driverClassName: org.postgresql.Driver
     initialization-mode: always
   jpa:
     show-sql: true
@@ -11,6 +12,9 @@ spring:
     hibernate:
       format-sql: true
       ddl-auto: none
-  shell:
-    interactive:
-      enabled: false
+
+shell:
+  output:
+    errorMessage: Some error occured. Please, try once more
+    notFoundMessage: Nothing was found
+    defaultMessage: Ok
