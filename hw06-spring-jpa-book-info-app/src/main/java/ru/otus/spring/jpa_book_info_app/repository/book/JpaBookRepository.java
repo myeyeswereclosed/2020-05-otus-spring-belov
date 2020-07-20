@@ -2,10 +2,8 @@ package ru.otus.spring.jpa_book_info_app.repository.book;
 
 import org.springframework.stereotype.Repository;
 import ru.otus.spring.jpa_book_info_app.domain.Book;
-import ru.otus.spring.jpa_book_info_app.domain.Comment;
 
 import javax.persistence.EntityManager;
-import javax.persistence.NoResultException;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 import java.util.List;

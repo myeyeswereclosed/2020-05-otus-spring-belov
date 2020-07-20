@@ -9,11 +9,9 @@ import org.springframework.context.annotation.Import;
 import org.springframework.test.annotation.DirtiesContext;
 import ru.otus.spring.jpa_book_info_app.domain.Author;
 import ru.otus.spring.jpa_book_info_app.domain.Book;
-import ru.otus.spring.jpa_book_info_app.domain.Comment;
 import ru.otus.spring.jpa_book_info_app.domain.Genre;
 import ru.otus.spring.jpa_book_info_app.repository.book.JpaBookRepository;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.stream.Collectors;
 
@@ -84,7 +82,6 @@ public class BookRepositoryTest {
         INITIAL_BOOK
             .addAuthor(new Author(AUTHOR.getFirstName(), AUTHOR.getLastName()))
             .addGenre(new Genre(GENRE_NAME))
-//            .addComment(new Comment(NEW_COMMENT_TEXT))
         ;
 
         var bookStored = repository.save(INITIAL_BOOK);
