@@ -34,10 +34,6 @@ public class Genre {
     @Column(name = "name", unique = true)
     private String name;
 
-    public static Genre fromDto(BookGenre bookGenre) {
-        return new Genre(bookGenre.getGenreId(), bookGenre.getGenreName());
-    }
-
     public Genre(String name) {
         this.name = name;
     }

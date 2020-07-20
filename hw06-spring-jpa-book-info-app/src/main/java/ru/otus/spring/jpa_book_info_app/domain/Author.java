@@ -43,10 +43,6 @@ public class Author {
     @Column(name = "last_name", nullable = false)
     private String lastName;
 
-    public static Author fromDto(BookAuthor bookAuthor) {
-        return new Author(bookAuthor.getAuthorId(), bookAuthor.getAuthorFirstName(), bookAuthor.getAuthorLastName());
-    }
-
     public Author(String firstName, String lastName) {
         this.firstName = firstName;
         this.lastName = lastName;

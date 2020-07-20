@@ -26,7 +26,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 @DisplayName("Сервис сводной информации о книгах должен ")
 @SpringBootTest
-@DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
 @Import({JpaBookRepository.class, JpaAuthorRepository.class, JpaGenreRepository.class, JpaCommentRepository.class})
 public class BookInfoServiceTest {
 
@@ -41,19 +40,13 @@ public class BookInfoServiceTest {
     private static final Comment NEW_COMMENT = new Comment(2, "Super book!");
 
     @Autowired
-    JpaBookRepository bookRepository;
+    private JpaAuthorRepository authorRepository;
 
     @Autowired
-    JpaAuthorRepository authorRepository;
+    private JpaGenreRepository genreRepository;
 
     @Autowired
-    JpaGenreRepository genreRepository;
-
-    @Autowired
-    JpaCommentRepository commentRepository;
-
-    @Autowired
-    BookInfoServiceImpl service;
+    private BookInfoServiceImpl service;
 
     @DisplayName("находить книгу по идентификатору")
     @Test
@@ -137,6 +130,7 @@ public class BookInfoServiceTest {
     }
 
     @DisplayName("игнорировать добавление уже существующего жанра книги")
+    @DirtiesContext(methodMode = DirtiesContext.MethodMode.BEFORE_METHOD)
     @Test
     public void addExistingBookGenre() {
         assertThat(
@@ -190,6 +184,7 @@ public class BookInfoServiceTest {
 
     @DisplayName("находить все книги с информацией по ним")
     @Transactional
+    @DirtiesContext(methodMode = DirtiesContext.MethodMode.BEFORE_METHOD)
     @Test
     public void getAll() {
         var result = service.getAll();
@@ -223,9 +218,5 @@ public class BookInfoServiceTest {
         var genre = List.copyOf(genres).get(0);
 
         assertThat(genre).isEqualTo(INITIAL_GENRE);
-
-//        assertThat(author.getId()).isEqualTo(INITIAL_AUTHOR.getId());
-//        assertThat(author.getFirstName()).isEqualTo(INITIAL_AUTHOR.getFirstName());
-//        assertThat(author.getFirstName()).isEqualTo(INITIAL_AUTHOR.getFirstName());
     }
 }

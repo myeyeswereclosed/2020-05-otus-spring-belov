@@ -5,6 +5,7 @@ spring:
     username: sa
     password:
     initialization-mode: always
+    data: data.sql
   jpa:
     show-sql: true
     generate-ddl: false

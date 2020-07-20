@@ -1,6 +1,7 @@
 package ru.otus.spring.jpa_book_info_app.service.book;
 
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import ru.otus.spring.jpa_book_info_app.domain.Book;
 import ru.otus.spring.jpa_book_info_app.infrastructure.AppLogger;
 import ru.otus.spring.jpa_book_info_app.infrastructure.AppLoggerFactory;
@@ -8,9 +9,6 @@ import ru.otus.spring.jpa_book_info_app.repository.book.BookRepository;
 import ru.otus.spring.jpa_book_info_app.service.result.Executed;
 import ru.otus.spring.jpa_book_info_app.service.result.Failed;
 import ru.otus.spring.jpa_book_info_app.service.result.ServiceResult;
-
-import javax.transaction.Transactional;
-
 
 @Service
 public class BookServiceImpl implements BookService {

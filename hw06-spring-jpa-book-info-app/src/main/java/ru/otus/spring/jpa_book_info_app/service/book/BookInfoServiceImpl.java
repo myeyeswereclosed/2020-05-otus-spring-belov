@@ -2,6 +2,7 @@ package ru.otus.spring.jpa_book_info_app.service.book;
 
 import org.apache.commons.lang3.tuple.Pair;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import ru.otus.spring.jpa_book_info_app.domain.Author;
 import ru.otus.spring.jpa_book_info_app.domain.Book;
 import ru.otus.spring.jpa_book_info_app.domain.Comment;
@@ -16,7 +17,6 @@ import ru.otus.spring.jpa_book_info_app.service.result.Executed;
 import ru.otus.spring.jpa_book_info_app.service.result.Failed;
 import ru.otus.spring.jpa_book_info_app.service.result.ServiceResult;
 
-import javax.transaction.Transactional;
 import javax.validation.constraints.NotNull;
 import java.util.List;
 import java.util.Map;
@@ -176,7 +176,7 @@ public class BookInfoServiceImpl implements BookInfoService {
     }
 
     @Override
-    @Transactional
+    @Transactional(readOnly = true)
     public ServiceResult<Book> get(long bookId) {
         return
             bookRepository
@@ -228,7 +228,7 @@ public class BookInfoServiceImpl implements BookInfoService {
         return
             toMap(
                 authorRepository.findAllWithBooks(),
-                bookAuthor -> Pair.of(bookAuthor.getBookId(), Author.fromDto(bookAuthor))
+                bookAuthor -> Pair.of(bookAuthor.getBookId(), bookAuthor.toAuthor())
             );
     }
 
@@ -236,7 +236,7 @@ public class BookInfoServiceImpl implements BookInfoService {
         return
             toMap(
                 genreRepository.findAllWithBooks(),
-                bookGenre -> Pair.of(bookGenre.getBookId(), Genre.fromDto(bookGenre))
+                bookGenre -> Pair.of(bookGenre.getBookId(), bookGenre.toGenre())
             );
     }
 

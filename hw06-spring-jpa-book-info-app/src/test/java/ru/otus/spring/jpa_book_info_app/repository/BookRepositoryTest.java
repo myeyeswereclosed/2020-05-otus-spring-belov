@@ -21,7 +21,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 @DisplayName("Репозиторий книг должен ")
 @DataJpaTest
-@DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
 @Import(JpaBookRepository.class)
 public class BookRepositoryTest {
     private final static Book INITIAL_BOOK = new Book(1, "Tri porosenka");
@@ -41,10 +40,10 @@ public class BookRepositoryTest {
     private final static String NEW_COMMENT_TEXT = "Super book!";
 
     @Autowired
-    TestEntityManager em;
+    private TestEntityManager em;
 
     @Autowired
-    JpaBookRepository repository;
+    private JpaBookRepository repository;
 
     @DisplayName("сохранять новую книгу без данных")
     
@@ -79,6 +78,7 @@ public class BookRepositoryTest {
     }
 
     @DisplayName("обновлять данные по книге")
+    @DirtiesContext(methodMode = DirtiesContext.MethodMode.BEFORE_METHOD)
     @Test
     public void updateBook() {
         assertThat(repository.findAll().size()).isEqualTo(1);

@@ -19,7 +19,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 @DisplayName("Репозиторий авторов должен ")
 @DataJpaTest
-@DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
 @Import({JpaAuthorRepository.class, JpaBookRepository.class})
 public class AuthorRepositoryTest {
     private static final Author INITIAL_AUTHOR = new Author(1, "Some", "Author");
@@ -30,13 +29,13 @@ public class AuthorRepositoryTest {
     private static final Book INITIAL_BOOK = new Book(1, "Tri porosenka");
 
     @Autowired
-    TestEntityManager em;
+    private TestEntityManager em;
 
     @Autowired
-    JpaAuthorRepository repository;
+    private JpaAuthorRepository repository;
 
     @Autowired
-    JpaBookRepository bookRepository;
+    private JpaBookRepository bookRepository;
 
     @DisplayName("находить сохраненных авторов")
     @Test
@@ -49,6 +48,7 @@ public class AuthorRepositoryTest {
     }
 
     @DisplayName("сoхранять нового автора")
+    @DirtiesContext(methodMode = DirtiesContext.MethodMode.BEFORE_METHOD)
     @Test
     public void save() {
         assertTestPreconditions();
