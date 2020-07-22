@@ -4,7 +4,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Configuration;
 
 @Configuration
-@ConfigurationProperties(prefix="shell.output")
+@ConfigurationProperties(prefix="spring.shell.output")
 public class ShellOutputConfig {
     private String errorMessage;
     private String notFoundMessage;

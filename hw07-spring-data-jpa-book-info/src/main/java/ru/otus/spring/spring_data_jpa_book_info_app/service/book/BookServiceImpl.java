@@ -1,5 +1,6 @@
 package ru.otus.spring.spring_data_jpa_book_info_app.service.book;
 
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.stereotype.Service;
 import ru.otus.spring.spring_data_jpa_book_info_app.domain.Book;
 import ru.otus.spring.spring_data_jpa_book_info_app.infrastructure.AppLogger;
@@ -9,7 +10,7 @@ import ru.otus.spring.spring_data_jpa_book_info_app.service.result.Executed;
 import ru.otus.spring.spring_data_jpa_book_info_app.service.result.Failed;
 import ru.otus.spring.spring_data_jpa_book_info_app.service.result.ServiceResult;
 
-import javax.transaction.Transactional;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 public class BookServiceImpl implements BookService {
@@ -35,11 +36,15 @@ public class BookServiceImpl implements BookService {
 
     @Override
     @Transactional
-    public ServiceResult<Void> rename(Book book) {
+    public ServiceResult<Book> rename(Book book) {
         try {
             if (bookRepository.updateTitleById(book.getId(), book.getTitle()) > 0) {
-                return Executed.unit();
+                return new Executed<>(book);
             }
+
+            logger.warn("Book with id = {} not found", book.getId());
+
+            return Executed.empty();
         } catch (Exception e) {
             logger.logException(e);
         }
@@ -48,16 +53,19 @@ public class BookServiceImpl implements BookService {
     }
 
     @Override
-    @Transactional
-    public ServiceResult<Void> remove(long id) {
+    public ServiceResult<Long> remove(long id) {
         try {
             bookRepository.deleteById(id);
 
-            return Executed.unit();
+            return new Executed<>(id);
+        } catch (EmptyResultDataAccessException e) {
+            logger.warn("Book with id = {} not found", id);
+
+            return Executed.empty();
         } catch (Exception e) {
             logger.logException(e);
-
-            return new Failed<>();
         }
+
+        return new Failed<>();
     }
 }

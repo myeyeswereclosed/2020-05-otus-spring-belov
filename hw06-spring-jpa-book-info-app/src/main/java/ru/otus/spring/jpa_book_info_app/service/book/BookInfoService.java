@@ -14,7 +14,7 @@ public interface BookInfoService {
 
     ServiceResult<Book> addBookGenre(long bookId, Genre genre);
 
-    ServiceResult<Void> addComment(long bookId, Comment comment);
+    ServiceResult<Comment> addComment(long bookId, Comment comment);
 
     ServiceResult<BookInfo> get(long bookId);
 

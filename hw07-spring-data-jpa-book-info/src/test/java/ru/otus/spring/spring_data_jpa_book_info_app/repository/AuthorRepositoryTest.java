@@ -4,8 +4,6 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
-import org.springframework.context.annotation.Import;
-import org.springframework.test.annotation.DirtiesContext;
 import ru.otus.spring.spring_data_jpa_book_info_app.domain.Author;
 import ru.otus.spring.spring_data_jpa_book_info_app.domain.Book;
 import ru.otus.spring.spring_data_jpa_book_info_app.dto.BookAuthor;
@@ -18,20 +16,18 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 @DisplayName("Репозиторий авторов должен ")
 @DataJpaTest
-@DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
 public class AuthorRepositoryTest {
     private static final Author INITIAL_AUTHOR = new Author(1, "Some", "Author");
 
     private static final Author NEW_AUTHOR = new Author("Ivan", "Kotov");
-    private static final Author UPDATED_NEW_AUTHOR = new Author(2, "Oleg", "Krotov");
 
     private static final Book INITIAL_BOOK = new Book(1, "Tri porosenka");
 
     @Autowired
-    AuthorRepository repository;
+    private AuthorRepository repository;
 
     @Autowired
-    BookRepository bookRepository;
+    private BookRepository bookRepository;
 
     @DisplayName("находить сохраненных авторов")
     @Test
@@ -57,11 +53,7 @@ public class AuthorRepositoryTest {
     @DisplayName("обновлять данные автора")
     @Test
     public void update() {
-//        assertTestPreconditions();
-
-//        var newAuthor = repository.save(NEW_AUTHOR);
-//        newAuthor.setFirstName(UPDATED_NEW_AUTHOR.getFirstName());
-//        newAuthor.setLastName(UPDATED_NEW_AUTHOR.getLastName());
+        assertTestPreconditions();
 
         var author = new Author(1, "Oleg", "Krotov");
 
@@ -73,8 +65,6 @@ public class AuthorRepositoryTest {
     @DisplayName("удалять автора")
     @Test
     public void delete() {
-//        assertTestPreconditions();
-
         repository.deleteById(INITIAL_AUTHOR.getId());
 
         assertThat(repository.findAll()).isEmpty();

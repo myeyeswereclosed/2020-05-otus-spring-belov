@@ -12,9 +12,8 @@ spring:
     hibernate:
       format-sql: true
       ddl-auto: none
-
-shell:
-  output:
-    errorMessage: Some error occured. Please, try once more
-    notFoundMessage: Nothing was found
-    defaultMessage: Ok
+  shell:
+    output:
+      errorMessage: Some error occured. Please, try once more
+      notFoundMessage: Nothing was found
+      defaultMessage: Ok

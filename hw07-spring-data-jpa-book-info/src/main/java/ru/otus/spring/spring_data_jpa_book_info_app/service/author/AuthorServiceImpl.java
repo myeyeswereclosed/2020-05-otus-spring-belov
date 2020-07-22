@@ -1,6 +1,8 @@
 package ru.otus.spring.spring_data_jpa_book_info_app.service.author;
 
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import ru.otus.spring.spring_data_jpa_book_info_app.domain.Author;
 import ru.otus.spring.spring_data_jpa_book_info_app.infrastructure.AppLogger;
 import ru.otus.spring.spring_data_jpa_book_info_app.infrastructure.AppLoggerFactory;
@@ -8,8 +10,6 @@ import ru.otus.spring.spring_data_jpa_book_info_app.repository.author.AuthorRepo
 import ru.otus.spring.spring_data_jpa_book_info_app.service.result.Executed;
 import ru.otus.spring.spring_data_jpa_book_info_app.service.result.Failed;
 import ru.otus.spring.spring_data_jpa_book_info_app.service.result.ServiceResult;
-
-import javax.transaction.Transactional;
 
 @Service
 public class AuthorServiceImpl implements AuthorService {
@@ -35,11 +35,15 @@ public class AuthorServiceImpl implements AuthorService {
 
     @Override
     @Transactional
-    public ServiceResult<Void> update(Author author) {
+    public ServiceResult<Author> update(Author author) {
         try {
-            repository.updateNameById(author.getId(), author.getFirstName(), author.getLastName());
+            if (repository.updateNameById(author.getId(), author.getFirstName(), author.getLastName()) > 0) {
+                return new Executed<>(author);
+            }
 
-            return Executed.unit();
+            logger.warn("Author with id = {} not found", author.getId());
+
+            return Executed.empty();
         } catch (Exception e) {
             logger.logException(e);
 
@@ -48,13 +52,15 @@ public class AuthorServiceImpl implements AuthorService {
     }
 
     @Override
-    @Transactional
-    public ServiceResult<Void> remove(long id) {
+    public ServiceResult<Long> remove(long id) {
         try {
             repository.deleteById(id);
-                return Executed.unit();
 
-//            logger.warn("Author with id = {} not found", id);
+            return new Executed<>(id);
+        } catch (EmptyResultDataAccessException e) {
+            logger.warn("Author with id = {} not found", id);
+
+            return Executed.empty();
         } catch (Exception e) {
             logger.logException(e);
         }

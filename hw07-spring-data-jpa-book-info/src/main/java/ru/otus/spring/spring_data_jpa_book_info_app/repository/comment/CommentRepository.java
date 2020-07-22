@@ -15,4 +15,7 @@ public interface CommentRepository extends JpaRepository<Comment, Long> {
     int updateTextById(@Param("id") long id, @Param("text") String text);
 
     List<Comment> findAllByBook(Book book);
+
+    @Query("select c from Comment c join fetch c.book")
+    List<Comment> all();
 }

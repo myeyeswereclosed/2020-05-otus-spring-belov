@@ -4,7 +4,6 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
-import org.springframework.context.annotation.Import;
 import org.springframework.test.annotation.DirtiesContext;
 import ru.otus.spring.spring_data_jpa_book_info_app.domain.Book;
 import ru.otus.spring.spring_data_jpa_book_info_app.domain.Genre;
@@ -18,7 +17,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 @DisplayName("Репозиторий жанров должен ")
 @DataJpaTest
-@DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
 public class GenreRepositoryTest {
     private static final List<Genre> INITIAL_GENRES = List.of(new Genre(1, "horror"), new Genre(2, "history"));
 
@@ -28,10 +26,10 @@ public class GenreRepositoryTest {
     private static final Book INITIAL_BOOK = new Book(1, "Tri porosenka");
 
     @Autowired
-    GenreRepository repository;
+    private GenreRepository repository;
 
     @Autowired
-    BookRepository bookRepository;
+    private BookRepository bookRepository;
 
     @DisplayName("находить сохраненные жанры")
     @Test
@@ -42,6 +40,7 @@ public class GenreRepositoryTest {
     }
 
     @DisplayName("сoхранять новый жанр")
+    @DirtiesContext(methodMode = DirtiesContext.MethodMode.BEFORE_METHOD)
     @Test
     public void save() {
         assertTestPreconditions();
@@ -55,11 +54,6 @@ public class GenreRepositoryTest {
     @DisplayName("обновлять название жанра")
     @Test
     public void update() {
-//        assertTestPreconditions();
-//
-//        var existingGenre = INITIAL_GENRES.get(0);
-//        existingGenre.setName(UPDATED_GENRE.getName());
-
         repository.updateNameById(UPDATED_GENRE.getId(), UPDATED_GENRE.getName());
 
         assertThat(repository.findById(UPDATED_GENRE.getId()).get()).isEqualTo(UPDATED_GENRE);
@@ -68,8 +62,6 @@ public class GenreRepositoryTest {
     @DisplayName("удалять жанр")
     @Test
     public void delete() {
-//        assertTestPreconditions();
-
         repository.deleteById(INITIAL_GENRES.get(0).getId());
 
         assertThat(repository.findAll().size()).isEqualTo(1);

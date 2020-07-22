@@ -1,5 +1,6 @@
 package ru.otus.spring.spring_data_jpa_book_info_app.service.genre;
 
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.stereotype.Service;
 import ru.otus.spring.spring_data_jpa_book_info_app.domain.Genre;
 import ru.otus.spring.spring_data_jpa_book_info_app.infrastructure.AppLogger;
@@ -8,8 +9,7 @@ import ru.otus.spring.spring_data_jpa_book_info_app.repository.genre.GenreReposi
 import ru.otus.spring.spring_data_jpa_book_info_app.service.result.Executed;
 import ru.otus.spring.spring_data_jpa_book_info_app.service.result.Failed;
 import ru.otus.spring.spring_data_jpa_book_info_app.service.result.ServiceResult;
-
-import javax.transaction.Transactional;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 public class GenreServiceImpl implements GenreService {
@@ -35,11 +35,15 @@ public class GenreServiceImpl implements GenreService {
 
     @Override
     @Transactional
-    public ServiceResult<Void> update(Genre genre) {
+    public ServiceResult<Genre> update(Genre genre) {
         try {
             if (repository.updateNameById(genre.getId(), genre.getName()) > 0) {
-                return Executed.unit();
+                return new Executed<>(genre);
             }
+
+            logger.warn("Genre with id = {} not found", genre.getId());
+
+            return Executed.empty();
         } catch (Exception e) {
             logger.logException(e);
         }
@@ -48,13 +52,15 @@ public class GenreServiceImpl implements GenreService {
     }
 
     @Override
-    @Transactional
-    public ServiceResult<Void> remove(int id) {
+    public ServiceResult<Integer> remove(int id) {
         try {
             repository.deleteById(id);
-                return Executed.unit();
 
-//            logger.warn("Genre with id = {} not found", id);
+            return new Executed<>(id);
+        } catch (EmptyResultDataAccessException e) {
+            logger.warn("Genre with id = {} not found", id);
+
+            return Executed.empty();
         } catch (Exception e) {
             logger.logException(e);
         }

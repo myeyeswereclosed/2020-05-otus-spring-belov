@@ -15,7 +15,12 @@ public interface GenreRepository extends JpaRepository<Genre, Integer> {
     @Query("update Genre g set g.name = :name where g.id = :id")
     int updateNameById(@Param("id") int id, @Param("name") String name);
 
-    @Query(name = "bookGenres", nativeQuery = true)
+    @Query(
+        value =
+            "select g.id genreId, g.name genreName, bg.book_id bookId " +
+            "from genre g join book_genre bg on bg.genre_id = g.id",
+        nativeQuery = true
+    )
     List<BookGenre> findAllWithBooks();
 
     Optional<Genre> findByName(String name);

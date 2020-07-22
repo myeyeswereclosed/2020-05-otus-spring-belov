@@ -19,7 +19,13 @@ public interface AuthorRepository extends JpaRepository<Author, Long> {
         @Param("lastName") String lastName
     );
 
-    @Query(name = "bookAuthors", nativeQuery = true)
+    @Query(
+        value =
+            "select a.id authorId, a.first_name authorFirstName, a.last_name authorLastName, ba.book_id bookId " +
+            "from author a join book_author ba " +
+            "on ba.author_id = a.id",
+        nativeQuery = true
+    )
     List<BookAuthor> findAllWithBooks();
 
     Optional<Author> findByFirstNameAndLastName(String firstName, String lastName);

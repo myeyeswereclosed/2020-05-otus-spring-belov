@@ -4,30 +4,26 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
-import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
 import ru.otus.spring.spring_data_jpa_book_info_app.domain.Book;
 import ru.otus.spring.spring_data_jpa_book_info_app.domain.Comment;
 import ru.otus.spring.spring_data_jpa_book_info_app.repository.comment.CommentRepository;
-
-import javax.transaction.Transactional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
 @DisplayName("Репозиторий комментариев должен ")
 @DataJpaTest
-@Transactional
 public class CommentRepositoryTest {
     private final static Book INITIAL_BOOK = new Book(1, "Tri porosenka");
     private final static Comment INITIAL_COMMENT = new Comment(1, "Good book!", INITIAL_BOOK);
     private final static Comment UPDATED_COMMENT = new Comment(1, "Super book!");
 
     @Autowired
-    CommentRepository repository;
+    private CommentRepository repository;
 
     @DisplayName("находить все комментарии")
     @Test
     public void findAll() {
-        var comments = repository.findAll();
+        var comments = repository.all();
 
         assertThat(comments.size()).isEqualTo(1);
         assertFirstComment(comments.get(0), INITIAL_COMMENT);

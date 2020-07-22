@@ -156,11 +156,11 @@ public class BookInfoServiceImpl implements BookInfoService {
 
     @Override
     @Transactional
-    public ServiceResult<Void> addComment(long bookId, Comment comment) {
+    public ServiceResult<Comment> addComment(long bookId, Comment comment) {
         try {
             return
                 bookRepository.findById(bookId)
-                    .<ServiceResult<Void>>map(
+                    .<ServiceResult<Comment>>map(
                         book -> {
                             comment.setBook(book);
 
@@ -168,7 +168,7 @@ public class BookInfoServiceImpl implements BookInfoService {
 
                             logger.info("Added '{}' as comment to '{}'", comment.getText(), book.getTitle());
 
-                            return Executed.unit();
+                            return new Executed<>(comment);
                         }
                     )
                     .orElse(Executed.empty())

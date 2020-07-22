@@ -1,7 +1,8 @@
-package ru.otus.spring.spring_data_jpa_book_info_app.service.shell.formatter;
+package ru.otus.spring.spring_data_jpa_book_info_app.service.shell.formatter.comment;
 
 import org.springframework.stereotype.Service;
-import ru.otus.spring.jpa_book_info_app.domain.Comment;
+import ru.otus.spring.spring_data_jpa_book_info_app.domain.Comment;
+import ru.otus.spring.spring_data_jpa_book_info_app.service.shell.formatter.OutputFormatter;
 
 import java.util.List;
 import java.util.stream.Collectors;

@@ -44,8 +44,4 @@ public class Comment {
                 .append(";book = '").append(book.getTitle()).append("'")
                 .toString();
     }
-
-    public boolean hasNoId() {
-        return id == 0;
-    }
 }

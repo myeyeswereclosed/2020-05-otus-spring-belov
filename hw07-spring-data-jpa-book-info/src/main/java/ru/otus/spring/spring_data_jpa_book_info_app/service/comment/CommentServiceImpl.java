@@ -1,5 +1,6 @@
 package ru.otus.spring.spring_data_jpa_book_info_app.service.comment;
 
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.stereotype.Service;
 import ru.otus.spring.spring_data_jpa_book_info_app.domain.Comment;
 import ru.otus.spring.spring_data_jpa_book_info_app.infrastructure.AppLogger;
@@ -9,7 +10,7 @@ import ru.otus.spring.spring_data_jpa_book_info_app.service.result.Executed;
 import ru.otus.spring.spring_data_jpa_book_info_app.service.result.Failed;
 import ru.otus.spring.spring_data_jpa_book_info_app.service.result.ServiceResult;
 
-import javax.transaction.Transactional;
+import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 
 @Service
@@ -24,11 +25,15 @@ public class CommentServiceImpl implements CommentService {
 
     @Override
     @Transactional
-    public ServiceResult<Void> edit(Comment comment) {
+    public ServiceResult<Comment> edit(Comment comment) {
         try {
             if (repository.updateTextById(comment.getId(), comment.getText()) > 0) {
-                return Executed.unit();
+                return new Executed<>(comment);
             }
+
+            logger.warn("Comment with id = {} not found", comment.getId());
+
+            return Executed.empty();
         } catch (Exception e) {
             logger.logException(e);
         }
@@ -37,7 +42,6 @@ public class CommentServiceImpl implements CommentService {
     }
 
     @Override
-    @Transactional
     public ServiceResult<Comment> find(long id) {
         try {
             return
@@ -58,10 +62,9 @@ public class CommentServiceImpl implements CommentService {
     }
 
     @Override
-    @Transactional
     public ServiceResult<List<Comment>> findAll() {
         try {
-            return new Executed<>(repository.findAll());
+            return new Executed<>(repository.all());
         } catch (Exception e) {
             logger.logException(e);
         }
@@ -70,15 +73,15 @@ public class CommentServiceImpl implements CommentService {
     }
 
     @Override
-    @Transactional
-    public ServiceResult<Void> remove(long id) {
+    public ServiceResult<Long> remove(long id) {
         try {
             repository.deleteById(id);
 
-            return Executed.unit();
+            return new Executed<>(id);
+        } catch (EmptyResultDataAccessException e) {
+            logger.warn("Comment with id = {} not found", id);
 
-
-//            logger.warn("Comment with id = {} not found", id);
+            return Executed.empty();
         } catch (Exception e) {
             logger.logException(e);
         }

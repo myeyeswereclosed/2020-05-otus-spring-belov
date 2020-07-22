@@ -3,8 +3,10 @@ package ru.otus.spring.spring_data_jpa_book_info_app.domain;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import ru.otus.spring.spring_data_jpa_book_info_app.dto.BookInfo;
 
 import javax.persistence.*;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
@@ -49,15 +51,8 @@ public class Book {
     )
     private Set<Genre> genres = new HashSet<>();
 
-
-    public boolean hasNoId() {
-        return id == 0;
-    }
-
     public Book addAuthor(Author author) {
-        addToSet(authors, author);
-
-        return this;
+        return addToSet(authors, author);
     }
 
     public boolean isWrittenBy(Author author) {
@@ -70,6 +65,10 @@ public class Book {
 
     public Book addGenre(Genre genre) {
         return addToSet(genres, genre);
+    }
+
+    public BookInfo toInfo() {
+        return new BookInfo(this, Collections.emptySet());
     }
 
     public boolean hasGenre(Genre genre) {

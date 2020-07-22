@@ -21,19 +21,22 @@ public class BookCommandsExecutor extends BaseCommandExecutor {
     private final BookInfoService bookInfoService;
     private final OutputFormatter<BookInfo> bookOutputFormatter;
     private final OutputFormatter<List<BookInfo>> booksOutputFormatter;
+    private final OutputFormatter<Comment> commentOutputFormatter;
 
     public BookCommandsExecutor(
         BookService service,
         BookInfoService bookInfoService,
         ShellOutputConfig config,
         OutputFormatter<BookInfo> bookOutputFormatter,
-        OutputFormatter<List<BookInfo>> booksOutputFormatter
+        OutputFormatter<List<BookInfo>> booksOutputFormatter,
+        OutputFormatter<Comment> commentOutputFormatter
     ) {
         super(config);
         this.bookService = service;
         this.bookInfoService = bookInfoService;
         this.bookOutputFormatter = bookOutputFormatter;
         this.booksOutputFormatter = booksOutputFormatter;
+        this.commentOutputFormatter = commentOutputFormatter;
     }
 
     @ShellMethod(value = "Add book command (only title)", key = {"add_book", "ab"})
@@ -84,7 +87,11 @@ public class BookCommandsExecutor extends BaseCommandExecutor {
 
     @ShellMethod(value = "Add book comment", key = {"add_comment", "ac"})
     public String addComment(long bookId, @Size(min = 2) String text) {
-        return output(bookInfoService.addComment(bookId, new Comment(text)));
+        return
+            output(
+                bookInfoService.addComment(bookId, new Comment(text)),
+                commentOutputFormatter::format
+            );
     }
 
     @ShellMethod(value = "Book info", key = {"book_info", "bi"})
