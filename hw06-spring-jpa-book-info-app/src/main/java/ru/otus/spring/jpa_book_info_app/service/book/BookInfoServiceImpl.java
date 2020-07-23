@@ -208,6 +208,7 @@ public class BookInfoServiceImpl implements BookInfoService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public ServiceResult<List<BookInfo>> getAll() {
         try {
             var booksStored = bookRepository.findAll();
