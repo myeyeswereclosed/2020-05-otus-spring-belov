@@ -18,16 +18,14 @@ public class BookOutputFormatter implements OutputFormatter<BookInfo> {
 
     @Override
     public String format(BookInfo bookInfo) {
-        var book = bookInfo.getBook();
-
         var result =
             new StringBuilder("Book: ")
                 .append(TABBED_NEW_LINE)
-                .append("id: ").append(book.getId()).append(TABBED_NEW_LINE)
-                .append("title: ").append(book.getTitle()).append(TABBED_NEW_LINE);
+                .append("id: ").append(bookInfo.getId()).append(TABBED_NEW_LINE)
+                .append("title: ").append(bookInfo.getTitle()).append(TABBED_NEW_LINE);
 
-        appendIfExists(result, book.getAuthors(), "authors:", Author::getId, Author::fullName);
-        appendIfExists(result, book.getGenres(), "genres:", Genre::getId, Genre::getName);
+        appendIfExists(result, bookInfo.getAuthors(), "authors:", Author::getId, Author::fullName);
+        appendIfExists(result, bookInfo.getGenres(), "genres:", Genre::getId, Genre::getName);
         appendIfExists(result, bookInfo.getComments(), "comments:", Comment::getId, Comment::getText);
 
         return result.toString();

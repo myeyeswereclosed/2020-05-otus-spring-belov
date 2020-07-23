@@ -9,7 +9,6 @@ import org.springframework.context.annotation.Import;
 import org.springframework.test.annotation.DirtiesContext;
 import ru.otus.spring.jpa_book_info_app.domain.Author;
 import ru.otus.spring.jpa_book_info_app.domain.Book;
-import ru.otus.spring.jpa_book_info_app.dto.BookAuthor;
 import ru.otus.spring.jpa_book_info_app.repository.author.JpaAuthorRepository;
 import ru.otus.spring.jpa_book_info_app.repository.book.JpaBookRepository;
 
@@ -109,26 +108,6 @@ public class AuthorRepositoryTest {
                     INITIAL_AUTHOR.getLastName()
                 )
         ).isEmpty();
-    }
-
-    @DisplayName("находить авторов, у которых есть книги")
-    @Test
-    public void findWithBooks() {
-        assertTestPreconditions();
-
-        repository.save(NEW_AUTHOR);
-
-        var authorsWithBooks = repository.findAllWithBooks();
-
-        assertThat(authorsWithBooks.size()).isEqualTo(1);
-        assertBookAuthor(authorsWithBooks.get(0));
-    }
-
-    private void assertBookAuthor(BookAuthor bookAuthor) {
-        assertThat(bookAuthor.getAuthorId()).isEqualTo(INITIAL_AUTHOR.getId());
-        assertThat(bookAuthor.getAuthorFirstName()).isEqualTo(INITIAL_AUTHOR.getFirstName());
-        assertThat(bookAuthor.getAuthorLastName()).isEqualTo(INITIAL_AUTHOR.getLastName());
-        assertThat(bookAuthor.getBookId()).isEqualTo(INITIAL_BOOK.getId());
     }
 
     private void assertTestPreconditions() {

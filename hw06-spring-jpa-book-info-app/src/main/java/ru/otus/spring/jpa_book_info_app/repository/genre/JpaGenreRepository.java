@@ -2,7 +2,6 @@ package ru.otus.spring.jpa_book_info_app.repository.genre;
 
 import org.springframework.stereotype.Repository;
 import ru.otus.spring.jpa_book_info_app.domain.Genre;
-import ru.otus.spring.jpa_book_info_app.dto.BookGenre;
 
 import javax.persistence.EntityManager;
 import javax.persistence.NoResultException;
@@ -15,13 +14,6 @@ import java.util.Optional;
 public class JpaGenreRepository implements GenreRepository {
     @PersistenceContext
     private EntityManager em;
-
-
-    private BookGenreRepository bookGenreRepository;
-
-    public JpaGenreRepository(BookGenreRepository bookGenreRepository) {
-        this.bookGenreRepository = bookGenreRepository;
-    }
 
     @Override
     public Genre save(Genre genre) {
@@ -44,11 +36,6 @@ public class JpaGenreRepository implements GenreRepository {
     @Override
     public List<Genre> findAll() {
         return em.createQuery("select g from Genre g", Genre.class).getResultList();
-    }
-
-    @Override
-    public List<BookGenre> findAllWithBooks() {
-        return bookGenreRepository.findAllWithBooks();
     }
 
     @Override

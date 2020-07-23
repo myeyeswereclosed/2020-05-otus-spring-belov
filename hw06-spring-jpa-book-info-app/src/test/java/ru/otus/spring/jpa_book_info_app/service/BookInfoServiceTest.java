@@ -82,8 +82,7 @@ public class BookInfoServiceTest {
         assertThat(result.isOk()).isTrue();
         assertThat(result.value())
             .get()
-            .extracting(BookInfo::getBook)
-            .extracting(Book::getAuthors)
+            .extracting(BookInfo::getAuthors)
             .isEqualTo(Set.of(INITIAL_AUTHOR, NEW_AUTHOR))
         ;
     }
@@ -103,8 +102,7 @@ public class BookInfoServiceTest {
         assertThat(result.isOk()).isTrue();
         assertThat(result.value())
             .get()
-            .extracting(BookInfo::getBook)
-            .extracting(Book::getAuthors)
+            .extracting(BookInfo::getAuthors)
             .isEqualTo(Set.of(INITIAL_AUTHOR))
         ;
     }
@@ -124,8 +122,7 @@ public class BookInfoServiceTest {
         assertThat(result.isOk()).isTrue();
         assertThat(result.value())
             .get()
-            .extracting(BookInfo::getBook)
-            .extracting(Book::getAuthors)
+            .extracting(BookInfo::getAuthors)
             .isEqualTo(Set.of(INITIAL_AUTHOR, NEW_AUTHOR))
         ;
     }
@@ -145,8 +142,7 @@ public class BookInfoServiceTest {
         assertThat(result.isOk()).isTrue();
         assertThat(result.value())
             .get()
-            .extracting(BookInfo::getBook)
-            .extracting(Book::getGenres)
+            .extracting(BookInfo::getGenres)
             .isEqualTo(Set.of(INITIAL_GENRE, NEW_GENRE))
         ;
     }
@@ -164,8 +160,7 @@ public class BookInfoServiceTest {
         assertThat(result.isOk()).isTrue();
         assertThat(result.value())
             .get()
-            .extracting(BookInfo::getBook)
-            .extracting(Book::getGenres)
+            .extracting(BookInfo::getGenres)
             .isEqualTo(Set.of(INITIAL_GENRE))
         ;
     }
@@ -185,8 +180,7 @@ public class BookInfoServiceTest {
         assertThat(result.isOk()).isTrue();
         assertThat(result.value())
             .get()
-            .extracting(BookInfo::getBook)
-            .extracting(Book::getGenres)
+            .extracting(BookInfo::getGenres)
             .isEqualTo(Set.of(INITIAL_GENRE, NEW_GENRE))
         ;
     }
@@ -236,11 +230,9 @@ public class BookInfoServiceTest {
     }
 
     private void assertInitialBookInfo(BookInfo bookInfo) {
-        var book = bookInfo.getBook();
+        assertInitialBook(bookInfo);
 
-        assertInitialBook(book);
-
-        var authors = book.getAuthors();
+        var authors = bookInfo.getAuthors();
 
         assertThat(authors.size()).isEqualTo(1);
 
@@ -248,7 +240,7 @@ public class BookInfoServiceTest {
 
         assertThat(author).isEqualTo(INITIAL_AUTHOR);
 
-        var genres = book.getGenres();
+        var genres = bookInfo.getGenres();
 
         assertThat(genres.size()).isEqualTo(1);
 
@@ -270,6 +262,11 @@ public class BookInfoServiceTest {
     }
 
     private void assertInitialBook(Book book) {
+        assertThat(book.getId()).isEqualTo(INITIAL_BOOK.getId());
+        assertThat(book.getTitle()).isEqualTo(INITIAL_BOOK.getTitle());
+    }
+
+    private void assertInitialBook(BookInfo book) {
         assertThat(book.getId()).isEqualTo(INITIAL_BOOK.getId());
         assertThat(book.getTitle()).isEqualTo(INITIAL_BOOK.getTitle());
     }
