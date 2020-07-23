@@ -3,6 +3,8 @@ package ru.otus.spring.jpa_book_info_app.domain;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.Fetch;
+import org.hibernate.annotations.FetchMode;
 import ru.otus.spring.jpa_book_info_app.dto.BookInfo;
 
 import javax.persistence.*;
@@ -35,6 +37,7 @@ public class Book {
     @Column(name = "title")
     private String title;
 
+    @Fetch(FetchMode.SUBSELECT)
     @ManyToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @JoinTable(
         name = "book_author",
@@ -42,7 +45,8 @@ public class Book {
         inverseJoinColumns = @JoinColumn(name = "author_id")
     )
     private Set<Author> authors = new HashSet<>();
-    
+
+    @Fetch(FetchMode.SUBSELECT)
     @ManyToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @JoinTable(
         name = "book_genre",
@@ -56,9 +60,7 @@ public class Book {
     }
 
     public Book addAuthor(Author author) {
-        addToSet(authors, author);
-
-        return this;
+        return addToSet(authors, author);
     }
 
     public boolean isWrittenBy(Author author) {
@@ -78,7 +80,7 @@ public class Book {
     }
 
     public BookInfo toInfo() {
-        return new BookInfo(this, Collections.emptySet());
+        return new BookInfo(id, title, authors, genres, Collections.emptySet());
     }
 
     private<T> Book addToSet(Set<T> set, T newItem) {

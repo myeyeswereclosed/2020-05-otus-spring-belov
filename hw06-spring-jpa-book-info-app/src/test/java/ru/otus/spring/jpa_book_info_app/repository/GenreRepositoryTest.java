@@ -7,9 +7,7 @@ import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
 import org.springframework.context.annotation.Import;
 import org.springframework.test.annotation.DirtiesContext;
-import ru.otus.spring.jpa_book_info_app.domain.Book;
 import ru.otus.spring.jpa_book_info_app.domain.Genre;
-import ru.otus.spring.jpa_book_info_app.dto.BookGenre;
 import ru.otus.spring.jpa_book_info_app.repository.book.JpaBookRepository;
 import ru.otus.spring.jpa_book_info_app.repository.genre.JpaGenreRepository;
 
@@ -25,8 +23,6 @@ public class GenreRepositoryTest {
 
     private static final Genre NEW_GENRE = new Genre("love-story");
     private static final Genre UPDATED_NEW_GENRE = new Genre(3, "drama");
-
-    private static final Book INITIAL_BOOK = new Book(1, "Tri porosenka");
 
     @Autowired
     private TestEntityManager em;
@@ -100,19 +96,6 @@ public class GenreRepositoryTest {
         assertThat(repository.findByName("No such genre")).isEmpty();
     }
 
-    @DisplayName("находить жанры, относящиеся к хранимым книгам")
-    @Test
-    public void findWithBooks() {
-        assertTestPreconditions();
-
-        repository.save(NEW_GENRE);
-
-        var booksGenres = repository.findAllWithBooks();
-
-        assertThat(booksGenres.size()).isEqualTo(1);
-        assertBookGenre(INITIAL_GENRES.get(0), booksGenres.get(0));
-    }
-
     private void assertTestPreconditions() {
         var books = bookRepository.findAll();
         var genres = repository.findAll();
@@ -135,11 +118,5 @@ public class GenreRepositoryTest {
         for (var i = 0; i < actualGenres.size(); i++) {
             assertThat(actualGenres.get(i)).isEqualTo(expectedGenres.get(i));
         }
-    }
-
-    private void assertBookGenre(Genre expectedGenre, BookGenre bookGenre) {
-        assertThat(bookGenre.getBookId()).isEqualTo(INITIAL_BOOK.getId());
-        assertThat(bookGenre.getGenreId()).isEqualTo(expectedGenre.getId());
-        assertThat(bookGenre.getGenreName()).isEqualTo(expectedGenre.getName());
     }
 }

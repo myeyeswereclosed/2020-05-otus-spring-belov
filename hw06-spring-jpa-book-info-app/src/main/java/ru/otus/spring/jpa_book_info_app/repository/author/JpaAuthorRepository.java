@@ -2,7 +2,6 @@ package ru.otus.spring.jpa_book_info_app.repository.author;
 
 import org.springframework.stereotype.Repository;
 import ru.otus.spring.jpa_book_info_app.domain.Author;
-import ru.otus.spring.jpa_book_info_app.dto.BookAuthor;
 
 import javax.persistence.EntityManager;
 import javax.persistence.NoResultException;
@@ -15,12 +14,6 @@ import java.util.Optional;
 public class JpaAuthorRepository implements AuthorRepository {
     @PersistenceContext
     private EntityManager em;
-
-    private BookAuthorRepository bookAuthorRepository;
-
-    public JpaAuthorRepository(BookAuthorRepository bookAuthorRepository) {
-        this.bookAuthorRepository = bookAuthorRepository;
-    }
 
     @Override
     public Author save(Author author) {
@@ -43,11 +36,6 @@ public class JpaAuthorRepository implements AuthorRepository {
     @Override
     public List<Author> findAll() {
         return em.createQuery("select a from Author a", Author.class).getResultList();
-    }
-
-    @Override
-    public List<BookAuthor> findAllWithBooks() {
-        return bookAuthorRepository.findAllWithBooks();
     }
 
     @Override

@@ -1,6 +1,5 @@
 package ru.otus.spring.jpa_book_info_app.service.book;
 
-import org.apache.commons.lang3.tuple.Pair;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.otus.spring.jpa_book_info_app.domain.Author;
@@ -23,12 +22,11 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import static java.util.Collections.emptySet;
 import static java.util.Comparator.comparingLong;
-import static java.util.stream.Collectors.*;
+import static java.util.stream.Collectors.toList;
 
 @Service
 public class BookInfoServiceImpl implements BookInfoService {
@@ -208,33 +206,28 @@ public class BookInfoServiceImpl implements BookInfoService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public ServiceResult<List<BookInfo>> getAll() {
         try {
             var booksStored = bookRepository.findAll();
-            var bookIdsMappedToAuthors = bookIdsMappedToAuthors();
-            var bookIdsMappedToGenres = bookIdsMappedToGenres();
+
+            logger.getLogger().info("Found {} books", booksStored.size());
+
             var comments = comments();
 
             var books =
                 booksStored
-                    .parallelStream()
+                    .stream()
                     .map(
-                        book -> {
-                            book.setAuthors(findOrEmpty(bookIdsMappedToAuthors, book.getId()));
-                            book.setGenres(findOrEmpty(bookIdsMappedToGenres, book.getId()));
-
-                            return
-                                new BookInfo(
-                                    book,
-                                    comments.getOrDefault(book.getId(), emptySet())
-                                );
-                        }
+                        book ->
+                            new BookInfo(
+                                book,
+                                comments.getOrDefault(book.getId(), emptySet())
+                            )
                     )
                     .sorted(comparingLong(BookInfo::bookId))
                     .collect(toList())
                 ;
-
-            logger.getLogger().info("Found {} books", books.size());
 
             return new Executed<>(books);
         } catch (Exception e) {
@@ -242,34 +235,6 @@ public class BookInfoServiceImpl implements BookInfoService {
 
             return new Failed<>();
         }
-    }
-
-    private Map<Long, Set<Author>> bookIdsMappedToAuthors() {
-        return
-            toMap(
-                authorRepository.findAllWithBooks(),
-                bookAuthor ->
-                    Pair.of(
-                        bookAuthor.getBookId(),
-                        new Author(
-                            bookAuthor.getAuthorId(),
-                            bookAuthor.getAuthorFirstName(),
-                            bookAuthor.getAuthorLastName()
-                        )
-                    )
-            );
-    }
-
-    private Map<Long, Set<Genre>> bookIdsMappedToGenres() {
-        return
-            toMap(
-                genreRepository.findAllWithBooks(),
-                bookGenre ->
-                    Pair.of(
-                        bookGenre.getBookId(),
-                        new Genre(bookGenre.getGenreId(), bookGenre.getGenreName())
-                    )
-            );
     }
 
     private Map<Long, Set<Comment>> comments() {
@@ -284,22 +249,5 @@ public class BookInfoServiceImpl implements BookInfoService {
                     )
                 )
             ;
-    }
-
-    private<T, U> Map<Long, Set<U>> toMap(List<T> values, Function<T, Pair<Long, U>> mapper) {
-        return
-            values
-                .parallelStream()
-                .map(mapper)
-                .collect(
-                    groupingBy(
-                        Pair::getLeft,
-                        mapping(Pair::getRight, toSet())
-                    )
-                );
-    }
-
-    private<T> Set<T> findOrEmpty(Map<Long, Set<T>> valuesMap, Long key) {
-        return valuesMap.getOrDefault(key, emptySet());
     }
 }
