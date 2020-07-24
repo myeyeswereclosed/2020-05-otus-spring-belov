@@ -29,10 +29,14 @@ public class BookServiceTest {
 
         assertThat(result.isOk()).isTrue();
 
-        var book = result.value().get();
+        var maybeBook = result.value();
 
-        assertThat(book.getId()).isEqualTo(INITIAL_BOOK.getId());
-        assertThat(book.getTitle()).isEqualTo(UPDATED_TITLE);
+        assertThat(maybeBook).get().satisfies(
+            book -> {
+                assertThat(book.getId()).isEqualTo(INITIAL_BOOK.getId());
+                assertThat(book.getTitle()).isEqualTo(UPDATED_TITLE);
+            }
+        );
     }
 
     @DisplayName("отдавать пустой результат при попытке обновить название несохранненой книги")

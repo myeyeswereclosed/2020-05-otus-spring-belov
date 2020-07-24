@@ -28,11 +28,16 @@ public class AuthorServiceTest {
 
         assertThat(result.isOk()).isTrue();
 
-        var author = result.value().get();
+        var maybeAuthor = result.value();
 
-        assertThat(author.getId()).isEqualTo(INITIAL_AUTHOR.getId());
-        assertThat(author.getFirstName()).isEqualTo(UPDATED_FIRST_NAME);
-        assertThat(author.getLastName()).isEqualTo(UPDATED_LAST_NAME);
+        assertThat(maybeAuthor).get()
+            .satisfies(
+                author -> {
+                    assertThat(author.getId()).isEqualTo(INITIAL_AUTHOR.getId());
+                    assertThat(author.getFirstName()).isEqualTo(UPDATED_FIRST_NAME);
+                    assertThat(author.getLastName()).isEqualTo(UPDATED_LAST_NAME);
+                }
+            );
     }
 
     @DisplayName("отдавать пустой результат при попытке обновить данные несохранненого автора")

@@ -27,10 +27,14 @@ public class GenreServiceTest {
 
         assertThat(result.isOk()).isTrue();
 
-        var genre = result.value().get();
-
-        assertThat(genre.getId()).isEqualTo(INITIAL_GENRE.getId());
-        assertThat(genre.getName()).isEqualTo(UPDATED_NAME);
+        assertThat(result.value())
+            .get()
+            .satisfies(
+                genre -> {
+                    assertThat(genre.getId()).isEqualTo(INITIAL_GENRE.getId());
+                    assertThat(genre.getName()).isEqualTo(UPDATED_NAME);
+                }
+            );
     }
 
     @DisplayName("отдавать пустой результат при попытке обновить данные несохранненого жанра")

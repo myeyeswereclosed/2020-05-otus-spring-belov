@@ -215,9 +215,11 @@ public class BookInfoServiceImpl implements BookInfoService {
             var bookIdsMappedToGenres = bookIdsMappedToGenres();
             var comments = comments();
 
+            logger.getLogger().info("Found {} books", booksStored.size());
+
             var books =
                 booksStored
-                    .parallelStream()
+                    .stream()
                     .map(
                         book -> {
                             book.setAuthors(findOrEmpty(bookIdsMappedToAuthors, book.getId()));
@@ -233,8 +235,6 @@ public class BookInfoServiceImpl implements BookInfoService {
                     .sorted(comparingLong(BookInfo::bookId))
                     .collect(toList())
                 ;
-
-            logger.getLogger().info("Found {} books", books.size());
 
             return new Executed<>(books);
         } catch (Exception e) {
