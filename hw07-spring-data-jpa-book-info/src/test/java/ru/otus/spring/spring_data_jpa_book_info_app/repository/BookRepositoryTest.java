@@ -34,7 +34,6 @@ public class BookRepositoryTest {
     private BookRepository repository;
 
     @DisplayName("сохранять новую книгу без данных")
-    
     @Test
     public void saveNewBook() {
         var newBook = repository.save(new Book(NEW_BOOK_TITLE));
