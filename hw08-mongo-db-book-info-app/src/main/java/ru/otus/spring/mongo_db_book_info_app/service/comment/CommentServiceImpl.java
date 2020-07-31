@@ -1,6 +1,5 @@
 package ru.otus.spring.mongo_db_book_info_app.service.comment;
 
-import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.otus.spring.mongo_db_book_info_app.domain.Comment;
@@ -11,7 +10,6 @@ import ru.otus.spring.mongo_db_book_info_app.service.result.Executed;
 import ru.otus.spring.mongo_db_book_info_app.service.result.Failed;
 import ru.otus.spring.mongo_db_book_info_app.service.result.ServiceResult;
 
-import java.lang.reflect.Executable;
 import java.util.List;
 
 @Service
@@ -41,9 +39,9 @@ public class CommentServiceImpl implements CommentService {
                     );
         } catch (Exception e) {
             logger.logException(e);
-        }
 
-        return new Failed<>();
+            return new Failed<>(e.getMessage());
+        }
     }
 
     @Override

@@ -1,6 +1,5 @@
 package ru.otus.spring.mongo_db_book_info_app.service.book;
 
-
 import ru.otus.spring.mongo_db_book_info_app.domain.Book;
 import ru.otus.spring.mongo_db_book_info_app.service.result.ServiceResult;
 

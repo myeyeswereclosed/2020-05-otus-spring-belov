@@ -10,9 +10,6 @@ import ru.otus.spring.mongo_db_book_info_app.config.MigrationConfig;
 
 @Configuration
 public class MongockConfig {
-
-//    private static final String MIGRATIONS_PACKAGE = "ru.otus.spring.mongo_db_book_info_app.migration.changelog";
-
     @Bean
     public SpringMongock mongock(
         MongoClient mongoClient,

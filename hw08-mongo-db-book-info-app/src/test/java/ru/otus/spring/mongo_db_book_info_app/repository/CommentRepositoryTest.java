@@ -10,6 +10,7 @@ import ru.otus.spring.mongo_db_book_info_app.domain.Book;
 import ru.otus.spring.mongo_db_book_info_app.domain.Comment;
 import ru.otus.spring.mongo_db_book_info_app.repository.book.BookRepository;
 import ru.otus.spring.mongo_db_book_info_app.repository.comment.CommentRepository;
+import ru.otus.spring.mongo_db_book_info_app.repository.comment.UpdateCommentConfig;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -141,7 +142,7 @@ public class CommentRepositoryTest {
 
         var updatedBook = initialBook.changeTitle(UPDATED_BOOK_TITLE);
 
-        repository.updateForBook(updatedBook);
+        repository.update(UpdateCommentConfig.renameBook(updatedBook));
 
         var comments = repository.findAll();
 

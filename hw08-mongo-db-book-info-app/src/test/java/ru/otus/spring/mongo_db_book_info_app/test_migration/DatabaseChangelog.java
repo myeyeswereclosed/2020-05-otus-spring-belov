@@ -9,8 +9,6 @@ import ru.otus.spring.mongo_db_book_info_app.domain.Book;
 import ru.otus.spring.mongo_db_book_info_app.domain.Comment;
 import ru.otus.spring.mongo_db_book_info_app.domain.Genre;
 
-import java.util.List;
-
 @ChangeLog
 public class DatabaseChangelog {
     private static final String INITIAL_BOOK_TITLE = "Tri porosenka";

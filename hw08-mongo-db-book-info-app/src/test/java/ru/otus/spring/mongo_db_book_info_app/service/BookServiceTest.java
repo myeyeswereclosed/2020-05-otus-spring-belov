@@ -5,6 +5,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.DirtiesContext;
+import ru.otus.spring.mongo_db_book_info_app.domain.Author;
 import ru.otus.spring.mongo_db_book_info_app.domain.Book;
 import ru.otus.spring.mongo_db_book_info_app.domain.Comment;
 import ru.otus.spring.mongo_db_book_info_app.repository.comment.CommentRepository;
@@ -23,7 +24,7 @@ public class BookServiceTest {
 
     private static final String NEW_BOOK_TITLE = "Tri kotenka";
 
-    private static final String UPDATED_TITLE = "Tri kotenka";
+    private static final String UPDATED_TITLE = "Tri utenka";
 
     private static final String FIRST_COMMENT_TEXT = "Good!";
     private static final String SECOND_COMMENT_TEXT = "Super!";
@@ -35,6 +36,7 @@ public class BookServiceTest {
     private CommentRepository commentRepository;
 
     @DisplayName("сохранять новую книгу")
+    @DirtiesContext(methodMode = DirtiesContext.MethodMode.AFTER_METHOD)
     @Test
     public void addBook() {
         var result = service.addBook(new Book(NEW_BOOK_TITLE));
@@ -49,6 +51,7 @@ public class BookServiceTest {
     }
 
     @DisplayName("обновлять название хранимой книги")
+    @DirtiesContext(methodMode = DirtiesContext.MethodMode.AFTER_METHOD)
     @Test
     public void editStored() {
         var storeResult = service.addBook(new Book(NEW_BOOK_TITLE));
@@ -135,12 +138,26 @@ public class BookServiceTest {
         assertThat(result.value()).isEmpty();
     }
 
-    @DisplayName("удалять книгу, если она сохранена")
+    @DisplayName("удалять книгу, если она сохранена, ")
+    @DirtiesContext(methodMode = DirtiesContext.MethodMode.AFTER_METHOD)
     @Test
     public void removeStored() {
-        var result = service.remove(INITIAL_BOOK.getId());
+        var addResult = service.addBook(new Book(NEW_BOOK_TITLE));
 
-        assertThat(result.isOk()).isTrue();
+        assertThat(addResult.isOk()).isTrue();
+
+        addResult
+            .value()
+            .ifPresentOrElse(
+                book -> {
+                    var removeResult = service.remove(book.getId());
+
+                    assertThat(removeResult.isOk()).isTrue();
+                    assertThat(removeResult.value()).get().isEqualTo(book.getId());
+                    assertThat(commentRepository.findAllByBook_Id(book.getId())).isEmpty();
+                },
+                () -> fail("Book was not added")
+            );
     }
 
     @DisplayName("отдавать пустой результат при попытке удалить несохраненную книгу")

@@ -12,20 +12,22 @@ import java.util.function.Function;
 public class BaseCommandExecutor {
     private final ShellOutputConfig config;
 
-//    public BaseCommandExecutor(ShellOutputConfig config) {
-//        this.config = config;
-//    }
-
-    protected  <T> String output(ServiceResult<T> serviceResult, Function<T, String> onValue) {
+    protected <T> String output(ServiceResult<T> serviceResult, Function<T, String> onValue) {
         return
             serviceResult.isOk()
                 ? serviceResult.value().map(onValue).orElse(config.getNotFoundMessage())
-                : config.getErrorMessage()
+                : errorMessage(serviceResult)
             ;
     }
 
     protected String output(ServiceResult<Void> serviceResult, String message) {
-        return serviceResult.isOk() ? message : config.getErrorMessage();
+        return serviceResult.isOk() ? message : errorMessage(serviceResult);
+    }
+
+    private <T> String errorMessage(ServiceResult<T> result) {
+        var description = result.description();
+
+        return description.isEmpty() ? config.getErrorMessage() : description;
     }
 
     protected String output(ServiceResult<Void> serviceResult) {

@@ -10,9 +10,11 @@ import ru.otus.spring.mongo_db_book_info_app.domain.Book;
 import ru.otus.spring.mongo_db_book_info_app.domain.Comment;
 import ru.otus.spring.mongo_db_book_info_app.domain.Genre;
 import ru.otus.spring.mongo_db_book_info_app.dto.BookInfo;
-import ru.otus.spring.mongo_db_book_info_app.repository.AuthorRepository;
-import ru.otus.spring.mongo_db_book_info_app.repository.GenreRepository;
-import ru.otus.spring.mongo_db_book_info_app.service.book.BookInfoService;
+import ru.otus.spring.mongo_db_book_info_app.repository.genre.GenreRepository;
+import ru.otus.spring.mongo_db_book_info_app.repository.author.AuthorRepository;
+import ru.otus.spring.mongo_db_book_info_app.repository.book.BookRepository;
+import ru.otus.spring.mongo_db_book_info_app.service.book.add.AddBookInfoService;
+import ru.otus.spring.mongo_db_book_info_app.service.book.get.GetBookInfoService;
 
 import java.util.List;
 import java.util.Optional;
@@ -20,9 +22,9 @@ import java.util.Optional;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.fail;
 
-@DisplayName("Сервис сводной информации о книгах должен ")
+@DisplayName("Сервис добавления информации о книгах должен ")
 @SpringBootTest
-public class BookInfoServiceTest {
+public class AddBookInfoServiceTest {
     private final static String INITIAL_BOOK_NOT_FOUND_MESSAGE = "Initial book not found";
 
     private static final String INITIAL_BOOK_TITLE = "Tri porosenka";
@@ -36,6 +38,8 @@ public class BookInfoServiceTest {
 
     private static final String NEW_COMMENT_TEXT = "Super book!";
 
+    private static final String NEW_BOOK_TITLE = "Tri kotenka";
+
     @Autowired
     private AuthorRepository authorRepository;
 
@@ -43,30 +47,10 @@ public class BookInfoServiceTest {
     private GenreRepository genreRepository;
 
     @Autowired
-    private BookInfoService service;
+    private AddBookInfoService service;
 
-    @DisplayName("находить книгу по идентификатору")
-    @Test
-    public void get() {
-        findInitial()
-            .ifPresentOrElse(
-                this::assertInitialBookInfo,
-                () -> fail(INITIAL_BOOK_NOT_FOUND_MESSAGE)
-            );
-    }
-
-    private Optional<BookInfo> findInitial() {
-        return service.getAll().value().map(bookInfoList -> bookInfoList.get(0));
-    }
-
-    @DisplayName("отдавать пустой результат, если не книга не найдена")
-    @Test
-    public void emptyIfNotFound() {
-        var result = service.get("");
-
-        assertThat(result.isOk());
-        assertThat(result.value().isEmpty()).isTrue();
-    }
+    @Autowired
+    private GetBookInfoService getInfoService;
 
     @DisplayName("успешно добавлять нового автора к хранимой книге")
     @DirtiesContext(methodMode = DirtiesContext.MethodMode.AFTER_METHOD)
@@ -213,6 +197,7 @@ public class BookInfoServiceTest {
     }
 
     @DisplayName("успешно добавлять сохраненный жанр как жанр книги")
+    @DirtiesContext(methodMode = DirtiesContext.MethodMode.AFTER_METHOD)
     @Test
     public void addStoredGenreAsBookGenre() {
         var genre = new Genre(NEW_GENRE_NAME);
@@ -252,7 +237,7 @@ public class BookInfoServiceTest {
         assertThat(result.value()).get().extracting(Comment::getText).isEqualTo(NEW_COMMENT_TEXT);
         assertThat(result.value()).get().extracting(Comment::getBook).isEqualTo(book);
 
-        assertThat(service.get(book.getId()).value())
+        assertThat(getInfoService.get(book.getId()).value())
             .get()
             .extracting(BookInfo::getComments)
             .extracting(List::size)
@@ -260,23 +245,8 @@ public class BookInfoServiceTest {
         ;
     }
 
-    @DisplayName("находить все книги с информацией по ним")
-    @DirtiesContext(methodMode = DirtiesContext.MethodMode.BEFORE_METHOD)
-    @Test
-    public void getAll() {
-        var result = service.getAll();
-
-        assertThat(result.isOk()).isTrue();
-
-        assertThat(result.value()).get().extracting(List::size).isEqualTo(1);
-        assertThat(result.value())
-            .get()
-            .satisfies(
-                bookInfoList -> {
-                    assertThat(bookInfoList.size()).isEqualTo(1);
-                    assertInitialBookInfo(bookInfoList.get(0));
-                }
-            );
+    private Optional<BookInfo> findInitial() {
+        return getInfoService.getAll().value().map(bookInfoList -> bookInfoList.get(0));
     }
 
     private void assertInitialBookInfo(BookInfo bookInfo) {

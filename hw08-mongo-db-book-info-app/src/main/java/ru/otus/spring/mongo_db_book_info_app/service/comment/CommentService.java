@@ -1,6 +1,5 @@
 package ru.otus.spring.mongo_db_book_info_app.service.comment;
 
-
 import ru.otus.spring.mongo_db_book_info_app.domain.Comment;
 import ru.otus.spring.mongo_db_book_info_app.service.result.ServiceResult;
 

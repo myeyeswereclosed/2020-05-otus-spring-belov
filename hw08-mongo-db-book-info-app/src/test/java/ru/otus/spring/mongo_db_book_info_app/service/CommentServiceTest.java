@@ -9,7 +9,6 @@ import ru.otus.spring.mongo_db_book_info_app.domain.Book;
 import ru.otus.spring.mongo_db_book_info_app.domain.Comment;
 import ru.otus.spring.mongo_db_book_info_app.service.comment.CommentService;
 
-
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;

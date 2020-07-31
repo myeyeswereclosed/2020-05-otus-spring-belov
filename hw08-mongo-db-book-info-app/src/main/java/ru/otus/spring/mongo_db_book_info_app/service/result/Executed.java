@@ -4,6 +4,7 @@ import java.util.Optional;
 
 public class Executed<T> implements ServiceResult<T> {
     private final T value;
+    private String description = "Ok";
 
     public Executed(T value) {
         this.value = value;
@@ -25,5 +26,10 @@ public class Executed<T> implements ServiceResult<T> {
     @Override
     public boolean isOk() {
         return true;
+    }
+
+    @Override
+    public String description() {
+        return "Ok";
     }
 }
