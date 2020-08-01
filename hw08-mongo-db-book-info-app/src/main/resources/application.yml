@@ -3,9 +3,6 @@ spring:
     mongodb:
       database: bookdb
       port: 27017
-#    uri: mongodb://localhost
-#    port: 27017
-#    database: bookdb
   shell:
     output:
       errorMessage: Some error occured. Please, try once more

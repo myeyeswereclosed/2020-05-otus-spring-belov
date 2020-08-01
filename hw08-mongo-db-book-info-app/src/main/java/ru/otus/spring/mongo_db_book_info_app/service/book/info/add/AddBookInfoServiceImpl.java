@@ -1,4 +1,4 @@
-package ru.otus.spring.mongo_db_book_info_app.service.book.add;
+package ru.otus.spring.mongo_db_book_info_app.service.book.info.add;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -9,11 +9,11 @@ import ru.otus.spring.mongo_db_book_info_app.domain.Comment;
 import ru.otus.spring.mongo_db_book_info_app.domain.Genre;
 import ru.otus.spring.mongo_db_book_info_app.infrastructure.AppLogger;
 import ru.otus.spring.mongo_db_book_info_app.infrastructure.AppLoggerFactory;
-import ru.otus.spring.mongo_db_book_info_app.repository.genre.GenreRepository;
 import ru.otus.spring.mongo_db_book_info_app.repository.author.AuthorRepository;
 import ru.otus.spring.mongo_db_book_info_app.repository.book.BookRepository;
 import ru.otus.spring.mongo_db_book_info_app.repository.comment.CommentRepository;
 import ru.otus.spring.mongo_db_book_info_app.repository.comment.UpdateCommentConfig;
+import ru.otus.spring.mongo_db_book_info_app.repository.genre.GenreRepository;
 import ru.otus.spring.mongo_db_book_info_app.service.result.Executed;
 import ru.otus.spring.mongo_db_book_info_app.service.result.Failed;
 import ru.otus.spring.mongo_db_book_info_app.service.result.ServiceResult;
@@ -56,11 +56,8 @@ public class AddBookInfoServiceImpl implements AddBookInfoService {
             return
                 authorRepository
                     .findByFirstNameAndLastName(author.getFirstName(), author.getLastName())
-                    .map(
-                        authorFound ->
-                            addStoredAuthor(book, authorFound, "Added existing author {} as author of '{}'")
-                    )
-                    .orElseGet(() -> addBookNewAuthor(book, author, "Added new author {} as author of '{}'"))
+                    .map(authorFound -> addStoredAuthor(book, authorFound))
+                    .orElseGet(() -> addBookNewAuthor(book, author))
                 ;
         } catch (Exception e) {
             logger.logException(e);
@@ -75,12 +72,12 @@ public class AddBookInfoServiceImpl implements AddBookInfoService {
         return new Executed<>(book);
     }
 
-    private ServiceResult<Book> addStoredAuthor(Book book, Author author, String logMessage) {
+    private ServiceResult<Book> addStoredAuthor(Book book, Author author) {
         try {
             var updatedBook = bookRepository.save(book.addAuthor(author));
             commentRepository.update(UpdateCommentConfig.addAuthor(book.getId(), author));
 
-            logger.info(logMessage, author.fullName(), updatedBook.toString());
+            logger.info("Added existing author {} as author of '{}'", author.fullName(), updatedBook.toString());
 
             return new Executed<>(updatedBook);
         } catch (Exception e) {
@@ -90,14 +87,14 @@ public class AddBookInfoServiceImpl implements AddBookInfoService {
         return new Failed<>();
     }
 
-    private ServiceResult<Book> addBookNewAuthor(Book book, Author author, String logMessage) {
+    private ServiceResult<Book> addBookNewAuthor(Book book, Author author) {
         try {
             var newAuthor = authorRepository.save(author);
 
             var updatedBook = bookRepository.save(book.addAuthor(newAuthor));
             commentRepository.update(UpdateCommentConfig.addAuthor(book.getId(), newAuthor));
 
-            logger.info(logMessage, author.fullName(), updatedBook.toString());
+            logger.info("Added new author {} as author of '{}'", author.fullName(), updatedBook.toString());
 
             return new Executed<>(updatedBook);
         } catch (Exception e) {
@@ -133,8 +130,8 @@ public class AddBookInfoServiceImpl implements AddBookInfoService {
             return
                 genreRepository
                     .findByName(genre.getName())
-                    .map(genreFound -> updateBookGenre(book, genreFound, "Added '{}' as genre of '{}'"))
-                    .orElseGet(() -> addBookNewGenre(book, genre, "Added new genre '{}' as genre of '{}'"))
+                    .map(genreFound -> addStoredGenre(book, genreFound))
+                    .orElseGet(() -> addBookNewGenre(book, genre))
                 ;
         } catch (Exception e) {
             logger.logException(e);
@@ -143,22 +140,23 @@ public class AddBookInfoServiceImpl implements AddBookInfoService {
         return new Failed<>();
     }
 
-    private ServiceResult<Book> updateBookGenre(Book book, Genre genre, String logMessage) {
+    private ServiceResult<Book> addStoredGenre(Book book, Genre genre) {
         var updatedBook = bookRepository.save(book.addGenre(genre));
+        commentRepository.update(UpdateCommentConfig.addGenre(book.getId(), genre));
 
-        logger.info(logMessage, genre.getName(), updatedBook.toString());
+        logger.info("Added '{}' as genre of '{}'", genre.getName(), updatedBook.toString());
 
         return new Executed<>(updatedBook);
     }
 
-    private ServiceResult<Book> addBookNewGenre(Book book, Genre genre, String logMessage) {
+    private ServiceResult<Book> addBookNewGenre(Book book, Genre genre) {
         try {
-            var updatedBook =
-                bookRepository.save(
-                    book.addGenre(genreRepository.save(genre))
-                );
+            var newGenre = genreRepository.save(genre);
 
-            logger.info(logMessage, genre.getName(), updatedBook.toString());
+            var updatedBook = bookRepository.save(book.addGenre(newGenre));
+            commentRepository.update(UpdateCommentConfig.addGenre(book.getId(), newGenre));
+
+            logger.info("Added new genre '{}' as genre of '{}'", genre.getName(), updatedBook.toString());
 
             return new Executed<>(updatedBook);
         } catch (Exception e) {

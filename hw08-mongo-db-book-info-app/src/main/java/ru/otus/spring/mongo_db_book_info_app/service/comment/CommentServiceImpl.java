@@ -65,6 +65,7 @@ public class CommentServiceImpl implements CommentService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public ServiceResult<List<Comment>> findAll() {
         try {
             return new Executed<>(repository.findAll());
@@ -76,6 +77,7 @@ public class CommentServiceImpl implements CommentService {
     }
 
     @Override
+    @Transactional
     public ServiceResult<String> remove(String id) {
         try {
             return

@@ -22,7 +22,12 @@ public class AuthorServiceImpl implements AuthorService {
     @Transactional
     public ServiceResult<Author> create(Author author) {
         try {
-            return new Executed<>(repository.save(author));
+            return
+                repository
+                    .findByFirstNameAndLastName(author.getFirstName(), author.getLastName())
+                    .<ServiceResult<Author>>map(authorFound -> new Failed<>("Author already stored"))
+                    .orElse(new Executed<>(repository.save(author)))
+            ;
         } catch (Exception e) {
             logger.logException(e);
 

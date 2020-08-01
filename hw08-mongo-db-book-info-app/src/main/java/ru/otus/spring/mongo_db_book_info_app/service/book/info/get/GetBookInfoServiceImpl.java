@@ -1,4 +1,4 @@
-package ru.otus.spring.mongo_db_book_info_app.service.book.get;
+package ru.otus.spring.mongo_db_book_info_app.service.book.info.get;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;

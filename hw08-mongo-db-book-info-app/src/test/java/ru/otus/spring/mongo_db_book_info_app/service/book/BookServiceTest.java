@@ -1,15 +1,13 @@
-package ru.otus.spring.mongo_db_book_info_app.service;
+package ru.otus.spring.mongo_db_book_info_app.service.book;
 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.DirtiesContext;
-import ru.otus.spring.mongo_db_book_info_app.domain.Author;
 import ru.otus.spring.mongo_db_book_info_app.domain.Book;
 import ru.otus.spring.mongo_db_book_info_app.domain.Comment;
 import ru.otus.spring.mongo_db_book_info_app.repository.comment.CommentRepository;
-import ru.otus.spring.mongo_db_book_info_app.service.book.BookService;
 import ru.otus.spring.mongo_db_book_info_app.service.result.ServiceResult;
 
 import java.util.List;
@@ -20,8 +18,6 @@ import static org.assertj.core.api.Assertions.fail;
 @DisplayName("Сервис работы с книгами должен ")
 @SpringBootTest
 public class BookServiceTest {
-    private static final Book INITIAL_BOOK = new Book("", "Tri porosenka");
-
     private static final String NEW_BOOK_TITLE = "Tri kotenka";
 
     private static final String UPDATED_TITLE = "Tri utenka";

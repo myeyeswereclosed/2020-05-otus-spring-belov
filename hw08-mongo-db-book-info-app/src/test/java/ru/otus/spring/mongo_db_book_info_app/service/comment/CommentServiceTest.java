@@ -1,4 +1,4 @@
-package ru.otus.spring.mongo_db_book_info_app.service;
+package ru.otus.spring.mongo_db_book_info_app.service.comment;
 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -7,7 +7,6 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.DirtiesContext;
 import ru.otus.spring.mongo_db_book_info_app.domain.Book;
 import ru.otus.spring.mongo_db_book_info_app.domain.Comment;
-import ru.otus.spring.mongo_db_book_info_app.service.comment.CommentService;
 
 import java.util.Optional;
 

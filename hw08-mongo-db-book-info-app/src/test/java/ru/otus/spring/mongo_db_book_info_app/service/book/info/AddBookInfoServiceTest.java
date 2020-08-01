@@ -1,4 +1,4 @@
-package ru.otus.spring.mongo_db_book_info_app.service;
+package ru.otus.spring.mongo_db_book_info_app.service.book.info;
 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -10,11 +10,10 @@ import ru.otus.spring.mongo_db_book_info_app.domain.Book;
 import ru.otus.spring.mongo_db_book_info_app.domain.Comment;
 import ru.otus.spring.mongo_db_book_info_app.domain.Genre;
 import ru.otus.spring.mongo_db_book_info_app.dto.BookInfo;
-import ru.otus.spring.mongo_db_book_info_app.repository.genre.GenreRepository;
 import ru.otus.spring.mongo_db_book_info_app.repository.author.AuthorRepository;
-import ru.otus.spring.mongo_db_book_info_app.repository.book.BookRepository;
-import ru.otus.spring.mongo_db_book_info_app.service.book.add.AddBookInfoService;
-import ru.otus.spring.mongo_db_book_info_app.service.book.get.GetBookInfoService;
+import ru.otus.spring.mongo_db_book_info_app.repository.genre.GenreRepository;
+import ru.otus.spring.mongo_db_book_info_app.service.book.info.add.AddBookInfoService;
+import ru.otus.spring.mongo_db_book_info_app.service.book.info.get.GetBookInfoService;
 
 import java.util.List;
 import java.util.Optional;
@@ -37,8 +36,6 @@ public class AddBookInfoServiceTest {
     private static final String NEW_GENRE_NAME = "love-story";
 
     private static final String NEW_COMMENT_TEXT = "Super book!";
-
-    private static final String NEW_BOOK_TITLE = "Tri kotenka";
 
     @Autowired
     private AuthorRepository authorRepository;
@@ -73,18 +70,7 @@ public class AddBookInfoServiceTest {
         assertThat(authorRepository.findAll().size()).isEqualTo(2);
 
         assertThat(result.isOk()).isTrue();
-        assertThat(result.value())
-            .get()
-            .extracting(Book::getAuthors).extracting(List::size).isEqualTo(2);
-
-        assertThat(result.value())
-            .get()
-            .extracting(Book::getAuthors).extracting(authors -> authors.get(1))
-            .satisfies(
-                author ->
-                    assertThat(author.hasFirstAndLastName(NEW_AUTHOR.getFirstName(), NEW_AUTHOR.getLastName()))
-                        .isTrue()
-            );
+        assertThat(result.value()).get().satisfies(this::assertBookWithNewAuthor);
 
         assertThat(result.value())
             .get()
@@ -94,6 +80,24 @@ public class AddBookInfoServiceTest {
                     assertThat(bookFound.getTitle()).isEqualTo(initialBook.getTitle());
                 }
             );
+
+        // check changes in comments
+        findInitial().ifPresentOrElse(
+            initialOne -> {
+                assertThat(initialOne.getComments().size()).isEqualTo(1);
+                assertThat(initialOne.getComments().get(0).getBook()).satisfies(this::assertBookWithNewAuthor);
+            },
+            () -> fail(INITIAL_BOOK_NOT_FOUND_MESSAGE)
+        );
+    }
+
+    private void assertBookWithNewAuthor(Book book) {
+        assertThat(book.getAuthors().size()).isEqualTo(2);
+        assertThat(book.getAuthors().get(1)).satisfies(
+            author ->
+                assertThat(author.hasFirstAndLastName(NEW_AUTHOR.getFirstName(), NEW_AUTHOR.getLastName()))
+                    .isTrue()
+        );
     }
 
     @DisplayName("игнорировать добавление уже существующего автора книги")
@@ -160,11 +164,7 @@ public class AddBookInfoServiceTest {
             .get()
             .extracting(Book::getGenres).extracting(List::size).isEqualTo(2);
 
-        assertThat(result.value())
-            .get()
-            .extracting(Book::getGenres).extracting(genres -> genres.get(1))
-            .satisfies(genre -> assertThat(genre.hasName(NEW_GENRE_NAME)).isTrue())
-        ;
+        assertThat(result.value()).get().satisfies(this::assertBookWithNewGenre);
 
         assertThat(result.value())
             .get()
@@ -174,6 +174,20 @@ public class AddBookInfoServiceTest {
                     assertThat(bookFound.getTitle()).isEqualTo(initialBook.getTitle());
                 }
             );
+
+        // check changes in comments
+        findInitial().ifPresentOrElse(
+            initialOne -> {
+                assertThat(initialOne.getComments().size()).isEqualTo(1);
+                assertThat(initialOne.getComments().get(0).getBook()).satisfies(this::assertBookWithNewGenre);
+            },
+            () -> fail(INITIAL_BOOK_NOT_FOUND_MESSAGE)
+        );
+    }
+
+    private void assertBookWithNewGenre(Book book) {
+        assertThat(book.getGenres().size()).isEqualTo(2);
+        assertThat(book.getGenres().get(1)).satisfies(genre -> assertThat(genre.hasName(NEW_GENRE_NAME)).isTrue());
     }
 
     @DisplayName("игнорировать добавление уже существующего жанра книги")

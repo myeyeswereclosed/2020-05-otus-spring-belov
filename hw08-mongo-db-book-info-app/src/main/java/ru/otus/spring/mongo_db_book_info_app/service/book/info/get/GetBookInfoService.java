@@ -1,4 +1,4 @@
-package ru.otus.spring.mongo_db_book_info_app.service.book.get;
+package ru.otus.spring.mongo_db_book_info_app.service.book.info.get;
 
 import ru.otus.spring.mongo_db_book_info_app.dto.BookInfo;
 import ru.otus.spring.mongo_db_book_info_app.service.result.ServiceResult;

@@ -60,6 +60,15 @@ public class UpdateCommentConfig {
             );
     }
 
+    public static UpdateCommentConfig addGenre(String bookId, Genre genre) {
+        return
+            new UpdateCommentConfig(
+                "book.id",
+                bookId,
+                new Update().push("book.genres", genre)
+            );
+    }
+
     public static UpdateCommentConfig updateGenre(Genre genre) {
         return
             new UpdateCommentConfig(

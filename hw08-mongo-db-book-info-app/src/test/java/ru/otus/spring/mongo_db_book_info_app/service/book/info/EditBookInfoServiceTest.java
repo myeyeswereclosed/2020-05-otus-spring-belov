@@ -1,4 +1,4 @@
-package ru.otus.spring.mongo_db_book_info_app.service;
+package ru.otus.spring.mongo_db_book_info_app.service.book.info;
 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -9,11 +9,11 @@ import ru.otus.spring.mongo_db_book_info_app.domain.Author;
 import ru.otus.spring.mongo_db_book_info_app.domain.Book;
 import ru.otus.spring.mongo_db_book_info_app.domain.Genre;
 import ru.otus.spring.mongo_db_book_info_app.dto.BookInfo;
-import ru.otus.spring.mongo_db_book_info_app.repository.genre.GenreRepository;
 import ru.otus.spring.mongo_db_book_info_app.repository.author.AuthorRepository;
 import ru.otus.spring.mongo_db_book_info_app.repository.book.BookRepository;
-import ru.otus.spring.mongo_db_book_info_app.service.book.edit.EditBookInfoService;
-import ru.otus.spring.mongo_db_book_info_app.service.book.get.GetBookInfoService;
+import ru.otus.spring.mongo_db_book_info_app.repository.genre.GenreRepository;
+import ru.otus.spring.mongo_db_book_info_app.service.book.info.edit.EditBookInfoService;
+import ru.otus.spring.mongo_db_book_info_app.service.book.info.get.GetBookInfoService;
 
 import java.util.List;
 import java.util.Optional;
@@ -34,8 +34,6 @@ public class EditBookInfoServiceTest {
 
     private static final String INITIAL_GENRE_NAME = "horror";
     private static final String NEW_GENRE_NAME = "love-story";
-
-    private static final String NEW_COMMENT_TEXT = "Super book!";
 
     private static final String NEW_BOOK_TITLE = "Tri kotenka";
 
@@ -123,6 +121,41 @@ public class EditBookInfoServiceTest {
                 );
             }
         );
+    }
+
+    @DisplayName("возвращать ошибку при попытке переименовать автора в уже существующего")
+    @DirtiesContext(methodMode = DirtiesContext.MethodMode.AFTER_METHOD)
+    @Test
+    public void renameAuthorToExistingOne() {
+        findInitial()
+            .ifPresentOrElse(
+                this::testRenamingToExistingAuthor,
+                () -> fail(INITIAL_BOOK_NOT_FOUND_MESSAGE)
+            );
+    }
+
+    @DisplayName("возвращать пустой результат при попытке удалить несохраненного автора")
+    @Test
+    public void renameNonStored() {
+        var result = service.removeAuthorById("");
+        assertThat(result.isOk()).isTrue();
+        assertThat(result.value()).isEmpty();
+    }
+
+    private void testRenamingToExistingAuthor(BookInfo initialBookInfo) {
+        authorRepository.save(NEW_AUTHOR);
+
+        var initialAuthor = initialBookInfo.getBook().getAuthors().get(0);
+
+        assertThat(
+            service.renameAuthor(
+                new Author(
+                    initialAuthor.getId(),
+                    NEW_AUTHOR.getFirstName(),
+                    NEW_AUTHOR.getLastName()
+                )
+            ).isOk()
+        ).isFalse();
     }
 
     @DisplayName("удалить автора книг")

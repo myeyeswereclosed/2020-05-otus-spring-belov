@@ -8,8 +8,8 @@ import ru.otus.spring.mongo_db_book_info_app.domain.Book;
 import ru.otus.spring.mongo_db_book_info_app.domain.Comment;
 import ru.otus.spring.mongo_db_book_info_app.domain.Genre;
 import ru.otus.spring.mongo_db_book_info_app.service.book.BookService;
-import ru.otus.spring.mongo_db_book_info_app.service.book.add.AddBookInfoService;
-import ru.otus.spring.mongo_db_book_info_app.service.book.get.GetBookInfoService;
+import ru.otus.spring.mongo_db_book_info_app.service.book.info.add.AddBookInfoService;
+import ru.otus.spring.mongo_db_book_info_app.service.book.info.get.GetBookInfoService;
 import ru.otus.spring.mongo_db_book_info_app.service.shell.formatter.OutputFormatter;
 import ru.otus.spring.mongo_db_book_info_app.service.shell.formatter.book.BookOperationFormatter;
 

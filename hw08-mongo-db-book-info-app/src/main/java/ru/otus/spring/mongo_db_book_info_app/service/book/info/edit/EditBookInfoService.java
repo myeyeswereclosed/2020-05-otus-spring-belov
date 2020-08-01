@@ -1,4 +1,4 @@
-package ru.otus.spring.mongo_db_book_info_app.service.book.edit;
+package ru.otus.spring.mongo_db_book_info_app.service.book.info.edit;
 
 import ru.otus.spring.mongo_db_book_info_app.domain.Author;
 import ru.otus.spring.mongo_db_book_info_app.domain.Genre;

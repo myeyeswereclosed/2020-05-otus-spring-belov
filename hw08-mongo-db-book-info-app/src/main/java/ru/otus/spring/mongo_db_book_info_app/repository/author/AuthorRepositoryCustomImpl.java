@@ -6,7 +6,6 @@ import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.data.mongodb.core.query.Update;
 import ru.otus.spring.mongo_db_book_info_app.domain.Author;
-import ru.otus.spring.mongo_db_book_info_app.domain.Comment;
 
 import java.util.Optional;
 

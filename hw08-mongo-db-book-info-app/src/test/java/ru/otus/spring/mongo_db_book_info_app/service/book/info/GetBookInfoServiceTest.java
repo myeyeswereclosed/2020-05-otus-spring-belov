@@ -1,4 +1,4 @@
-package ru.otus.spring.mongo_db_book_info_app.service;
+package ru.otus.spring.mongo_db_book_info_app.service.book.info;
 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -8,7 +8,7 @@ import org.springframework.test.annotation.DirtiesContext;
 import ru.otus.spring.mongo_db_book_info_app.domain.Author;
 import ru.otus.spring.mongo_db_book_info_app.domain.Book;
 import ru.otus.spring.mongo_db_book_info_app.dto.BookInfo;
-import ru.otus.spring.mongo_db_book_info_app.service.book.get.GetBookInfoService;
+import ru.otus.spring.mongo_db_book_info_app.service.book.info.get.GetBookInfoService;
 
 import java.util.List;
 import java.util.Optional;

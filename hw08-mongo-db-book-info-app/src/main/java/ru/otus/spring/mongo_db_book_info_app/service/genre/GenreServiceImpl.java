@@ -22,7 +22,12 @@ public class GenreServiceImpl implements GenreService {
     @Transactional
     public ServiceResult<Genre> create(Genre genre) {
         try {
-            return new Executed<>(repository.save(genre));
+            return
+                repository
+                    .findByName(genre.getName())
+                    .<ServiceResult<Genre>>map(authorFound -> new Failed<>("Genre already stored"))
+                    .orElse(new Executed<>(repository.save(genre)))
+                ;
         } catch (Exception e) {
             logger.logException(e);
 

@@ -4,7 +4,7 @@ import org.springframework.shell.standard.ShellComponent;
 import org.springframework.shell.standard.ShellMethod;
 import ru.otus.spring.mongo_db_book_info_app.config.ShellOutputConfig;
 import ru.otus.spring.mongo_db_book_info_app.domain.Genre;
-import ru.otus.spring.mongo_db_book_info_app.service.book.edit.EditBookInfoService;
+import ru.otus.spring.mongo_db_book_info_app.service.book.info.edit.EditBookInfoService;
 import ru.otus.spring.mongo_db_book_info_app.service.genre.GenreService;
 import ru.otus.spring.mongo_db_book_info_app.service.shell.formatter.genre.GenreOperationFormatter;
 

@@ -62,6 +62,7 @@ public class BookServiceImpl implements BookService {
     }
 
     @Override
+    @Transactional
     public ServiceResult<String> remove(String id) {
         try {
             return

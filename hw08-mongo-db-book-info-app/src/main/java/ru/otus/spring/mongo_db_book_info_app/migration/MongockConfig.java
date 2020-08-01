@@ -16,7 +16,6 @@ public class MongockConfig {
         DatabaseConfig databaseConfig,
         MigrationConfig migrationConfig
     ) {
-        System.out.println(migrationConfig.getChangelogPackage());
         return
             new SpringMongockBuilder(
                 mongoClient,

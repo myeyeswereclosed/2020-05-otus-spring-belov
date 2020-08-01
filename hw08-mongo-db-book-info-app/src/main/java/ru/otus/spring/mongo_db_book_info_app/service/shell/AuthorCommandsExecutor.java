@@ -5,7 +5,7 @@ import org.springframework.shell.standard.ShellMethod;
 import ru.otus.spring.mongo_db_book_info_app.config.ShellOutputConfig;
 import ru.otus.spring.mongo_db_book_info_app.domain.Author;
 import ru.otus.spring.mongo_db_book_info_app.service.author.AuthorService;
-import ru.otus.spring.mongo_db_book_info_app.service.book.edit.EditBookInfoService;
+import ru.otus.spring.mongo_db_book_info_app.service.book.info.edit.EditBookInfoService;
 import ru.otus.spring.mongo_db_book_info_app.service.shell.formatter.OperationResultFormatter;
 
 import javax.validation.constraints.Size;
