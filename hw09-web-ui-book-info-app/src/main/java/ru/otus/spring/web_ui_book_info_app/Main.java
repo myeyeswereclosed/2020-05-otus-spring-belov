@@ -1,0 +1,13 @@
+package ru.otus.spring.web_ui_book_info_app;
+
+import org.springframework.boot.SpringApplication;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
+//import org.springframework.data.mongodb.ru.otus.spring.web_ui_book_info_app.repository.config.EnableMongoRepositories;
+
+@SpringBootApplication
+//@EnableMongoRepositories
+public class Main {
+    public static void main(String[] args) {
+        SpringApplication.run(Main.class);
+    }
+}
