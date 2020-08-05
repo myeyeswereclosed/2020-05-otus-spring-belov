@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Not Found</title>
+    <link rel="stylesheet" th:href="@{/webjars/bootstrap/css/bootstrap.min.css}">
+    <link rel="stylesheet" th:href="@{/common.css}">
+</head>
+    <body>
+        <div class="container">
+            <div class="common-div">
+                <p th:text="${entity.name + ' with id = ' + entity.id + ' not found'}">Nothing was found</p>
+
+                <a class="btn btn-primary" th:href="@{/}" href="book_info/info_list.html">Back</a>
+            </div>
+        </div>
+    </body>
+</html>

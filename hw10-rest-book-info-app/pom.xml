@@ -9,9 +9,19 @@
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
-    <groupId>ru.otus.spring</groupId>
-    <artifactId>hw-09-web-ui-book-info-app</artifactId>
-    <version>0.0.1</version>
+    <artifactId>hw10-rest-book-info-app</artifactId>
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <configuration>
+                    <source>13</source>
+                    <target>13</target>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
 
     <properties>
         <maven.compiler.source>14</maven.compiler.source>
@@ -42,6 +52,11 @@
             <groupId>org.webjars</groupId>
             <artifactId>bootstrap</artifactId>
             <version>4.3.1</version>
+        </dependency>
+        <dependency>
+            <groupId>org.webjars</groupId>
+            <artifactId>jquery</artifactId>
+            <version>3.3.1</version>
         </dependency>
         <dependency>
             <groupId>org.webjars</groupId>
@@ -86,6 +101,11 @@
             <artifactId>lombok</artifactId>
             <version>1.18.12</version>
         </dependency>
+        <dependency>
+            <groupId>ru.otus.spring</groupId>
+            <artifactId>hw-09-web-ui-book-info-app</artifactId>
+            <version>0.0.1</version>
+            <scope>compile</scope>
+        </dependency>
     </dependencies>
-
 </project>
