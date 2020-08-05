@@ -8,11 +8,19 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
+import ru.otus.spring.web_ui_book_info_app.domain.Author;
 import ru.otus.spring.web_ui_book_info_app.domain.Book;
+import ru.otus.spring.web_ui_book_info_app.domain.Genre;
+import ru.otus.spring.web_ui_book_info_app.dto.BookInfo;
 import ru.otus.spring.web_ui_book_info_app.service.book.BookService;
 import ru.otus.spring.web_ui_book_info_app.service.result.Executed;
+import ru.otus.spring.web_ui_book_info_app.service.result.Failed;
+
+import java.util.Collections;
+import java.util.List;
 
 import static org.hamcrest.Matchers.containsString;
+import static org.junit.Assert.fail;
 import static org.mockito.BDDMockito.given;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -24,13 +32,34 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 public class BookControllerTest {
     private static final Book BOOK = new Book("Tri porosenka");
     private static final String BOOK_ID_STUB = "JustAStubId";
+
     private static final String NEW_TITLE = "Tri kotenka";
+
+    private static final Author AUTHOR = new Author("Some", "Author");
+    private static final Genre GENRE = new Genre("horror");
+
+    private static final Book NEW_BOOK = new Book(BOOK_ID_STUB, NEW_TITLE, List.of(AUTHOR), List.of(GENRE));
 
     @Autowired
     private MockMvc mvc;
 
     @MockBean
     private BookService bookService;
+
+    @DisplayName("отдавать страницу с информацией о книгах")
+    @Test
+    public void infoList() throws Exception {
+        given(bookService.getAll()).willReturn(new Executed<>(List.of(BOOK, NEW_BOOK)));
+
+        mvc.perform(get("/"))
+            .andExpect(status().isOk())
+            .andExpect(content().string(containsString(BOOK.getTitle())))
+            .andExpect(content().string(containsString(AUTHOR.getFirstName())))
+            .andExpect(content().string(containsString(AUTHOR.getLastName())))
+            .andExpect(content().string(containsString(GENRE.getName())))
+            .andExpect(content().string(containsString(NEW_TITLE)))
+        ;
+    }
 
     @DisplayName("добавлять книгу ")
     @Test
@@ -111,5 +140,19 @@ public class BookControllerTest {
             .andExpect(status().isOk())
             .andExpect(content().string(containsString("Book with id = " + BOOK_ID_STUB + " not found")))
         ;
+    }
+
+    @DisplayName("отдавать страницу ошибки, если она произошла на уровне сервиса ")
+    @Test
+    public void serviceError() throws Exception {
+        var action = get("/");
+
+        given(bookService.getAll()).willReturn(new Failed<>());
+
+        mvc
+            .perform(action)
+            .andExpect(status().isOk())
+            .andExpect(content().string(containsString("Some error occurred. Please, try once more")));
+
     }
 }

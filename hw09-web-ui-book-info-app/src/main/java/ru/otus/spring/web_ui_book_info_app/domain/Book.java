@@ -10,6 +10,7 @@ import java.util.Objects;
 
 @Document
 @NoArgsConstructor
+@AllArgsConstructor
 @EqualsAndHashCode
 @ToString
 @Data

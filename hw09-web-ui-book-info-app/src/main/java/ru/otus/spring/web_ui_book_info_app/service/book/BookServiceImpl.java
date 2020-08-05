@@ -13,6 +13,8 @@ import ru.otus.spring.web_ui_book_info_app.service.result.Executed;
 import ru.otus.spring.web_ui_book_info_app.service.result.Failed;
 import ru.otus.spring.web_ui_book_info_app.service.result.ServiceResult;
 
+import java.util.List;
+
 @Service
 @RequiredArgsConstructor
 public class BookServiceImpl implements BookService {
@@ -83,6 +85,17 @@ public class BookServiceImpl implements BookService {
                         }
                     )
             ;
+        } catch (Exception e) {
+            logger.logException(e);
+        }
+
+        return new Failed<>();
+    }
+
+    @Override
+    public ServiceResult<List<Book>> getAll() {
+        try {
+            return new Executed<>(bookRepository.findAll());
         } catch (Exception e) {
             logger.logException(e);
         }

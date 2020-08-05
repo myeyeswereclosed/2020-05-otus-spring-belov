@@ -94,49 +94,15 @@ public class BookInfoControllerTest {
 
     @DisplayName("отдавать страницу ошибки, если она произошла на уровне сервиса ")
     @Test
-    public void serviceError() {
-        var actions = List.of(get("/info?id=" + BOOK_ID_STUB), get("/"));
+    public void serviceError() throws Exception {
+        var action = get("/info?id=" + BOOK_ID_STUB);
 
         given(getBookInfoService.get(BOOK_ID_STUB)).willReturn(new Failed<>());
-        given(getBookInfoService.getAll()).willReturn(new Failed<>());
 
-        actions.forEach(
-            action -> {
-                try {
-                    mvc
-                        .perform(action)
-                        .andExpect(status().isOk())
-                        .andExpect(content().string(containsString("Some error occurred. Please, try once more")));
-                } catch (Exception e) {
-                    fail(e.getMessage());
-                }
-            }
-        );
-    }
-
-    @DisplayName("отдавать страницу с информацией о книгах")
-    @Test
-    public void infoList() throws Exception {
-        given(getBookInfoService.getAll())
-            .willReturn(
-                new Executed<>(
-                    List.of(
-                        BOOK_INFO,
-                        new BookInfo(
-                            new Book(ANOTHER_TITLE),
-                            Collections.emptyList()
-                        )
-                    )
-                )
-            );
-
-        mvc.perform(get("/"))
+        mvc
+            .perform(action)
             .andExpect(status().isOk())
-            .andExpect(content().string(containsString(TITLE)))
-            .andExpect(content().string(containsString(AUTHOR.getFirstName())))
-            .andExpect(content().string(containsString(AUTHOR.getLastName())))
-            .andExpect(content().string(containsString(GENRE.getName())))
-            .andExpect(content().string(containsString(ANOTHER_TITLE)))
+            .andExpect(content().string(containsString("Some error occurred. Please, try once more")))
         ;
     }
 

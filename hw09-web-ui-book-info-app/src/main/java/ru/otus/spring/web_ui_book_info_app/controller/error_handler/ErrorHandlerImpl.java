@@ -1,7 +1,6 @@
-package ru.otus.spring.web_ui_book_info_app.controller;
+package ru.otus.spring.web_ui_book_info_app.controller.error_handler;
 
 import org.springframework.stereotype.Component;
-import org.springframework.stereotype.Service;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.ObjectError;
 import ru.otus.spring.web_ui_book_info_app.infrastructure.AppLogger;
@@ -13,8 +12,8 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Component
-public class ErrorHandler {
-    private static final AppLogger logger = AppLoggerFactory.logger(ErrorHandler.class);
+public class ErrorHandlerImpl implements ErrorHandler {
+    private static final AppLogger logger = AppLoggerFactory.logger(ErrorHandlerImpl.class);
 
     public Optional<String> handle(BindingResult bindingResult, @NotNull String template) {
         if (bindingResult.hasErrors()) {

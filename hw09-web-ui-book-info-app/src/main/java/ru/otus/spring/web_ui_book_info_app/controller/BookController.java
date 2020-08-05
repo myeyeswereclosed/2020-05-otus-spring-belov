@@ -7,6 +7,7 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import ru.otus.spring.web_ui_book_info_app.controller.error_handler.ErrorHandler;
 import ru.otus.spring.web_ui_book_info_app.domain.Book;
 import ru.otus.spring.web_ui_book_info_app.dto.NotFoundEntity;
 import ru.otus.spring.web_ui_book_info_app.service.book.BookService;
@@ -21,6 +22,28 @@ public class BookController {
 
     private final BookService service;
     private final ErrorHandler errorHandler;
+
+    @GetMapping("/")
+    public String list(Model model) {
+        var result = service.getAll();
+
+        return
+            errorHandler
+                .handle(result, ERROR_TEMPLATE)
+                .orElse(
+                    result
+                        .value()
+                        .map(
+                            books -> {
+                                model.addAttribute("books", books);
+
+                                return "book/list";
+                            }
+                        )
+                        .orElse("book/list")
+                )
+            ;
+    }
 
     @GetMapping("/addBook")
     public String add(Model model) {
