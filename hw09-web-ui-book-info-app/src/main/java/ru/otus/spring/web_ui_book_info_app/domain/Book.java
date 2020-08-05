@@ -3,11 +3,8 @@ package ru.otus.spring.web_ui_book_info_app.domain;
 import lombok.*;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
-import ru.otus.spring.web_ui_book_info_app.dto.BookInfo;
 
-import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 
@@ -30,10 +27,6 @@ public class Book {
     public Book(String id, String title) {
         this(title);
         this.id = id;
-    }
-
-    public BookInfo toInfo() {
-        return new BookInfo(this, Collections.emptyList());
     }
 
     public boolean isWrittenBy(Author author) {

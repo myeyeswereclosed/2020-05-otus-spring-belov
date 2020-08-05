@@ -10,7 +10,6 @@ import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import ru.otus.spring.web_ui_book_info_app.domain.Book;
 import ru.otus.spring.web_ui_book_info_app.service.book.BookService;
-import ru.otus.spring.web_ui_book_info_app.service.book.info.get.GetBookInfoService;
 import ru.otus.spring.web_ui_book_info_app.service.result.Executed;
 
 import static org.hamcrest.Matchers.containsString;

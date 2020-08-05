@@ -91,7 +91,7 @@ public class BookInfoController {
         BindingResult bindingResult,
         Model model
     ) {
-        return bookInfoOperation(bindingResult, addInfoService.addBookAuthor(bookId, author), model, bookId);
+        return bookInfoOperation(bindingResult, addInfoService.addBookAuthor(bookId, author), model, bookId, HOME);
     }
 
     @GetMapping("/addBookGenre")
@@ -110,7 +110,7 @@ public class BookInfoController {
         BindingResult bindingResult,
         Model model
     ) {
-        return bookInfoOperation(bindingResult, addInfoService.addBookGenre(bookId, genre), model, bookId);
+        return bookInfoOperation(bindingResult, addInfoService.addBookGenre(bookId, genre), model, bookId, HOME);
     }
 
     @GetMapping("/addComment")
@@ -129,16 +129,22 @@ public class BookInfoController {
         BindingResult bindingResult,
         Model model
     ) {
-        System.out.println("Comment is " + comment);
-
-        return bookInfoOperation(bindingResult, addInfoService.addComment(bookId, comment), model, bookId);
+        return
+            bookInfoOperation(
+                bindingResult,
+                addInfoService.addComment(bookId, comment),
+                model,
+                bookId,
+                "redirect:/info?id=" + bookId
+            );
     }
 
     private<T> String bookInfoOperation(
         BindingResult bindingResult,
         ServiceResult<T> serviceResult,
         Model model,
-        String id
+        String id,
+        String onSuccessRedirectTo
     ) {
         return
             errorHandler
@@ -150,7 +156,7 @@ public class BookInfoController {
                             .orElse(
                                 serviceResult
                                     .value()
-                                    .map(operationExecuted -> HOME)
+                                    .map(operationExecuted -> onSuccessRedirectTo)
                                     .orElseGet(
                                         () -> {
                                             makeModel(model, id);

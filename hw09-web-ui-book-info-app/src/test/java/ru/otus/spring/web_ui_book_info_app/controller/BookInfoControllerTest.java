@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
 import ru.otus.spring.web_ui_book_info_app.domain.Author;
@@ -24,9 +25,10 @@ import java.util.List;
 import static org.junit.Assert.fail;
 import static org.mockito.BDDMockito.given;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.hamcrest.Matchers.containsString;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
 
 @DisplayName("Контроллер сводной информации о книгах должен ")
 @SpringBootTest
@@ -135,6 +137,122 @@ public class BookInfoControllerTest {
             .andExpect(content().string(containsString(AUTHOR.getLastName())))
             .andExpect(content().string(containsString(GENRE.getName())))
             .andExpect(content().string(containsString(ANOTHER_TITLE)))
+        ;
+    }
+
+    @DisplayName("добавлять автора книги, если она сохранена")
+    @Test
+    public void addBookAuthor() throws Exception {
+        var newAuthor = new Author("Another", "One");
+
+        given(addBookInfoService.addBookAuthor(BOOK_ID_STUB, newAuthor)).willReturn(new Executed<>(BOOK));
+
+        mvc
+            .perform(
+                post("/addBookAuthor/" + BOOK_ID_STUB)
+                    .contentType(MediaType.APPLICATION_FORM_URLENCODED)
+                    .param("firstName", newAuthor.getFirstName())
+                    .param("lastName", newAuthor.getLastName())
+            )
+            .andExpect(status().is3xxRedirection())
+            .andExpect(redirectedUrl("/"))
+            .andExpect(header().string("Location", "/"))
+        ;
+    }
+
+    @DisplayName("добавлять жанр книги, если она сохранена")
+    @Test
+    public void addBookGenre() throws Exception {
+        var newGenre = new Genre("drama");
+
+        given(addBookInfoService.addBookGenre(BOOK_ID_STUB, newGenre)).willReturn(new Executed<>(BOOK));
+
+        mvc
+            .perform(
+                post("/addBookGenre/" + BOOK_ID_STUB)
+                    .contentType(MediaType.APPLICATION_FORM_URLENCODED)
+                    .param("name", newGenre.getName())
+            )
+            .andExpect(status().is3xxRedirection())
+            .andExpect(redirectedUrl("/"))
+            .andExpect(header().string("Location", "/"))
+        ;
+    }
+
+    @DisplayName("отдавать страницу с информацией, что книга не найдена, при попытке добавить автора несохраненной книги")
+    @Test
+    public void addAuthorOfNonStoredBook() throws Exception {
+        var newAuthor = new Author("Another", "One");
+
+        given(addBookInfoService.addBookAuthor(BOOK_ID_STUB, newAuthor)).willReturn(Executed.empty());
+
+        mvc
+            .perform(
+                post("/addBookAuthor/" + BOOK_ID_STUB)
+                    .contentType(MediaType.APPLICATION_FORM_URLENCODED)
+                    .param("firstName", newAuthor.getFirstName())
+                    .param("lastName", newAuthor.getLastName())
+            )
+            .andExpect(status().isOk())
+            .andExpect(content().string(containsString("Book with id = " + BOOK_ID_STUB + " not found")))
+        ;
+    }
+
+    @DisplayName("отдавать страницу с информацией, что книга не найдена, при попытке добавить жанр несохраненной книги")
+    @Test
+    public void addGenreOfNonStoredBook() throws Exception {
+        var newGenre = new Genre("drama");
+
+        given(addBookInfoService.addBookGenre(BOOK_ID_STUB, newGenre)).willReturn(Executed.empty());
+
+        mvc
+            .perform(
+                post("/addBookGenre/" + BOOK_ID_STUB)
+                    .contentType(MediaType.APPLICATION_FORM_URLENCODED)
+                    .param("name", newGenre.getName())
+            )
+            .andExpect(status().isOk())
+            .andExpect(content().string(containsString("Book with id = " + BOOK_ID_STUB + " not found")))
+        ;
+    }
+
+    @DisplayName("добавлять комментарий к книге, если она сохранена")
+    @Test
+    public void addComment() throws Exception {
+        var comment = new Comment("Super book!");
+
+        given(addBookInfoService.addComment(BOOK_ID_STUB, comment)).willReturn(new Executed<>(comment));
+
+        mvc
+            .perform(
+                post("/addComment/" + BOOK_ID_STUB)
+                    .contentType(MediaType.APPLICATION_FORM_URLENCODED)
+                    .param("text", comment.getText())
+            )
+            .andExpect(status().is3xxRedirection())
+            .andExpect(redirectedUrl("/info?id=" + BOOK_ID_STUB))
+            .andExpect(header().string("Location", "/info?id=" + BOOK_ID_STUB))
+        ;
+    }
+
+    @DisplayName(
+        "отдавать страницу с информацией, что книга не найдена," +
+        " при попытке добавить комментарий к несохраненной книге"
+    )
+    @Test
+    public void addCommentToNonStoredBook() throws Exception {
+        var comment = new Comment("Super book!");
+
+        given(addBookInfoService.addComment(BOOK_ID_STUB, comment)).willReturn(Executed.empty());
+
+        mvc
+            .perform(
+                post("/addComment/" + BOOK_ID_STUB)
+                    .contentType(MediaType.APPLICATION_FORM_URLENCODED)
+                    .param("text", comment.getText())
+            )
+            .andExpect(status().isOk())
+            .andExpect(content().string(containsString("Book with id = " + BOOK_ID_STUB + " not found")))
         ;
     }
 }
