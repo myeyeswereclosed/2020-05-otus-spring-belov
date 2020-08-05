@@ -5,6 +5,8 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
+import ru.otus.spring.web_ui_book_info_app.controller.error_handler.ErrorHandler;
+import ru.otus.spring.web_ui_book_info_app.controller.error_handler.ErrorHandlerImpl;
 import ru.otus.spring.web_ui_book_info_app.domain.Author;
 import ru.otus.spring.web_ui_book_info_app.domain.Comment;
 import ru.otus.spring.web_ui_book_info_app.domain.Genre;
@@ -16,7 +18,6 @@ import ru.otus.spring.web_ui_book_info_app.service.result.ServiceResult;
 @RequiredArgsConstructor
 @Controller
 public class BookInfoController {
-    private final static String LIST_TEMPLATE = "book_info/info_list";
     private final static String BOOK_TEMPLATE = "book_info/info";
 
     private final static String NOT_FOUND_TEMPLATE = "not_found";
@@ -27,26 +28,6 @@ public class BookInfoController {
     private final GetBookInfoService getInfoService;
     private final AddBookInfoService addInfoService;
     private final ErrorHandler errorHandler;
-
-    @GetMapping("/")
-    public String bookInfoList(Model model) {
-        var result = getInfoService.getAll();
-
-        return
-            errorHandler
-                .handle(result, ERROR_TEMPLATE)
-                .orElse(
-                    result
-                        .value()
-                        .map(bookInfoList -> {
-                            model.addAttribute("bookInfoList", bookInfoList);
-
-                            return LIST_TEMPLATE;
-                        })
-                        .orElse(LIST_TEMPLATE)
-                )
-        ;
-    }
 
     @GetMapping("/info")
     public String bookInfo(@RequestParam("id") String id, Model model) {

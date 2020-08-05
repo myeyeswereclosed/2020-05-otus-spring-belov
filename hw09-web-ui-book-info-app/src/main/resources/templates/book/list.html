@@ -13,7 +13,7 @@
             </div>
             <div class="col-lg">
                 <div class="float-right">
-                    <a class="btn btn-primary btn-success add" th:href="@{/addBook}" href="../book/add.html">Add book</a>
+                    <a class="btn btn-primary btn-success add" th:href="@{/addBook}" href="add.html">Add book</a>
                 </div>
             </div>
         </div>
@@ -32,29 +32,29 @@
                 </tr>
                 </thead>
                 <tbody>
-                <tr th:each="bookInfo : ${bookInfoList}">
-                    <td th:text="${bookInfo.book.id}">1</td>
-                    <td th:text="${bookInfo.book.title}">Stub Book</td>
+                <tr th:each="book : ${books}">
+                    <td th:text="${book.id}">1</td>
+                    <td th:text="${book.title}">Stub Book</td>
                     <td>
-                        <ul th:each="author : ${bookInfo.book.authors}">
+                        <ul th:each="author : ${book.authors}">
                             <li th:text="${author.fullName()}"></li>
                         </ul>
-                        <a class="btn btn-link btn-sm" th:href="@{/addBookAuthor(bookId=${bookInfo.book.id})}">Add</a>
+                        <a class="btn btn-link btn-sm" th:href="@{/addBookAuthor(bookId=${book.id})}">Add</a>
                     </td>
                     <td>
-                        <ul th:each="genre : ${bookInfo.book.genres}">
+                        <ul th:each="genre : ${book.genres}">
                             <li th:text="${genre.getName()}"></li>
                         </ul>
-                        <a class="btn btn-link btn-sm" th:href="@{/addBookGenre(bookId=${bookInfo.book.id})}">Add</a>
+                        <a class="btn btn-link btn-sm" th:href="@{/addBookGenre(bookId=${book.id})}">Add</a>
                     </td>
                     <td>
-                        <a class="btn btn-primary btn-info btn-sm" th:href="@{/info(id=${bookInfo.book.id})}">Details</a>
+                        <a class="btn btn-primary btn-info btn-sm" th:href="@{/info(id=${book.id})}">Details</a>
                     </td>
                     <td>
-                        <a class="btn btn-primary btn-secondary btn-sm" th:href="@{/editBook(id=${bookInfo.book.id})}" href="../book/edit.html">Edit</a>
+                        <a class="btn btn-primary btn-secondary btn-sm" th:href="@{/editBook(id=${book.id})}" href="edit.html">Edit</a>
                     </td>
                     <td>
-                        <a th:href="@{/removeBook(id=${bookInfo.book.id})}" class="btn btn-danger btn-sm">Remove</a>
+                        <a th:href="@{/removeBook(id=${book.id})}" class="btn btn-danger btn-sm">Remove</a>
                     </td>
                 </tr>
                 </tbody>
