@@ -1,5 +1,7 @@
-package ru.otus.spring.hw10_rest_book_info_app.controller.rest;
+package ru.otus.spring.rest_book_info_app.controller.rest;
 
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.ObjectError;
@@ -9,6 +11,7 @@ import ru.otus.spring.web_ui_book_info_app.service.result.ServiceResult;
 
 import javax.validation.constraints.NotNull;
 import java.util.Optional;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 @Component
@@ -32,11 +35,22 @@ public class ResultHandler {
         return Optional.empty();
     }
 
-    public<T> T handle(ServiceResult<T> serviceResult, T onFailure, T onEmpty) {
+    public<T,R> ResponseEntity<R> handle(
+        ServiceResult<T> serviceResult,
+        Function<T, R> onSuccess,
+        ResponseEntity<R> onEmpty,
+        ResponseEntity<R> onFailure
+    ) {
         return
             !serviceResult.isOk()
                 ? onFailure
-                : serviceResult.value().orElse(onEmpty)
+                : serviceResult
+                    .value()
+                    .map(result -> {
+                        System.out.println("OLOLO " + result);
+                        return new ResponseEntity<>(onSuccess.apply(result), HttpStatus.OK);
+                    })
+                    .orElse(onEmpty)
             ;
     }
 }
