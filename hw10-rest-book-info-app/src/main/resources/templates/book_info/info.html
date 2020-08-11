@@ -5,71 +5,153 @@
     <link rel="stylesheet" th:href="@{/webjars/bootstrap/css/bootstrap.min.css}">
     <link rel="stylesheet" th:href="@{common.css}">
     <link rel="stylesheet" th:href="@{book_info.css}">
+    <script th:src="@{/webjars/jquery/3.3.1/jquery.min.js}"></script>
+    <script th:src="@{/js/common.js}"></script>
 </head>
     <body>
         <div id="main-content" class="container common-div">
-            <div class="container">
-                <div class="row title">
-                    <div class="col-sm my-auto">
-                        <h5 class="font-weight-bold" th:text="${bookInfo.book.title}">Book title</h5>
-                    </div>
-                    <div class="col-xs action">
-                        <a
-                                class="btn btn-primary btn-secondary"
-                                th:href="@{/editBook(id=${bookInfo.book.id})}"
-                                href="../book/edit.html"
-                        >Edit</a>
-                    </div>
-                    <div class="col-xs action">
-                        <a th:href="@{/removeBook(id=${bookInfo.book.id})}" class="btn btn-danger">Remove</a>
-                    </div>
-                </div>
+            <script th:inline="javascript">
+                /*<![CDATA[*/
+                const id = /*[[${id}]]*/ 'stubId';
 
-                <div class="row">
-                    <div class="col-sm-3 my-auto">
-                        <h6 class="font-weight-bold">Author(s): </h6>
-                    </div>
-                    <div class="col-sm-3">
-                        <a class="btn btn-secondary btn-sm" th:href="@{/addBookAuthor(bookId=${bookInfo.book.id})}">Add</a>
-                    </div>
-                </div>
-                <hr class="w-100">
-                <ul th:each="author : ${bookInfo.book.authors}">
-                    <li class="list-inline-item" th:text="${author.fullName()}"></li>
-                </ul>
-                <hr class="w-100">
+                $
+                    .get("/book/" + id)
+                    .done(function (bookInfo) {
+                        $('#main-content')
+                            .append(
+                                $('<div class="container">')
+                                    .append(
+                                        $('<div class="row title">')
+                                            .append(
+                                                $('<div class="col-sm my-auto">')
+                                                    .append(
+                                                        '<h5 class="font-weight-bold">' + bookInfo.book.title + '</h5>'
+                                                    )
+                                            )
+                                            .append(
+                                                $('<div class="col-xs action">')
+                                                    .append(
+                                                        '<a ' +
+                                                            'class="btn btn-primary btn-secondary" ' +
+                                                            'href="/editBook?id=' + bookInfo.book.id + '&title=' + bookInfo.book.title + '">Edit' +
+                                                        '</a>'
+                                                    )
+                                            )
+                                            .append(
+                                                $('<div class="col-xs action">')
+                                                    .append(
+                                                        '<a ' +
+                                                        'class="btn btn-primary btn-danger" ' +
+                                                        'id="remove-book-btn" ' +
+                                                        'href="/remove/' + bookInfo.book.id + '">Remove</a>'
+                                                    )
+                                            )
+                                    )
+                                    .append(
+                                        $('<div class="row">')
+                                            .append(
+                                                $('<div class="col-sm-3 my-auto">')
+                                                    .append(
+                                                        '<h6 class="font-weight-bold">Author(s):</h6>'
+                                                    )
+                                            )
+                                            .append(
+                                                $('<div class="col-sm-3 my-auto">')
+                                                    .append(
+                                                        '<a class="btn btn-secondary btn-sm" ' +
+                                                        'href="/addBookAuthor?bookId=' + bookInfo.book.id + '">Add</a>'
+                                                    )
+                                            )
+                                            .append('<hr class="w-100">')
+                                            .append('<ul id="book-authors"></ul>')
+                                    )
+                                    .append('<hr class="w-100">')
+                                    .append(
+                                        $('<div class="row">')
+                                            .append(
+                                                $('<div class="col-sm-3 my-auto">')
+                                                    .append(
+                                                        '<h6 class="font-weight-bold">Genre(s):</h6>'
+                                                    )
+                                            )
+                                            .append(
+                                                $('<div class="col-sm-3 my-auto">')
+                                                    .append(
+                                                        '<a class="btn btn-secondary btn-sm" ' +
+                                                        'href="/addBookGenre?bookId=' + bookInfo.book.id + '">Add</a>'
+                                                    )
+                                            )
+                                            .append('<hr class="w-100">')
+                                            .append('<ul id="book-genres"></ul>')
+                                    )
+                                    .append('<hr class="w-100">')
+                                    .append(
+                                        $('<div class="row">')
+                                            .append(
+                                                $('<div class="col-sm-3 my-auto">')
+                                                    .append('<h6 class="font-weight-bold">Comment(s):</h6>')
+                                            )
+                                            .append(
+                                                $('<div class="col-sm-3 my-auto">')
+                                                    .append(
+                                                        '<a class="btn btn-secondary btn-sm" ' +
+                                                        'href="/addComment?bookId=' + bookInfo.book.id + '">Add</a>'
+                                                    )
+                                            )
+                                            .append('<hr class="w-100">')
+                                            .append('<ul id="book-comments"></ul>')
+                                    )
+                                    .append(
+                                        $('<div class="back">')
+                                            .append('<a class="btn btn-primary btn-sm" href="/">Back</a>')
+                                    )
+                            );
 
-                <div class="row">
-                    <div class="col-sm-3 my-auto">
-                        <h6 class="font-weight-bold">Genre(s): </h6>
-                    </div>
-                    <div class="col-sm-3">
-                        <a class="btn btn-secondary btn-sm" th:href="@{/addBookGenre(bookId=${bookInfo.book.id})}">Add</a>
-                    </div>
-                </div>
-                <hr class="w-100">
-                <ul th:each="genre : ${bookInfo.book.genres}">
-                    <li class="list-inline-item" th:text="${genre.getName()}"></li>
-                </ul>
-                <hr class="w-100">
+                        $('#remove-book-btn').click(
+                            function (event) {
+                                event.preventDefault();
 
-                <div class="row">
-                    <div class="col-sm-3 my-auto">
-                        <h6 class="font-weight-bold">Comment(s): </h6>
-                    </div>
-                    <div class="col-sm-3">
-                        <a class="btn btn-secondary btn-sm" th:href="@{/addComment(bookId=${bookInfo.book.id})}">Add</a>
-                    </div>
-                </div>
-                <hr class="w-100">
-                <ul th:each="comment : ${bookInfo.comments}">
-                    <li class="list-group-item" th:text="${comment.getText()}"></li>
-                </ul>
+                                $.ajax({
+                                    url: "/book/" + bookInfo.book.id,
+                                    method: "delete",
+                                    success: function() {
+                                        window.location.replace("/");
+                                    },
+                                    error: function(jqXHR) {
+                                        handleError(jqXHR, this.url.split("/")[2])
+                                    }
+                                })
+                            }
+                        )
 
-                <div class="back">
-                    <a class="btn btn-primary btn-sm" th:href="@{/}" href="info_list.html">Back</a>
-                </div>
-            </div>
+                        $.each(
+                            bookInfo.book.authors, function (i, author) {
+                                $('#book-authors')
+                                    .append('<li class="list-inline-item">' + author.firstName + ' ' + author.lastName + '</li>')
+                            }
+                        )
+
+                        $.each(
+                            bookInfo.book.genres, function (i, genre) {
+                                $('#book-genres')
+                                    .append('<li class="list-inline-item">' + genre.name + '</li>')
+                            }
+                        )
+
+                        $.each(
+                            bookInfo.comments, function (i, comment) {
+                                $('#book-comments')
+                                    .append('<li class="list-group-item">' + comment + '</li></br>')
+                            }
+                        )
+                    })
+                .fail(
+                    function (jqXHR) {
+                        handleError(jqXHR, id);
+                    }
+                )
+                /*]]>*/
+            </script>
         </div>
     </body>
 </html>

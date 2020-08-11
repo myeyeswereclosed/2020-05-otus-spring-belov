@@ -5,6 +5,7 @@
     <link rel="stylesheet" th:href="@{/webjars/bootstrap/css/bootstrap.min.css}">
     <link rel="stylesheet" th:href="@{common.css}">
     <script th:src="@{/webjars/jquery/3.3.1/jquery.min.js}"></script>
+    <script th:src="@{/js/common.js}"></script>
 </head>
 <body>
     <div id="main-content" class="container common-div">
@@ -66,20 +67,36 @@
                                                 .append(
                                                     $('<td>')
                                                         .append(
-                                                            '<a class="btn btn-primary btn-secondary btn-sm" href="/editBook?bookId=' +
-                                                            book.id +
+                                                            '<a class="btn btn-primary btn-secondary btn-sm" href="/editBook?id=' +
+                                                            book.id + "&title=" + book.title +
                                                             '">Edit</a>'
                                                         )
                                                 )
                                                 .append(
                                                     $('<td>')
                                                         .append(
-                                                            '<a class="btn btn-primary btn-danger btn-sm" href="/removeBook?bookId=' +
-                                                            book.id +
-                                                            '">Remove</a>'
+                                                            '<a ' +
+                                                            'class="btn btn-primary btn-danger btn-sm remove-book-btn" href="/book/' + book.id + '">Remove</a>'
                                                         )
                                                 )
                                         );
+
+                                    $(".remove-book-btn").click(
+                                        function (event) {
+                                            event.preventDefault();
+
+                                            $.ajax({
+                                                url: $(this).attr("href"),
+                                                method: "delete",
+                                                success: function() {
+                                                    window.location.replace("/");
+                                                },
+                                                error: function(jqXHR) {
+                                                    handleError(jqXHR, this.url.split("/")[2]);
+                                                }
+                                            })
+                                        }
+                                    )
 
                                     $.each(
                                         book.authors, function (i, author) {
@@ -97,12 +114,8 @@
 
                                 });
                             }),
-                            error: function (jqXHR, error, errorThrown) {
-                                if (jqXHR.status && jqXHR.status === 400) {
-                                    alert(jqXHR.responseText);
-                                } else {
-                                    alert("Something went wrong");
-                                }
+                            error: function() {
+                                error();
                             }
                         })
                     })

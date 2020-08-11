@@ -4,36 +4,70 @@
     <title>Add Book Genre</title>
     <link rel="stylesheet" th:href="@{/webjars/bootstrap/css/bootstrap.min.css}">
     <link rel="stylesheet" th:href="@{common.css}">
+    <script th:src="@{/webjars/jquery/3.3.1/jquery.min.js}"></script>
+    <script th:src="@{/js/common.js}"></script>
 </head>
 <body>
-<div class="container">
-    <div class="row border round common-div">
-        <div class="col-md-4">
-            <h5>New comment: </h5>
-            <!--/*@thymesVar id="genre" type="ru.otus.spring.web_ui_book_info_app.domain.Comment"*/-->
-            <form th:action="@{/addComment/{bookId}(bookId=${bookId})}" th:object="${comment}" th:method="post">
-                <div class="form-group">
-                    <input
-                            type="text"
-                            id="comment"
-                            name="comment-text"
-                            class="form-control"
-                            placeholder="text..."
-                            required
-                            th:field="*{text}"
-                    >
-                </div>
-                <div class="row">
-                    <div class="col-sm">
-                        <button class="btn btn-dark btn-sm" type="submit">Add</button>
+    <div class="container" id="main-content">
+        <div class="row border round common-div">
+            <div class="col-md-4">
+                <h5>New comment: </h5>
+                <!--/*@thymesVar id="genre" type="ru.otus.spring.web_ui_book_info_app.domain.Comment"*/-->
+                <form
+                    th:action="@{/book/{bookId}/comment(bookId=${bookId})}"
+                    th:object="${comment}"
+                    th:method="post"
+                    id="add-comment-form"
+                >
+                    <div class="form-group">
+                        <input
+                                type="text"
+                                id="comment"
+                                name="comment-text"
+                                class="form-control"
+                                placeholder="text..."
+                                required
+                                th:field="*{text}"
+                        >
                     </div>
-                    <div class="col-sm">
-                        <a class="btn btn-primary btn-sm" th:href="@{/}" href="info_list.html">Back</a>
+                    <div class="row">
+                        <div class="col-sm">
+                            <button class="btn btn-dark btn-sm" type="submit" id ="add-comment-btn">Add</button>
+                        </div>
+                        <div class="col-sm">
+                            <a
+                                class="btn btn-primary btn-sm"
+                                th:href="@{/info(id=${bookId})}"
+                                href="../book_info/info"
+                            >Back</a>
+                        </div>
                     </div>
-                </div>
-            </form>
-        </div>
+                </form>
+            </div>
 
+        </div>
     </div>
-</div>
+    <script>
+        $('#add-comment-btn')
+            .click(
+                function (event) {
+                    event.preventDefault();
+
+                    const form = $('#add-comment-form');
+                    const action = form.attr("action");
+                    const bookId = action.split("/")[2];
+
+                    $.post(action, form.serialize())
+                        .done(function() {
+                            window.location.replace("/info?id=" + bookId);
+                        })
+                        .fail(
+                            function(jqXHR) {
+                                handleError(jqXHR, bookId);
+                            }
+                        )
+                }
+            )
+    </script>
 </body>
+</html>

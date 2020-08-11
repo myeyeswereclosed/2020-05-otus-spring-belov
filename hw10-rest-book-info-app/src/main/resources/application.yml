@@ -3,10 +3,5 @@ spring:
     mongodb:
       database: bookdb
       port: 27017
-  shell:
-    output:
-      errorMessage: Some error occured. Please, try once more
-      notFoundMessage: Nothing was found
-      defaultMessage: Ok
 migration:
-  changelogPackage: ru.otus.spring.web_ui_book_info_app.migration.changelog
+  changelogPackage: ru.otus.spring.rest_book_info_app.migration.changelog

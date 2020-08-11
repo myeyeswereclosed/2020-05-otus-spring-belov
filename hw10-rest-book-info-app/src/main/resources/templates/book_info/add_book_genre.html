@@ -4,36 +4,65 @@
     <title>Add Book Genre</title>
     <link rel="stylesheet" th:href="@{/webjars/bootstrap/css/bootstrap.min.css}">
     <link rel="stylesheet" th:href="@{common.css}">
+    <script th:src="@{/webjars/jquery/3.3.1/jquery.min.js}"></script>
+    <script th:src="@{/js/common.js}"></script>
 </head>
 <body>
-<div class="container">
-    <div class="row border round common-div">
-        <div class="col-md-4">
-            <h5>Add author: </h5>
-            <!--/*@thymesVar id="genre" type="ru.otus.spring.web_ui_book_info_app.domain.Genre"*/-->
-            <form th:action="@{/addBookGenre/{bookId}(bookId=${bookId})}" th:object="${genre}" th:method="post">
-                <div class="form-group">
-                    <input
-                            type="text"
-                            id="genre-name"
-                            name="genre-name"
-                            class="form-control"
-                            placeholder="genre..."
-                            required
-                            th:field="*{name}"
-                    >
-                </div>
-                <div class="row">
-                    <div class="col-sm">
-                        <button class="btn btn-dark btn-sm" type="submit">Add</button>
+    <div class="container" id="main-content">
+        <div class="row border round common-div">
+            <div class="col-md-4">
+                <h5>Add genre: </h5>
+                <!--/*@thymesVar id="genre" type="ru.otus.spring.rest_book_info_app.controller.rest.dto.GenreDto"*/-->
+                <form
+                        th:action="@{/book/{bookId}/genre(bookId=${bookId})}"
+                        th:object="${genre}"
+                        th:method="post"
+                        id="add-book-genre-form"
+                >
+                    <div class="form-group">
+                        <input
+                                type="text"
+                                id="genre-name"
+                                name="genre-name"
+                                class="form-control"
+                                placeholder="genre..."
+                                required
+                                th:field="*{name}"
+                        >
                     </div>
-                    <div class="col-sm">
-                        <a class="btn btn-primary btn-sm" th:href="@{/}" href="info_list.html">Back</a>
+                    <div class="row">
+                        <div class="col-sm">
+                            <button class="btn btn-dark btn-sm" type="submit" id="add-book-genre-btn">Add</button>
+                        </div>
+                        <div class="col-sm">
+                            <a class="btn btn-primary btn-sm" th:href="@{/}" href="book/list.html">Back</a>
+                        </div>
                     </div>
-                </div>
-            </form>
-        </div>
+                </form>
+            </div>
 
+        </div>
     </div>
-</div>
+    <script>
+        $('#add-book-genre-btn')
+            .click(
+                function (event) {
+                    event.preventDefault();
+
+                    const form = $('#add-book-genre-form');
+                    const action = form.attr("action");
+
+                    $.post(action, form.serialize())
+                        .done(function() {
+                            window.location.replace("/");
+                        })
+                        .fail(
+                            function(jqXHR) {
+                                handleError(jqXHR, action.split("/")[2]);
+                            }
+                        )
+                }
+            )
+    </script>
 </body>
+</html>

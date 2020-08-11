@@ -4,14 +4,16 @@
     <title>Add Book</title>
     <link rel="stylesheet" th:href="@{/webjars/bootstrap/css/bootstrap.min.css}">
     <link rel="stylesheet" th:href="@{common.css}">
+    <script th:src="@{/webjars/jquery/3.3.1/jquery.min.js}"></script>
+    <script th:src="@{/js/common.js}"></script>
 </head>
 <body>
-    <div class="container">
+    <div class="container" id="main-content">
         <div class="row border round common-div">
             <div class="col-md-4">
                 <h5>Add book: </h5>
-                <!--/*@thymesVar id="book" type="ru.otus.spring.web_ui_book_info_app.domain.Book"*/-->
-                <form th:action="@{/addBook}" th:object="${book}" th:method="post">
+                <!--/*@thymesVar id="book" type="ru.otus.spring.rest_book_info_app.controller.rest.dto.BookDto"*/-->
+                <form th:object="${book}" th:method="post" id="add-book-form">
                     <div class="form-group">
                         <input
                                 type="text"
@@ -25,7 +27,7 @@
                     </div>
                     <div class="row">
                         <div class="col-sm">
-                            <button class="btn btn-dark btn-sm" type="submit">Add</button>
+                            <button class="btn btn-dark btn-sm" type="submit" id="add-book-btn">Add</button>
                         </div>
                         <div class="col-sm">
                             <a class="btn btn-primary btn-sm" th:href="@{/}" href="../book_info/info_list.html">Back</a>
@@ -36,5 +38,22 @@
 
         </div>
     </div>
+    <script>
+        $('#add-book-btn')
+            .click(
+                function (event) {
+                    event.preventDefault();
+
+                    $
+                        .post('/book', $('#add-book-form').serialize())
+                        .done(function() {
+                            window.location.replace("/");
+                        })
+                        .fail(function() {
+                            error();
+                        })
+                }
+            )
+    </script>
 </body>
 </html>
