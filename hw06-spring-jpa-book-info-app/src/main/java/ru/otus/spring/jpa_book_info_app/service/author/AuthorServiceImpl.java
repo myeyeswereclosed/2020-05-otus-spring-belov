@@ -10,7 +10,6 @@ import ru.otus.spring.jpa_book_info_app.service.result.Executed;
 import ru.otus.spring.jpa_book_info_app.service.result.Failed;
 import ru.otus.spring.jpa_book_info_app.service.result.ServiceResult;
 
-
 @Service
 public class AuthorServiceImpl implements AuthorService {
     private static final AppLogger logger = AppLoggerFactory.logger(AuthorServiceImpl.class);

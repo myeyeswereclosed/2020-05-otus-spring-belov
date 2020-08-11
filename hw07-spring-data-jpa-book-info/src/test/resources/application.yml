@@ -1,0 +1,21 @@
+spring:
+  datasource:
+    platform: h2
+    url: jdbc:h2:mem:testdb
+    username: sa
+    password:
+    initialization-mode: always
+    data: data.sql
+  jpa:
+    show-sql: true
+    generate-ddl: false
+    hibernate:
+      format-sql: true
+      ddl-auto: none
+  shell:
+    interactive:
+      enabled: false
+    output:
+      errorMessage: Some error occured. Please, try once more
+      notFoundMessage: Nothing was found
+      defaultMessage: Ok

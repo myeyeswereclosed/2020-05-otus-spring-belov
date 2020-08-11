@@ -1,32 +1,34 @@
-package ru.otus.spring.jpa_book_info_app.service.book;
+package ru.otus.spring.spring_data_jpa_book_info_app.service.book;
 
+import org.apache.commons.lang3.tuple.Pair;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import ru.otus.spring.jpa_book_info_app.domain.Author;
-import ru.otus.spring.jpa_book_info_app.domain.Book;
-import ru.otus.spring.jpa_book_info_app.domain.Comment;
-import ru.otus.spring.jpa_book_info_app.domain.Genre;
-import ru.otus.spring.jpa_book_info_app.dto.BookInfo;
-import ru.otus.spring.jpa_book_info_app.infrastructure.AppLogger;
-import ru.otus.spring.jpa_book_info_app.infrastructure.AppLoggerFactory;
-import ru.otus.spring.jpa_book_info_app.repository.author.AuthorRepository;
-import ru.otus.spring.jpa_book_info_app.repository.book.BookRepository;
-import ru.otus.spring.jpa_book_info_app.repository.comment.CommentRepository;
-import ru.otus.spring.jpa_book_info_app.repository.genre.GenreRepository;
-import ru.otus.spring.jpa_book_info_app.service.result.Executed;
-import ru.otus.spring.jpa_book_info_app.service.result.Failed;
-import ru.otus.spring.jpa_book_info_app.service.result.ServiceResult;
+import ru.otus.spring.spring_data_jpa_book_info_app.domain.Author;
+import ru.otus.spring.spring_data_jpa_book_info_app.domain.Book;
+import ru.otus.spring.spring_data_jpa_book_info_app.domain.Comment;
+import ru.otus.spring.spring_data_jpa_book_info_app.domain.Genre;
+import ru.otus.spring.spring_data_jpa_book_info_app.dto.BookInfo;
+import ru.otus.spring.spring_data_jpa_book_info_app.infrastructure.AppLogger;
+import ru.otus.spring.spring_data_jpa_book_info_app.infrastructure.AppLoggerFactory;
+import ru.otus.spring.spring_data_jpa_book_info_app.repository.author.AuthorRepository;
+import ru.otus.spring.spring_data_jpa_book_info_app.repository.book.BookRepository;
+import ru.otus.spring.spring_data_jpa_book_info_app.repository.comment.CommentRepository;
+import ru.otus.spring.spring_data_jpa_book_info_app.repository.genre.GenreRepository;
+import ru.otus.spring.spring_data_jpa_book_info_app.service.result.Executed;
+import ru.otus.spring.spring_data_jpa_book_info_app.service.result.Failed;
+import ru.otus.spring.spring_data_jpa_book_info_app.service.result.ServiceResult;
 
 import javax.validation.constraints.NotNull;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import static java.util.Collections.emptySet;
 import static java.util.Comparator.comparingLong;
-import static java.util.stream.Collectors.toList;
+import static java.util.stream.Collectors.*;
 
 @Service
 public class BookInfoServiceImpl implements BookInfoService {
@@ -74,7 +76,7 @@ public class BookInfoServiceImpl implements BookInfoService {
 
             return
                 authorRepository
-                    .findByFirstAndLastName(author.getFirstName(), author.getLastName())
+                    .findByFirstNameAndLastName(author.getFirstName(), author.getLastName())
                     .map(
                         authorFound ->
                             updateBookAuthor(book, authorFound, "Added existing author {} as author of '{}'")
@@ -89,7 +91,7 @@ public class BookInfoServiceImpl implements BookInfoService {
     }
 
     private<T> ServiceResult<Book> addExistingInfo(Book book, String logMessage, String info) {
-        logger.warn(logMessage, book.toString(), info);
+        logger.warn(logMessage, book, info);
 
         return new Executed<>(book);
     }
@@ -179,7 +181,7 @@ public class BookInfoServiceImpl implements BookInfoService {
     }
 
     @Override
-    @Transactional(readOnly = true)
+    @Transactional
     public ServiceResult<BookInfo> get(long bookId) {
         try {
             return
@@ -192,7 +194,7 @@ public class BookInfoServiceImpl implements BookInfoService {
                             return new Executed<>(
                                 new BookInfo(
                                     book,
-                                    new HashSet<>(commentRepository.findByBook(bookId))
+                                    new HashSet<>(commentRepository.findAllByBook(book))
                                 )
                             );
                         })
@@ -206,24 +208,29 @@ public class BookInfoServiceImpl implements BookInfoService {
     }
 
     @Override
-    @Transactional(readOnly = true)
     public ServiceResult<List<BookInfo>> getAll() {
         try {
             var booksStored = bookRepository.findAll();
+            var bookIdsMappedToAuthors = bookIdsMappedToAuthors();
+            var bookIdsMappedToGenres = bookIdsMappedToGenres();
+            var comments = comments();
 
             logger.getLogger().info("Found {} books", booksStored.size());
-
-            var comments = comments();
 
             var books =
                 booksStored
                     .stream()
                     .map(
-                        book ->
-                            new BookInfo(
-                                book,
-                                comments.getOrDefault(book.getId(), emptySet())
-                            )
+                        book -> {
+                            book.setAuthors(findOrEmpty(bookIdsMappedToAuthors, book.getId()));
+                            book.setGenres(findOrEmpty(bookIdsMappedToGenres, book.getId()));
+
+                            return
+                                new BookInfo(
+                                    book,
+                                    comments.getOrDefault(book.getId(), emptySet())
+                                );
+                        }
                     )
                     .sorted(comparingLong(BookInfo::bookId))
                     .collect(toList())
@@ -237,10 +244,38 @@ public class BookInfoServiceImpl implements BookInfoService {
         }
     }
 
+    private Map<Long, Set<Author>> bookIdsMappedToAuthors() {
+        return
+            toMap(
+                authorRepository.findAllWithBooks(),
+                bookAuthor ->
+                    Pair.of(
+                        bookAuthor.getBookId(),
+                        new Author(
+                            bookAuthor.getAuthorId(),
+                            bookAuthor.getAuthorFirstName(),
+                            bookAuthor.getAuthorLastName()
+                        )
+                    )
+            );
+    }
+
+    private Map<Long, Set<Genre>> bookIdsMappedToGenres() {
+        return
+            toMap(
+                genreRepository.findAllWithBooks(),
+                bookGenre ->
+                    Pair.of(
+                        bookGenre.getBookId(),
+                        new Genre(bookGenre.getGenreId(), bookGenre.getGenreName())
+                    )
+            );
+    }
+
     private Map<Long, Set<Comment>> comments() {
         return
             commentRepository
-                .findAll()
+                .all()
                 .parallelStream()
                 .collect(
                     Collectors.groupingBy(
@@ -249,5 +284,22 @@ public class BookInfoServiceImpl implements BookInfoService {
                     )
                 )
             ;
+    }
+
+    private<T, U> Map<Long, Set<U>> toMap(List<T> values, Function<T, Pair<Long, U>> mapper) {
+        return
+            values
+                .parallelStream()
+                .map(mapper)
+                .collect(
+                    groupingBy(
+                        Pair::getLeft,
+                        mapping(Pair::getRight, toSet())
+                    )
+                );
+    }
+
+    private<T> Set<T> findOrEmpty(Map<Long, Set<T>> valuesMap, Long key) {
+        return valuesMap.getOrDefault(key, emptySet());
     }
 }

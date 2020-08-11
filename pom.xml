@@ -15,5 +15,6 @@
         <module>hw04-spring-shell-testing-app</module>
         <module>hw05-book-info-app</module>
         <module>hw06-spring-jpa-book-info-app</module>
+        <module>hw07-spring-data-jpa-book-info</module>
     </modules>
 </project>

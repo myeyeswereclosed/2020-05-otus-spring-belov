@@ -1,41 +1,36 @@
-package ru.otus.spring.jpa_book_info_app.service.shell;
+package ru.otus.spring.spring_data_jpa_book_info_app.service.shell;
 
 import org.springframework.shell.standard.ShellComponent;
 import org.springframework.shell.standard.ShellMethod;
-import ru.otus.spring.jpa_book_info_app.config.ShellOutputConfig;
-import ru.otus.spring.jpa_book_info_app.domain.Author;
-import ru.otus.spring.jpa_book_info_app.domain.Book;
-import ru.otus.spring.jpa_book_info_app.domain.Comment;
-import ru.otus.spring.jpa_book_info_app.domain.Genre;
-import ru.otus.spring.jpa_book_info_app.dto.BookInfo;
-import ru.otus.spring.jpa_book_info_app.service.book.BookInfoService;
-import ru.otus.spring.jpa_book_info_app.service.book.BookService;
-import ru.otus.spring.jpa_book_info_app.service.shell.formatter.OutputFormatter;
+import ru.otus.spring.spring_data_jpa_book_info_app.config.ShellOutputConfig;
+import ru.otus.spring.spring_data_jpa_book_info_app.domain.Author;
+import ru.otus.spring.spring_data_jpa_book_info_app.domain.Book;
+import ru.otus.spring.spring_data_jpa_book_info_app.domain.Comment;
+import ru.otus.spring.spring_data_jpa_book_info_app.domain.Genre;
+import ru.otus.spring.spring_data_jpa_book_info_app.service.book.BookInfoService;
+import ru.otus.spring.spring_data_jpa_book_info_app.service.book.BookService;
+import ru.otus.spring.spring_data_jpa_book_info_app.service.shell.formatter.OutputFormatter;
+import ru.otus.spring.spring_data_jpa_book_info_app.service.shell.formatter.book.BookOperationFormatter;
 
 import javax.validation.constraints.Size;
-import java.util.List;
 
 @ShellComponent
 public class BookCommandsExecutor extends BaseCommandExecutor {
     private final BookService bookService;
     private final BookInfoService bookInfoService;
-    private final OutputFormatter<BookInfo> bookOutputFormatter;
-    private final OutputFormatter<List<BookInfo>> booksOutputFormatter;
+    private final BookOperationFormatter formatter;
     private final OutputFormatter<Comment> commentOutputFormatter;
 
     public BookCommandsExecutor(
         BookService service,
         BookInfoService bookInfoService,
         ShellOutputConfig config,
-        OutputFormatter<BookInfo> bookOutputFormatter,
-        OutputFormatter<List<BookInfo>> booksOutputFormatter,
-        OutputFormatter<Comment> commentOutputFormatter
+        BookOperationFormatter formatter, OutputFormatter<Comment> commentOutputFormatter
     ) {
         super(config);
         this.bookService = service;
         this.bookInfoService = bookInfoService;
-        this.bookOutputFormatter = bookOutputFormatter;
-        this.booksOutputFormatter = booksOutputFormatter;
+        this.formatter = formatter;
         this.commentOutputFormatter = commentOutputFormatter;
     }
 
@@ -44,23 +39,27 @@ public class BookCommandsExecutor extends BaseCommandExecutor {
         return
             output(
                 bookService.addBook(new Book(title)),
-                book -> bookOutputFormatter.format(book.toInfo())
+                book -> formatter.info(book.toInfo())
             );
     }
 
     @ShellMethod(value = "Rename book", key = {"rename_book", "rb"})
     public String rename(long id, String title) {
-        return output(bookService.rename(new Book(id, title)), "Book renamed");
+        return
+            output(
+                bookService.rename(new Book(id, title)),
+                book -> formatter.editInfo(book.toInfo())
+            );
     }
 
     @ShellMethod(value = "Delete book", key = {"delete_book", "db"})
     public String delete(long id) {
-        return output(bookService.remove(id), "Book deleted");
+        return output(bookService.remove(id), formatter::removeInfo);
     }
 
     @ShellMethod(value = "Get all books", key = {"all_books", "all"})
     public String getAll() {
-        return output(bookInfoService.getAll(), booksOutputFormatter::format);
+        return output(bookInfoService.getAll(), formatter::listInfo);
     }
 
     @ShellMethod(value = "Add book author", key = {"add_author", "aa"})
@@ -72,7 +71,7 @@ public class BookCommandsExecutor extends BaseCommandExecutor {
         return
             output(
                 bookInfoService.addBookAuthor(bookId, new Author(firstName, lastName)),
-                book -> bookOutputFormatter.format(book.toInfo())
+                book -> formatter.info(book.toInfo())
             );
     }
 
@@ -81,7 +80,7 @@ public class BookCommandsExecutor extends BaseCommandExecutor {
         return
             output(
                 bookInfoService.addBookGenre(bookId, new Genre(name)),
-                book -> bookOutputFormatter.format(book.toInfo())
+                book -> formatter.info(book.toInfo())
             );
     }
 
@@ -96,10 +95,6 @@ public class BookCommandsExecutor extends BaseCommandExecutor {
 
     @ShellMethod(value = "Book info", key = {"book_info", "bi"})
     public String bookInfo(long id) {
-        return
-            output(
-                bookInfoService.get(id),
-                bookOutputFormatter::format
-            );
+        return output(bookInfoService.get(id), formatter::info);
     }
 }
