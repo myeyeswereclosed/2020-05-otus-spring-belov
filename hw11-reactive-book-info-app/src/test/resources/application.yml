@@ -1,0 +1,7 @@
+spring:
+  data:
+    mongodb:
+      port: 0
+      database: test
+migration:
+  changelogPackage: ru.otus.spring.reactive_book_info_app.test_migration
