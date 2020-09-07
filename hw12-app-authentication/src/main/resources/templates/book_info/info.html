@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Book Info</title>
+    <link rel="stylesheet" th:href="@{/webjars/bootstrap/css/bootstrap.min.css}">
+    <link rel="stylesheet" th:href="@{common.css}">
+    <link rel="stylesheet" th:href="@{book_info.css}">
+    <script th:src="@{/webjars/jquery/3.3.1/jquery.min.js}"></script>
+</head>
+    <body>
+        <div id="main-content" class="container common-div">
+            <div th:include="~{fragments/header :: header(${user})}"></div>
+            <div class="container">
+                <div class="row title">
+                    <div class="col-sm my-auto">
+                        <h5 class="font-weight-bold" th:text="${bookInfo.book.title}">Book title</h5>
+                    </div>
+                    <div class="col-xs action" th:if="${!isAnonymous}">
+                        <a
+                                class="btn btn-primary btn-secondary"
+                                th:href="@{/editBook(id=${bookInfo.book.id})}"
+                                href="../book/edit.html"
+                        >Edit</a>
+                    </div>
+                    <div class="col-xs action" th:if="${!isAnonymous}">
+                        <a
+                                th:href="@{/removeBook(id=${bookInfo.book.id})}"
+                                class="btn btn-danger"
+                                id="remove-book-btn"
+                        >Remove</a>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-sm-3 my-auto">
+                        <h6 class="font-weight-bold">Author(s): </h6>
+                    </div>
+                    <div class="col-sm-3" th:if="${!isAnonymous}">
+                        <a class="btn btn-secondary btn-sm" th:href="@{/addBookAuthor(bookId=${bookInfo.book.id})}">Add</a>
+                    </div>
+                </div>
+                <hr class="w-100">
+                <ul th:each="author : ${bookInfo.book.authors}">
+                    <li class="list-inline-item" th:text="${author.fullName()}"></li>
+                </ul>
+                <hr class="w-100">
+
+                <div class="row">
+                    <div class="col-sm-3 my-auto">
+                        <h6 class="font-weight-bold">Genre(s): </h6>
+                    </div>
+                    <div class="col-sm-3" th:if="${!isAnonymous}">
+                        <a class="btn btn-secondary btn-sm" th:href="@{/addBookGenre(bookId=${bookInfo.book.id})}">Add</a>
+                    </div>
+                </div>
+                <hr class="w-100">
+                <ul th:each="genre : ${bookInfo.book.genres}">
+                    <li class="list-inline-item" th:text="${genre.getName()}"></li>
+                </ul>
+                <hr class="w-100">
+
+                <div class="row">
+                    <div class="col-sm-3 my-auto">
+                        <h6 class="font-weight-bold">Comment(s): </h6>
+                    </div>
+                    <div class="col-sm-3">
+                        <a class="btn btn-secondary btn-sm" th:href="@{/addComment(bookId=${bookInfo.book.id})}">Add</a>
+                    </div>
+                </div>
+                <hr class="w-100">
+                <ul th:each="comment : ${bookInfo.comments}">
+                    <li class="list-group-item" th:text="${comment.getText()}"></li>
+                </ul>
+
+                <div class="back">
+                    <a class="btn btn-primary btn-sm" th:href="@{/}" href="../book/list.html">Back</a>
+                </div>
+            </div>
+        </div>
+
+        <script>
+            $("#remove-book-btn").click(
+                function (event) {
+                    event.preventDefault();
+
+                    $.ajax({
+                        url: $(this).attr("href"),
+                        method: "post",
+                        success: function() {
+                            window.location.replace("/");
+                        },
+                        error: function(jqXHR) {
+                            window.location.replace("/error");
+                        }
+                    })
+                }
+            )
+        </script>
+    </body>
+</html>

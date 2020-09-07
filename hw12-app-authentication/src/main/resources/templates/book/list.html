@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Books Info</title>
+    <link rel="stylesheet" th:href="@{/webjars/bootstrap/css/bootstrap.min.css}">
+    <link rel="stylesheet" th:href="@{common.css}">
+    <script th:src="@{/webjars/jquery/3.3.1/jquery.min.js}"></script>
+</head>
+<body>
+    <div id="main-content" class="container common-div">
+    <div th:include="~{fragments/header :: header(${user})}"></div>
+    <div class="row">
+        <div class="col-lg">
+            <h3>Book Info App</h3>
+        </div>
+        <div class="col-lg">
+            <div class="float-right" th:if="${!isAnonymous}">
+                <a class="btn btn-primary btn-success add" th:href="@{/addBook}" href="add.html">Add book</a>
+            </div>
+        </div>
+    </div>
+
+        <div class="row table-responsive">
+            <table id = "book-info" class="table">
+                <thead>
+                <tr>
+                    <th>id</th>
+                    <th>Title</th>
+                    <th>Author(s)</th>
+                    <th>Genre(s)</th>
+                    <th></th>
+                    <th></th>
+                    <th></th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:each="book : ${books}">
+                    <td th:text="${book.id}">1</td>
+                    <td th:text="${book.title}">Stub Book</td>
+                    <td>
+                        <ul th:each="author : ${book.authors}">
+                            <li th:text="${author.fullName()}"></li>
+                        </ul>
+                        <div th:if="${!isAnonymous}">
+                            <a class="btn btn-link btn-sm"  th:href="@{/addBookAuthor(bookId=${book.id})}">Add</a>
+                        </div>
+                    </td>
+                    <td>
+                        <ul th:each="genre : ${book.genres}">
+                            <li th:text="${genre.getName()}"></li>
+                        </ul>
+                        <div th:if="${!isAnonymous}">
+                            <a class="btn btn-link btn-sm" th:href="@{/addBookGenre(bookId=${book.id})}">Add</a>
+                        </div>
+                    </td>
+                    <td>
+                        <a class="btn btn-primary btn-info btn-sm" th:href="@{/info(id=${book.id})}">Details</a>
+                    </td>
+                    <td>
+                        <div th:if="${!isAnonymous}">
+                            <a class="btn btn-primary btn-secondary btn-sm"
+                           th:href="@{/editBook(id=${book.id}, title=${book.title})}" href="edit.html"
+                            >Edit</a>
+                        </div>
+                    </td>
+                    <td>
+                        <div th:if="${!isAnonymous}">
+                            <a
+                                    th:href="@{/removeBook(id=${book.id})}"
+                                    class="btn btn-danger btn-sm remove-book-btn"
+                                    id="remove-book-btn"
+                            >Remove</a>
+                        </div>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <script>
+        $(".remove-book-btn").click(
+            function (event) {
+                event.preventDefault();
+
+                $.ajax({
+                    url: $(this).attr("href"),
+                    method: "post",
+                    success: function() {
+                        window.location.replace("/");
+                    },
+                    error: function(jqXHR) {
+                        window.location.replace("/error");
+                    }
+                })
+            }
+        )
+    </script>
+</body>
+</html>

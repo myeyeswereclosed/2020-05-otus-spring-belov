@@ -20,5 +20,6 @@
         <module>hw09-web-ui-book-info-app</module>
         <module>hw10-rest-book-info-app</module>
         <module>hw11-reactive-book-info-app</module>
+        <module>hw12-app-authentication</module>
     </modules>
 </project>

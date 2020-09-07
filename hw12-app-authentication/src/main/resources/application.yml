@@ -4,4 +4,4 @@ spring:
       database: bookdb
       port: 27017
 migration:
-  changelogPackage: ru.otus.spring.web_ui_book_info_app.migration.changelog
+  changelogPackage: ru.otus.spring.app_authentication.migration.changelog
