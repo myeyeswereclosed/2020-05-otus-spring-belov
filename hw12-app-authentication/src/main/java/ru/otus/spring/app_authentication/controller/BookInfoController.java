@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import ru.otus.spring.app_authentication.controller.auth_handler.AuthHandler;
 import ru.otus.spring.app_authentication.controller.auth_handler.AuthHandlerImpl;
 import ru.otus.spring.app_authentication.controller.error_handler.ErrorHandler;
 import ru.otus.spring.app_authentication.domain.Author;
@@ -32,7 +33,7 @@ public class BookInfoController {
     private final GetBookInfoService getInfoService;
     private final AddBookInfoService addInfoService;
     private final ErrorHandler errorHandler;
-    private final AuthHandlerImpl authHandler;
+    private final AuthHandler authHandler;
 
     @GetMapping("/info")
     public String bookInfo(@RequestParam("id") String id, Model model) {
