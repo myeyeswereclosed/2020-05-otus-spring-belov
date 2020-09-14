@@ -1,7 +1,6 @@
 package ru.otus.spring.app_authorization.controller.book;
 
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -102,7 +101,7 @@ public class BookController {
                 .handle(bindingResult, ERROR_TEMPLATE)
                 .orElseGet(
                     () -> {
-                        var serviceResult = service.rename(book);
+                        var serviceResult = service.update(book);
 
                         return
                             errorHandler

@@ -21,7 +21,9 @@ public class BookRepositoryCustomImpl implements BookRepositoryCustom {
             Optional.ofNullable(
                 mongoTemplate.findAndModify(
                     new Query(Criteria.where("id").is(book.getId())),
-                    new Update().set("title", book.getTitle()),
+                    new Update()
+                        .set("title", book.getTitle())
+                        .set("status", book.getStatus()),
                     Book.class
                 )
             );

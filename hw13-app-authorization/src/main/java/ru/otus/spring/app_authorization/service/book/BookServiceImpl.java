@@ -1,7 +1,6 @@
 package ru.otus.spring.app_authorization.service.book;
 
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.access.prepost.PostFilter;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.otus.spring.app_authorization.domain.Book;
@@ -38,14 +37,14 @@ public class BookServiceImpl implements BookService {
 
     @Override
     @Transactional
-    public ServiceResult<Book> rename(Book book) {
+    public ServiceResult<Book> update(Book book) {
         try {
             return
                 bookRepository
                     .update(book)
                     .map(
                         updated -> {
-                            commentRepository.update(UpdateCommentConfig.renameBook(book));
+                            commentRepository.update(UpdateCommentConfig.updateBook(book));
 
                             return new Executed<>(book);
                         }

@@ -19,10 +19,20 @@
                                 id="new-book-title"
                                 name="title"
                                 class="form-control"
-                                placeholder="title..."
+                                th:placeholder="${title}"
                                 required
-                                th:field="*{title}"
+                                th:value="${title}"
                         >
+                    </div>
+                    <div class="form-group">
+                        <select th:name="status" class="custom-select">
+                            <option
+                                    th:each="status : ${T(ru.otus.spring.app_authorization.domain.BookStatus).values()}"
+                                    th:value="${status}"
+                                    th:text="${status}"
+                                    th:field="*{status}"
+                            >Status</option>
+                        </select>
                     </div>
                     <div class="row">
                         <div class="col-sm">

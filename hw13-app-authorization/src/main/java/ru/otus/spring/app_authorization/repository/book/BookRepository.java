@@ -8,6 +8,8 @@ import java.util.List;
 
 public interface BookRepository extends MongoRepository<Book, String>, BookRepositoryCustom {
     @Override
-    @PostFilter("hasRole('MANAGER') or filterObject.status == 'INIT'")
+    @PostFilter(
+        "hasRole('MANAGER') or filterObject.status == T(ru.otus.spring.app_authorization.domain.BookStatus).RELEASED"
+    )
     List<Book> findAll();
 }

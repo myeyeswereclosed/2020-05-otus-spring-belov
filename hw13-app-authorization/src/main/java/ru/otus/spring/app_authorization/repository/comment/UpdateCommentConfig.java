@@ -20,12 +20,14 @@ public class UpdateCommentConfig {
         this.update = update;
     }
 
-    public static UpdateCommentConfig renameBook(Book book) {
+    public static UpdateCommentConfig updateBook(Book book) {
         return
             new UpdateCommentConfig(
                 "book._id",
                 book.getId(),
-                new Update().set("book.title", book.getTitle())
+                new Update()
+                    .set("book.title", book.getTitle())
+                    .set("book.status", book.getStatus())
             );
     }
 

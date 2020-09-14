@@ -8,6 +8,7 @@ import org.springframework.ui.Model;
 import ru.otus.spring.app_authorization.security.user.AppPrincipal;
 
 import java.util.Objects;
+import java.util.Optional;
 
 @Component
 public class AuthHandlerImpl implements AuthHandler {
@@ -21,6 +22,17 @@ public class AuthHandlerImpl implements AuthHandler {
                 .addAttribute("canManage", canManage(authentication))
                 .addAttribute("canComment", canComment(authentication))
         ;
+    }
+
+    @Override
+    public Optional<AppPrincipal> principal() {
+        var authentication = SecurityContextHolder.getContext().getAuthentication();
+
+        return
+            Objects.isNull(authentication)
+                ? Optional.empty()
+                : Optional.of((AppPrincipal)authentication.getPrincipal())
+            ;
     }
 
     private boolean canManage(Authentication authentication) {

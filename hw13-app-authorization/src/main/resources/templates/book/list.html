@@ -53,6 +53,9 @@
                             <a class="btn btn-link btn-sm" th:href="@{/addBookGenre(bookId=${book.id})}">Add</a>
                         </div>
                     </td>
+                    <td th:if="${canManage}">
+                        <p th:text="${book.status}">Status</p>
+                    </td>
                     <td>
                         <a class="btn btn-primary btn-info btn-sm" th:href="@{/info(id=${book.id})}">Details</a>
                     </td>

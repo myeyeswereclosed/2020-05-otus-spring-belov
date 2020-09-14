@@ -3,6 +3,9 @@ package ru.otus.spring.app_authorization.domain;
 import lombok.*;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
+import ru.otus.spring.app_authorization.security.user.AppPrincipal;
+import ru.otus.spring.app_authorization.security.user.AppUser;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -19,7 +22,7 @@ public class Book {
     private String title;
     private List<Author> authors = new ArrayList<>();
     private List<Genre> genres = new ArrayList<>();
-    private String status = "INIT";
+    private BookStatus status = BookStatus.CREATED;
 
     public Book(String title) {
         this.title = title;
