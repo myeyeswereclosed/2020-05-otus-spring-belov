@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Add Book Author</title>
+    <link rel="stylesheet" th:href="@{/webjars/bootstrap/css/bootstrap.min.css}">
+    <link rel="stylesheet" th:href="@{common.css}">
+</head>
+<body>
+<div class="container">
+    <div th:include="~{fragments/header :: header(${user})}"></div>
+    <div class="row border round common-div">
+        <div class="col-md-4">
+            <h5>Add author: </h5>
+            <!--/*@thymesVar id="author" type="ru.otus.spring.app_authorization.domain.Author"*/-->
+            <form th:action="@{/addBookAuthor/{bookId}(bookId=${bookId})}" th:object="${author}" th:method="post">
+                <div class="form-group">
+                    <input
+                            type="text"
+                            id="author-first-name"
+                            name="first-name"
+                            class="form-control"
+                            placeholder="first name..."
+                            required
+                            th:field="*{firstName}"
+                    >
+                </div>
+                <div class="form-group">
+                    <input
+                            type="text"
+                            id="author-last-name"
+                            name="last-name"
+                            class="form-control"
+                            placeholder="last name..."
+                            required
+                            th:field="*{lastName}"
+                    >
+                </div>
+                <div class="row">
+                    <div class="col-sm">
+                        <button class="btn btn-dark btn-sm" type="submit">Add</button>
+                    </div>
+                    <div class="col-sm">
+                        <a class="btn btn-primary btn-sm" th:href="@{/}" href="../book/list.html">Back</a>
+                    </div>
+                </div>
+            </form>
+        </div>
+
+    </div>
+</div>
+</body>

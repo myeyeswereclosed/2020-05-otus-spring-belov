@@ -1,0 +1,7 @@
+spring:
+  data:
+    mongodb:
+      database: bookdb
+      port: 27017
+migration:
+  changelogPackage: ru.otus.spring.app_authorization.migration.changelog

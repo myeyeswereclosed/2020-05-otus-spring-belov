@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Add Book Genre</title>
+    <link rel="stylesheet" th:href="@{/webjars/bootstrap/css/bootstrap.min.css}">
+    <link rel="stylesheet" th:href="@{common.css}">
+</head>
+<body>
+<div class="container">
+    <div th:include="~{fragments/header :: header(${user})}"></div>
+    <div class="row border round common-div">
+        <div class="col-md-4">
+            <h5>Add genre: </h5>
+            <!--/*@thymesVar id="genre" type="ru.otus.spring.app_authorization.domain.Genre"*/-->
+            <form th:action="@{/addBookGenre/{bookId}(bookId=${bookId})}" th:object="${genre}" th:method="post">
+                <div class="form-group">
+                    <input
+                            type="text"
+                            id="genre-name"
+                            name="genre-name"
+                            class="form-control"
+                            placeholder="genre..."
+                            required
+                            th:field="*{name}"
+                    >
+                </div>
+                <div class="row">
+                    <div class="col-sm">
+                        <button class="btn btn-dark btn-sm" type="submit">Add</button>
+                    </div>
+                    <div class="col-sm">
+                        <a class="btn btn-primary btn-sm" th:href="@{/}" href="../book/list.html">Back</a>
+                    </div>
+                </div>
+            </form>
+        </div>
+
+    </div>
+</div>
+</body>

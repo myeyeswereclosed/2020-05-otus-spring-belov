@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+    <head>
+        <link rel="stylesheet" th:href="@{/webjars/bootstrap/css/bootstrap.min.css}">
+        <link rel="stylesheet" th:href="@{common.css}">
+    </head>
+    <body>
+    <!--/*@thymesVar id="book" type="ru.otus.spring.app_authorization.infrastructure.security.AppPrincipal"*/-->
+        <div class="row common-div" th:fragment="header(user)">
+            <div class="row d-flex flex-row-reverse"  th:if="${isAuthenticated}">
+                <div class="col-sm-2">
+                    <a th:href="@{/logout}" th:text="Logout">Logout</a>
+                </div>
+                <div class="col-sm-2">
+                    <p th:text="${user.fullName()}">firstName LastName</p>
+                </div>
+            </div>
+            <div class="row d-flex flex-row-reverse"  th:if="${!isAuthenticated}">
+                <div class="col-sm-2">
+                    <a th:href="@{/login}" th:text="Login">Login</a>
+                    <a class="register" th:href="@{/register}" th:text="Register">Register</a>
+                </div>
+            </div>
+        </div>
+    </body>
+</html>

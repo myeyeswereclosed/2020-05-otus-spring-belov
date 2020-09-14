@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Add App user</title>
+    <link rel="stylesheet" th:href="@{/webjars/bootstrap/css/bootstrap.min.css}">
+    <link rel="stylesheet" th:href="@{common.css}">
+</head>
+<body>
+    <div class="container">
+        <div th:include="~{fragments/header :: header(${user})}"></div>
+        <div class="row border round common-div">
+            <div class="col-md-4">
+                <h5>Add user: </h5>
+                <!--/*@thymesVar id="appUser" type="ru.otus.spring.app_authorization.security.user.User"*/-->
+                <form th:action="@{/addUser}" th:object="${appUser}" th:method="post">
+                    <div class="form-group">
+                        <input
+                                type="text"
+                                id="user-first-name"
+                                name="first-name"
+                                class="form-control"
+                                placeholder="first name..."
+                                required
+                                th:field="*{firstName}"
+                        >
+                    </div>
+                    <div class="form-group">
+                        <input
+                                type="text"
+                                id="user-last-name"
+                                name="last-name"
+                                class="form-control"
+                                placeholder="last name..."
+                                required
+                                th:field="*{lastName}"
+                        >
+                    </div>
+                    <div class="form-group">
+                        <input
+                                type="text"
+                                id="user-login"
+                                name="user-login"
+                                class="form-control"
+                                placeholder="login..."
+                                required
+                                th:field="*{login}"
+                        >
+                    </div>
+                    <div class="form-group">
+                        <input
+                                type="password"
+                                id="user-password"
+                                name="password"
+                                class="form-control"
+                                placeholder="password..."
+                                required
+                                th:field="*{password}"
+                        >
+                    </div>
+                    <div class="form-group">
+                        <select th:name="role" class="custom-select">
+                            <option
+                                    th:each="role : ${T(ru.otus.spring.app_authorization.security.user.Role).withPrivileges()}"
+                                    th:value="${role.name}"
+                                    th:text="${role.name}"
+                                    th:field="*{role}"
+                            >Role</option>
+                        </select>
+                    </div>
+                    <div class="row">
+                        <div class="col-sm">
+                            <button class="btn btn-dark btn-sm" type="submit">Add</button>
+                        </div>
+                        <div class="col-sm">
+                            <a class="btn btn-primary btn-sm" th:href="@{/}" href="../list.html">Back</a>
+                        </div>
+                    </div>
+                </form>
+            </div>
+
+        </div>
+    </div>
+</body>
