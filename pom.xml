@@ -22,5 +22,6 @@
         <module>hw11-reactive-book-info-app</module>
         <module>hw12-app-authentication</module>
         <module>hw13-app-authorization</module>
+        <module>hw15-spring-integration</module>
     </modules>
 </project>
