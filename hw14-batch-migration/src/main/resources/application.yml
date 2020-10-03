@@ -1,0 +1,25 @@
+spring:
+  datasource:
+    platform: postgres
+    url: jdbc:postgresql://localhost:5432/bookdb
+    username: postgres
+    password: testpassword
+    driverClassName: org.postgresql.Driver
+    initialization-mode: always
+  batch:
+    initialize-schema: always
+    job:
+      enabled: false
+  shell:
+    interactive:
+      enabled: true
+  data:
+    mongodb:
+      database: bookdb
+      port: 27017
+migration:
+  jobName: MigrationJob
+  stepName: MigrationStep
+  pageSize: 3
+  chunkSize: 1
+  clearSourceId: true

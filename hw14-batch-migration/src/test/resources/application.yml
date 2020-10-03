@@ -1,0 +1,25 @@
+spring:
+  datasource:
+    platform: h2
+    url: jdbc:h2:mem:testdb
+    username: sa
+    password:
+    initialization-mode: always
+    data: testdata.sql
+  shell:
+    interactive:
+      enabled: false
+  batch:
+    job:
+      enabled: false
+  data:
+    mongodb:
+      host: localhost
+      port: 0
+      database: testbookdb
+migration:
+  jobName: MigrationJob
+  stepName: MigrationStep
+  pageSize: 2
+  chunkSize: 1
+  clearSourceId: true

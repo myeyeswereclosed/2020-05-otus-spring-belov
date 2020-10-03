@@ -23,5 +23,6 @@
         <module>hw12-app-authentication</module>
         <module>hw13-app-authorization</module>
         <module>hw15-spring-integration</module>
+        <module>hw14-batch-migration</module>
     </modules>
 </project>
