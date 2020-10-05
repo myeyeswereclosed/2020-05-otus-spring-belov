@@ -1,4 +1,4 @@
-package ru.otus.spring.rest_book_info_app;
+package ru.otus.spring.actuator;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;

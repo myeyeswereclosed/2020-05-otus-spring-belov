@@ -24,5 +24,6 @@
         <module>hw13-app-authorization</module>
         <module>hw15-spring-integration</module>
         <module>hw14-batch-migration</module>
+        <module>hw16-actuator</module>
     </modules>
 </project>
