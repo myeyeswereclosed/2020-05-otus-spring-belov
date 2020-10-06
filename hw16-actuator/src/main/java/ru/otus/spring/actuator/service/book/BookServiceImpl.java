@@ -44,7 +44,7 @@ public class BookServiceImpl implements BookService {
                     .update(book)
                     .map(
                         updated -> {
-                            commentRepository.update(UpdateCommentConfig.renameBook(book));
+                            commentRepository.updateWithConfig(UpdateCommentConfig.renameBook(book));
 
                             return new Executed<>(book);
                         }

@@ -75,7 +75,7 @@ public class AddBookInfoServiceImpl implements AddBookInfoService {
     private ServiceResult<Book> addStoredAuthor(Book book, Author author) {
         try {
             var updatedBook = bookRepository.save(book.addAuthor(author));
-            commentRepository.update(UpdateCommentConfig.addAuthor(book.getId(), author));
+            commentRepository.updateWithConfig(UpdateCommentConfig.addAuthor(book.getId(), author));
 
             logger.info("Added existing author {} as author of '{}'", author.fullName(), updatedBook.toString());
 
@@ -92,7 +92,7 @@ public class AddBookInfoServiceImpl implements AddBookInfoService {
             var newAuthor = authorRepository.save(author);
 
             var updatedBook = bookRepository.save(book.addAuthor(newAuthor));
-            commentRepository.update(UpdateCommentConfig.addAuthor(book.getId(), newAuthor));
+            commentRepository.updateWithConfig(UpdateCommentConfig.addAuthor(book.getId(), newAuthor));
 
             logger.info("Added new author {} as author of '{}'", author.fullName(), updatedBook.toString());
 
@@ -142,7 +142,7 @@ public class AddBookInfoServiceImpl implements AddBookInfoService {
 
     private ServiceResult<Book> addStoredGenre(Book book, Genre genre) {
         var updatedBook = bookRepository.save(book.addGenre(genre));
-        commentRepository.update(UpdateCommentConfig.addGenre(book.getId(), genre));
+        commentRepository.updateWithConfig(UpdateCommentConfig.addGenre(book.getId(), genre));
 
         logger.info("Added '{}' as genre of '{}'", genre.getName(), updatedBook.toString());
 
@@ -154,7 +154,7 @@ public class AddBookInfoServiceImpl implements AddBookInfoService {
             var newGenre = genreRepository.save(genre);
 
             var updatedBook = bookRepository.save(book.addGenre(newGenre));
-            commentRepository.update(UpdateCommentConfig.addGenre(book.getId(), newGenre));
+            commentRepository.updateWithConfig(UpdateCommentConfig.addGenre(book.getId(), newGenre));
 
             logger.info("Added new genre '{}' as genre of '{}'", genre.getName(), updatedBook.toString());
 

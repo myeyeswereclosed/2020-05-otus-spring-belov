@@ -41,7 +41,7 @@ public class EditBookInfoServiceImpl implements EditBookInfoService {
             if (authorRepository.existsById(author.getId())) {
                 authorRepository.update(author);
                 bookInfoRepository.updateAuthor(author);
-                commentRepository.update(UpdateCommentConfig.updateAuthor(author));
+                commentRepository.updateWithConfig(UpdateCommentConfig.updateAuthor(author));
 
                 return new Executed<>(author);
             }
@@ -66,7 +66,7 @@ public class EditBookInfoServiceImpl implements EditBookInfoService {
                     .map(
                         deleted -> {
                             bookInfoRepository.removeAuthor(id);
-                            commentRepository.update(UpdateCommentConfig.removeAuthor(id));
+                            commentRepository.updateWithConfig(UpdateCommentConfig.removeAuthor(id));
 
                             return new Executed<>(id);
                         }
@@ -95,7 +95,7 @@ public class EditBookInfoServiceImpl implements EditBookInfoService {
             if (genreRepository.existsById(genre.getId())) {
                 genreRepository.update(genre);
                 bookInfoRepository.updateGenre(genre);
-                commentRepository.update(UpdateCommentConfig.updateGenre(genre));
+                commentRepository.updateWithConfig(UpdateCommentConfig.updateGenre(genre));
 
                 return new Executed<>(genre);
             }
@@ -120,7 +120,7 @@ public class EditBookInfoServiceImpl implements EditBookInfoService {
                     .map(
                         deleted -> {
                             bookInfoRepository.removeGenre(id);
-                            commentRepository.update(UpdateCommentConfig.removeGenre(id));
+                            commentRepository.updateWithConfig(UpdateCommentConfig.removeGenre(id));
 
                             return new Executed<>(id);
                         }

@@ -9,9 +9,9 @@ import ru.otus.spring.actuator.domain.Genre;
 import java.util.List;
 import java.util.Optional;
 
-//@RepositoryRestResource
+@RepositoryRestResource
 public interface GenreRepository extends MongoRepository<Genre, String>, GenreRepositoryCustom {
-//    @RestResource(path = "genres", rel = "genres")
+    @RestResource(path = "genres", rel = "genres")
     List<Genre> findAll();
 
     Optional<Genre> findByName(String name);

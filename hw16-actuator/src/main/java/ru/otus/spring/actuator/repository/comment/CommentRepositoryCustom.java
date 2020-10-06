@@ -9,5 +9,5 @@ public interface CommentRepositoryCustom {
 
     Optional<String> delete(String id);
 
-    void update(UpdateCommentConfig config);
+    void updateWithConfig(UpdateCommentConfig config);
 }

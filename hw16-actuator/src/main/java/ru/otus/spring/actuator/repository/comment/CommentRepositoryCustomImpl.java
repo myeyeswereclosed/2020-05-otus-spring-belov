@@ -25,7 +25,7 @@ public class CommentRepositoryCustomImpl implements CommentRepositoryCustom {
             );
     }
 
-    public void update(UpdateCommentConfig config) {
+    public void updateWithConfig(UpdateCommentConfig config) {
         mongoTemplate
             .updateMulti(
                 new Query(Criteria.where(config.getField()).is(config.getValue())),
