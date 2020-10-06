@@ -1,0 +1,15 @@
+spring:
+  data:
+    mongodb:
+      port: 0
+      database: test
+migration:
+  changelogPackage: ru.otus.spring.actuator.test_migration
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health
+  endpoint:
+    health:
+      show-details: always
