@@ -14,8 +14,10 @@ public interface CommentRepository extends MongoRepository<Comment, String>, Com
     @RestResource(path = "comments", rel = "comments")
     List<Comment> findAll();
 
-    @RestResource(path = "byBookId")
     List<Comment> findAllByBook_Id(@Param("id") String bookId);
+
+    @RestResource(path = "byBookId")
+    List<Comment> findShortByBook_Id(@Param("id") String bookId);
 
     void deleteAllByBook_Id(String bookId);
 }

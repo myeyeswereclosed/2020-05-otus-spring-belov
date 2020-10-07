@@ -7,7 +7,10 @@ import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.data.mongodb.core.query.Update;
 import ru.otus.spring.actuator.domain.Comment;
 
+import java.util.List;
 import java.util.Optional;
+
+import static java.util.stream.Collectors.toList;
 
 @RequiredArgsConstructor
 public class CommentRepositoryCustomImpl implements CommentRepositoryCustom {
@@ -32,6 +35,20 @@ public class CommentRepositoryCustomImpl implements CommentRepositoryCustom {
                 config.getUpdate(),
                 Comment.class
         );
+    }
+
+    // emulate just beginning of comment
+    @Override
+    public List<Comment> findShortByBook_Id(String bookId) {
+        return
+            mongoTemplate
+                .find(
+                    new Query(Criteria.where("book_id").is(bookId)),
+                    Comment.class
+                )
+                .stream()
+                .map(found -> new Comment(found.getId(), found.getText().substring(0, 5)))
+                .collect(toList());
     }
 
     @Override
