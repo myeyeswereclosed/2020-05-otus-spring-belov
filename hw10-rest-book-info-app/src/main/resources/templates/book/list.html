@@ -68,7 +68,7 @@
                                                     $('<td>')
                                                         .append(
                                                             '<a class="btn btn-primary btn-secondary btn-sm" href="/editBook?id=' +
-                                                            book.id + "&title=" + book.title +
+                                                            book.id + "&title=" + escape(book.title) +
                                                             '">Edit</a>'
                                                         )
                                                 )
