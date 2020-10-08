@@ -3,7 +3,7 @@ package ru.otus.spring.actuator.health;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import ru.otus.spring.actuator.domain.Genre;
-import ru.otus.spring.actuator.repository.FindDuplicates;
+import ru.otus.spring.actuator.repository.DuplicatesFinder;
 import ru.otus.spring.actuator.repository.genre.GenreRepository;
 
 import java.util.function.Function;
@@ -14,7 +14,7 @@ public class GenreUniquenessHealthIndicator extends UniquenessHealthIndicator<Ge
     private final GenreRepository repository;
 
     @Override
-    protected FindDuplicates<Genre> repository() {
+    protected DuplicatesFinder<Genre> repository() {
         return repository;
     }
 

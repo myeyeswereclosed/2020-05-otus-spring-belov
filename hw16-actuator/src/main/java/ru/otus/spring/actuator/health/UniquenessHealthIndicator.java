@@ -2,7 +2,7 @@ package ru.otus.spring.actuator.health;
 
 import org.springframework.boot.actuate.health.Health;
 import org.springframework.boot.actuate.health.HealthIndicator;
-import ru.otus.spring.actuator.repository.FindDuplicates;
+import ru.otus.spring.actuator.repository.DuplicatesFinder;
 
 import java.util.function.Function;
 
@@ -10,7 +10,7 @@ import static java.util.stream.Collectors.toList;
 
 // assume we forgot about unique indexes :)
 abstract public class UniquenessHealthIndicator<T> implements HealthIndicator {
-    abstract protected FindDuplicates<T> repository();
+    abstract protected DuplicatesFinder<T> repository();
 
     abstract protected Function<T, String> mapToString();
 
