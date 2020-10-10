@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Add Book</title>
+    <link rel="stylesheet" th:href="@{/webjars/bootstrap/css/bootstrap.min.css}">
+    <link rel="stylesheet" th:href="@{common.css}">
+    <script th:src="@{/webjars/jquery/3.3.1/jquery.min.js}"></script>
+    <script th:src="@{/js/common.js}"></script>
+</head>
+<body>
+    <div class="container" id="main-content">
+        <div class="row border round common-div">
+            <div class="col-md-4">
+                <h5>Edit '<span th:text="${title}">Edit book: </span>'</h5>
+                <!--/*@thymesVar id="book" type="ru.otus.spring.web_ui_book_info_app.domain.Book"*/-->
+                <form th:action="@{/book/{id}(id=${id})}" th:object="${book}" th:method="put" id="edit-book-form">
+                    <div class="form-group">
+                        <input
+                                type="text"
+                                id="new-book-title"
+                                name="title"
+                                class="form-control"
+                                placeholder="title..."
+                                required
+                                th:field="*{title}"
+                        >
+                    </div>
+                    <div class="row">
+                        <div class="col-sm">
+                            <button class="btn btn-dark btn-sm" type="submit" id="edit-book-btn">Edit</button>
+                        </div>
+                        <div class="col-sm">
+                            <a class="btn btn-primary btn-sm" th:href="@{/}" href="book/list.html">Back</a>
+                        </div>
+                    </div>
+                </form>
+            </div>
+
+        </div>
+    </div>
+    <script>
+        $('#edit-book-btn')
+            .click(
+                function (event) {
+                    event.preventDefault();
+
+                    const form = $('#edit-book-form');
+
+                    $.ajax({
+                        url: form.attr("action"),
+                        method: "put",
+                        data: form.serialize(),
+                        success: function() {
+                            window.location.replace("/");
+                        },
+                        error: function(jqXHR) {
+                           handleError(jqXHR, form.attr('action').split("/")[2])
+                        }
+                    })
+                }
+            )
+    </script>
+</body>
+</html>

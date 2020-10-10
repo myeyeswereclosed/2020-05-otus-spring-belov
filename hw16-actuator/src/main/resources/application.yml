@@ -1,0 +1,18 @@
+spring:
+  data:
+    mongodb:
+      database: bookdb
+      port: 27017
+migration:
+  changelogPackage: ru.otus.spring.actuator.migration.changelog
+management:
+  endpoints:
+    web:
+      exposure:
+        include: metrics, logfile, health
+  endpoint:
+    health:
+      show-details: always
+logging:
+  file:
+    name: hw16-actuator/logs/book_info_logs
