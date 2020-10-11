@@ -1,0 +1,18 @@
+spring:
+  data:
+    mongodb:
+      uri: ${MONGODB_URI}
+      database: ${MONGODB_DB}
+migration:
+  changelogPackage: ru.otus.spring.app_container.migration.changelog
+management:
+  endpoints:
+    web:
+      exposure:
+        include: metrics, logfile, health
+  endpoint:
+    health:
+      show-details: always
+logging:
+  file:
+    name: hw17-app-container/logs/book_info_logs

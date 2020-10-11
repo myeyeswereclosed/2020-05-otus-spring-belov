@@ -1,0 +1,20 @@
+version: '3'
+services:
+  app:
+    image: book_app
+    build:
+      context: .
+      dockerfile: Dockerfile
+    privileged: true
+    environment:
+      - MONGODB_URI=mongodb://mongo:27017/bookdb
+      - MONGODB_DB=bookdb
+    links:
+      - mongo
+    ports:
+      - "8888:8080"
+  mongo:
+    image: mongo
+    ports:
+      - "12345:27017"
+    restart: always

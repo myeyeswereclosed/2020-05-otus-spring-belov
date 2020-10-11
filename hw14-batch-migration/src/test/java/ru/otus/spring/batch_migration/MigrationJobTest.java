@@ -374,7 +374,7 @@ public class MigrationJobTest {
         List<T> actual,
         Function<BookInfo, T> initialDataToResultType
     ) {
-        assertResults(actual, t -> t, initialDataToResultType);
+        assertResults(actual, Function.identity(), initialDataToResultType);
     }
 
     private void assertAuthorMigratedWithoutDuplicates(List<AuthorDocument> migratedAuthors) {
