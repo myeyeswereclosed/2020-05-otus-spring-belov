@@ -7,8 +7,8 @@ services:
       dockerfile: Dockerfile
     privileged: true
     environment:
-      - MONGODB_URI=mongodb://mongo:27017/bookdb
-      - MONGODB_DB=bookdb
+      - MONGO_URI=mongodb://mongo:27017/bookdb
+      - MONGO_DB=bookdb
     links:
       - mongo
     ports:

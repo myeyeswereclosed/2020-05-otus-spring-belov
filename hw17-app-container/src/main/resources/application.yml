@@ -1,8 +1,8 @@
 spring:
   data:
     mongodb:
-      uri: ${MONGODB_URI}
-      database: ${MONGODB_DB}
+      uri: ${MONGO_URI}
+      database: ${MONGO_DB}
 migration:
   changelogPackage: ru.otus.spring.app_container.migration.changelog
 management:
