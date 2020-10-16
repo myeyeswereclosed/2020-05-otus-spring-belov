@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Books Info</title>
+    <script th:src="@{/webjars/jquery/3.3.1/jquery.min.js}"></script>
+    <script th:src="@{/webjars/bootstrap/4.3.1/js/bootstrap.min.js}"></script>
+    <script th:src="@{/js/common.js}"></script>
+    <link rel="stylesheet" th:href="@{/webjars/bootstrap/css/bootstrap.min.css}">
+    <link rel="stylesheet" th:href="@{common.css}">
+</head>
+<body>
+    <div id="main-content" class="container common-div">
+        <div class="row">
+            <div class="col-lg">
+                <h3>Book Info App</h3>
+            </div>
+            <div class="col-lg">
+                <div class="float-right">
+                    <a class="btn btn-primary btn-success add" th:href="@{/addBook}" href="add.html">Add book</a>
+                </div>
+            </div>
+        </div>
+
+        <div class="row table-responsive">
+            <table id = "book-info" class="table">
+                <thead>
+                <tr>
+                    <th>id</th>
+                    <th>Title</th>
+                    <th>Author(s)</th>
+                    <th>Genre(s)</th>
+                    <th></th>
+                    <th></th>
+                    <th></th>
+                </tr>
+                </thead>
+                <tbody>
+                </tbody>
+
+                <script th:inline="javascript">
+                    $(function () {
+                        const baseUri = /*[[${uri}]]*/'uri';
+
+                        $.ajax({
+                            url: baseUri + "books",
+                            method: "get",
+                            success: (function (books) {
+                                books.forEach(function (book) {
+                                    $('tbody')
+                                        .append(
+                                            $('<tr>')
+                                                .append($('<td>' + book.id + '</td>'))
+                                                .append($('<td>' + book.title + '</td>'))
+                                                .append(
+                                                    $('<td>')
+                                                        .append($('<ul id ="book-authors-' + book.id + '">'))
+                                                )
+                                                .append(
+                                                    $('<td>')
+                                                        .append($('<ul id ="book-genres-' + book.id + '">'))
+                                                )
+                                                .append(
+                                                    $('<td>')
+                                                        .append(
+                                                            '<a class="btn btn-primary btn-info btn-sm" href="/info?id=' +
+                                                            book.id +
+                                                            '">Details</a>'
+                                                        )
+                                                )
+                                                .append(
+                                                    $('<td>')
+                                                        .append(
+                                                            '<a class="btn btn-primary btn-secondary btn-sm" href="/editBook?id=' +
+                                                            book.id + "&title=" + escape(book.title) +
+                                                            '">Edit</a>'
+                                                        )
+                                                )
+                                                .append(
+                                                    $('<td>')
+                                                        .append(
+                                                            '<a ' +
+                                                            'class="btn btn-primary btn-danger btn-sm remove-book-btn" ' +
+                                                            'href="' + baseUri + 'book/' + book.id + '">Remove</a>'
+                                                        )
+                                                )
+                                        );
+
+                                    $(".remove-book-btn").click(
+                                        function (event) {
+                                            event.preventDefault();
+
+                                            $.ajax({
+                                                url: $(this).attr("href"),
+                                                method: "delete",
+                                                success: function() {
+                                                    window.location.replace("/");
+                                                },
+                                                error: function(jqXHR) {
+                                                    handleError(jqXHR, this.url.split("/")[2]);
+                                                }
+                                            })
+                                        }
+                                    )
+
+                                    $.each(
+                                        book.authors, function (i, author) {
+                                            $('#book-authors-' + book.id)
+                                                .append('<li>' + author.firstName + ' ' + author.lastName + '</li>')
+                                        }
+                                    )
+
+                                    $.each(
+                                        book.genres, function (i, genre) {
+                                            $('#book-genres-' + book.id)
+                                                .append('<li>' + genre.name + '</li>')
+                                        }
+                                    )
+
+                                });
+                            }),
+                            error: function() {
+                                error();
+                            }
+                        })
+                    })
+                </script>
+            </table>
+        </div>
+    </div>
+</body>
+</html>
