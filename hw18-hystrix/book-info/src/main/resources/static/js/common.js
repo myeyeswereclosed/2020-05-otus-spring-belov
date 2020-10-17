@@ -1,5 +1,5 @@
 function handleError(jqXHR, bookId) {
-    if (jqXHR.status === 404) {
+    if (jqXHR !== undefined && jqXHR.status === 404) {
         bookNotFound(bookId)
     } else {
         error();
