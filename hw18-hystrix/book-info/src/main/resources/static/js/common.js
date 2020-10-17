@@ -39,11 +39,11 @@ function error() {
 }
 
 function sendFormData(form, uri, method, errorHandler) {
-    let postData = {};
+    let data = {};
 
     $.each(form.serializeArray(),
         function(i, v) {
-            postData[v.name] = v.value;
+            data[v.name] = v.value;
         });
 
     $.ajax({
@@ -51,7 +51,7 @@ function sendFormData(form, uri, method, errorHandler) {
         contentType: "application/json",
         mimeType: 'application/json',
         url: uri ,
-        data: JSON.stringify(postData),
+        data: JSON.stringify(data),
         success: function() {
             window.location.replace("/");
         },
