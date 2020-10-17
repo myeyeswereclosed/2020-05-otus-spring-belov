@@ -27,6 +27,5 @@
         <module>hw16-actuator</module>
         <module>hw17-app-container</module>
         <module>hw18-hystrix</module>
-        <module>book-info-lib</module>
     </modules>
 </project>
