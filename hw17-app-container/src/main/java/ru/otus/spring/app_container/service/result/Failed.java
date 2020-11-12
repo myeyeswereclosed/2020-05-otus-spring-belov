@@ -2,10 +2,16 @@ package ru.otus.spring.app_container.service.result;
 
 import lombok.NoArgsConstructor;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Optional;
 
 @NoArgsConstructor
 public class Failed<T> implements ServiceResult<T> {
+    private Map<byte[], byte[]> m = new HashMap<>();
+
+
+
     private String description = "";
 
     public Failed(String description) {
@@ -27,3 +33,5 @@ public class Failed<T> implements ServiceResult<T> {
         return description;
     }
 }
+
+
