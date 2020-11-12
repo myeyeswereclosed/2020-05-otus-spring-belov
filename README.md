@@ -26,3 +26,4 @@ hw15-spring-integration:        Занятие 28. Spring Integration: Endpoints
 hw16-actuator:                  Занятие 29. Монолиты vs. Microservices (Round 2), Spring Boot Actuator - must have в микросервисах. Дз16
 hw17-app-container:             Занятие 31. Docker, оркестрация, облака, облачные хостинги. Дз 17
 hw18-hystrix:                   Занятие 34. Zuul, Hystrix Circuit Breaker, Sleuth, Zipkin, Hystrix Dashboard, Secure Configuration Properties. Дз 18 (Реализовано в рамках проектной работы https://github.com/myeyeswereclosed/otus-spring-rehearsal-base)
+
